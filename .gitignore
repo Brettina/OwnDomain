@@ -1,0 +1,28 @@
+# Dependencies
+/node_modules
+/vendor
+/bower_components
+
+# Build artifacts and output directories
+/dist
+/build
+/out
+/publish
+
+# Temporary files, logs, and caches
+*.log
+*.tmp
+*.cache
+.temp/
+.cache/
+
+# Environment variables and sensitive files
+.env
+.DS_Store # macOS
+Thumbs.db # Windows
+
+# Editor and IDE-specific files (customize as needed)
+.vscode/
+.idea/
+*.suo # Visual Studio
+*.user # Visual Studio

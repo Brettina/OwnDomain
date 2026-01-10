@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Engineer — Weichware Lohr</title>
+  <meta name="description" content="Python engineering, simulation, synthetic data, and database systems." />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <meta name="color-scheme" content="light dark" />
+  <script src="/assets/site.js" defer></script>
+</head>
+
+<body class="page-engineer" data-page="engineer">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- injected shared header -->
+  <div id="header-slot"></div>
+
+  <main id="main" class="container">
+    <header class="page-hero engineer-hero">
+      <div class="mono-line" aria-hidden="true">
+        <span class="prompt">$</span> python -m weichware.engineer --services --projects --timeline
+      </div>
+
+      <h1 data-title></h1>
+      <p class="lead" data-lead></p>
+
+      <div class="engineer-meta">
+        <div class="kpi">
+          <div class="kpi-label">Default</div>
+          <div class="kpi-value">Reproducible</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Bias</div>
+          <div class="kpi-value">Testable</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Focus</div>
+          <div class="kpi-value">Delivery</div>
+        </div>
+      </div>
+
+      <div data-pills></div>
+
+      <div class="note-block" style="margin-top:14px;">
+        <h2 style="margin:0 0 8px; font-size:1.05rem;">Notes</h2>
+        <div data-scope></div>
+      </div>
+    </header>
+
+    <section class="section" aria-labelledby="services">
+      <h2 id="services">Services</h2>
+      <p class="fineprint">Grouped as collapsible sections to keep the page readable.</p>
+      <div data-services></div>
+    </section>
+
+    <section class="section" aria-labelledby="store">
+      <h2 id="store">Products & projects (request-only)</h2>
+      <div data-store></div>
+    </section>
+
+    <section class="section" aria-labelledby="timeline">
+      <h2 id="timeline">Selected highlights</h2>
+      <div data-timeline></div>
+    </section>
+
+    <section class="section" aria-labelledby="contact">
+      <h2 id="contact">Contact</h2>
+
+      <p class="fineprint">
+        Email: <span data-email></span>
+      </p>
+
+      <!-- mailto workflow -->
+      <form class="form" data-contact-form>
+        <div class="field" style="position:absolute; left:-9999px;" aria-hidden="true">
+          <label for="company-engineer-contact">Company</label>
+          <input id="company-engineer-contact" name="company" autocomplete="off" tabindex="-1" />
+        </div>
+
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" autocomplete="name" required />
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+          <label for="topic">Topic</label>
+          <select id="topic" name="topic" required></select>
+        </div>
+
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="6" required placeholder="What are you building? Constraints? Data sensitivity? Timeline?"></textarea>
+          <p class="fineprint" style="margin-top:6px;">
+            Helpful: stack (Python version, DB), expected scale, and what “done” means.
+          </p>
+        </div>
+
+        <div class="field checkbox">
+          <input id="consent" name="consent" type="checkbox" required />
+          <label for="consent">I agree that my data will be used to respond to my request.</label>
+        </div>
+
+        <p class="fineprint">
+          See <a href="/regulation/privacy/">Privacy</a>, <a href="/regulation/cookies/">Cookies</a>, and <a href="/regulation/imprint/">Imprint</a>.
+        </p>
+
+        <button class="button" type="submit">Open email draft</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- injected shared footer -->
+  <div id="footer-slot"></div>
+</body>
+</html>

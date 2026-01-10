@@ -1,0 +1,428 @@
+{
+  "social-worker": {
+    "title": "Social worker",
+    "lead": "Coaching and reflective support work, grounded in phenomenology and attentive conversation. Seelsorge-style support where appropriate.",
+    "pills": ["Coaching", "Phenomenology", "Seelsorge", "Schwarzes Kreuz (context)"],
+
+    "scopeNote": [
+      "This is non-medical, non-psychotherapeutic support. Nothing here constitutes medical care, psychotherapy, or emergency services.",
+      "Please avoid sending highly sensitive personal data in the first message. If you need higher confidentiality, say so and we can agree on a safer channel."
+    ],
+
+    "services": [
+      {
+        "group": "Support formats",
+        "items": [
+          { "name": "Coaching (life & work contexts)", "desc": "Structured sessions to clarify decisions, reduce overwhelm, and build workable next steps. No diagnosis, no treatment claims." },
+          { "name": "Phenomenology-informed conversation", "desc": "Attention to lived experience: how situations show up, what is felt, what is avoided, and what is implicitly assumed." },
+          { "name": "Seelsorge-style support", "desc": "Calm, confidential conversation around meaning, guilt/shame themes, grief, and moral injury—without pressure or dogma." }
+        ]
+      },
+      {
+        "group": "For helpers and teams",
+        "items": [
+          { "name": "Documentation & structure", "desc": "Help with templates, routines, boundary scripts, and workflow hygiene for support/care settings." },
+          { "name": "Workshops (small groups)", "desc": "Boundaries, communication under stress, reflective practice, and sustainable helping." }
+        ]
+      }
+    ],
+
+    "store": {
+      "intro": "Catalog only — no checkout on this site. Requests open an email draft.",
+      "current": [
+        { "item": "Session bundle: 3× Coaching", "status": "available", "desc": "Short cycle: define problem → test interventions → consolidate outcomes.", "variants": ["Online", "In person (if possible)"] },
+        { "item": "Resource pack: Boundary scripts", "status": "available", "desc": "Templates for saying no, holding limits, and de-escalating politely.", "variants": ["PDF", "Printed (on request)"] },
+        { "item": "Workshop: Reflective practice", "status": "limited", "desc": "Facilitated session for teams or peer groups.", "variants": ["60 minutes", "90 minutes", "120 minutes"] }
+      ],
+      "past": [
+        { "item": "Support series: Transition & identity", "desc": "Short series for navigating major transitions with language and boundary focus." },
+        { "item": "Workshop pilot: Communication under pressure", "desc": "Pilot exploring calm routines in high-stress institutional environments." }
+      ]
+    },
+
+    "timeline": [
+      { "year": "2025", "title": "Workshop format stabilized", "desc": "Repeatable small-group structure for reflective practice and boundary work." },
+      { "year": "2024", "title": "Resource templates released", "desc": "Compact scripts and templates for practical boundary-setting." },
+      { "year": "2023", "title": "Coaching approach refined", "desc": "Clearer goals, measurable steps, and follow-up routines." }
+    ],
+
+    "contactTopicOptions": [
+      ["coaching", "Coaching"],
+      ["phenomenology", "Phenomenology-informed conversation"],
+      ["seelsorge", "Seelsorge-style support"],
+      ["workshop", "Workshop request"],
+      ["resource", "Resource/merch inquiry"],
+      ["other", "Other"]
+    ]
+  },
+  
+  "consulting": {
+    "title": "Consulting",
+    "lead": "Project management and operational support for agencies, teams, and small organizations — backoffice, marketing ops, and sales enablement.",
+    "pills": ["Project management", "Agency support", "Backoffice", "Marketing ops", "Sales ops"],
+
+    "scopeNote": [
+      "This page describes operational consulting and delivery support. No legal advice, tax advice, or regulated financial advice.",
+      "If your request is sensitive (e.g., contracts, HR cases), keep the first message high-level and we’ll agree on an appropriate channel."
+    ],
+
+    "services": [
+      {
+        "group": "Delivery & project work",
+        "items": [
+          {
+            "name": "Project management (lightweight)",
+            "desc": "Set goals, define scope, run cadence, manage risks, and keep delivery moving without bureaucracy."
+          },
+          {
+            "name": "Agency operations support",
+            "desc": "Stabilize delivery systems: handoffs, briefs, QA checklists, client comms, and predictable throughput."
+          },
+          {
+            "name": "Backoffice setup",
+            "desc": "Templates and routines for invoices coordination, document structure, asset organization, and reporting."
+          }
+        ]
+      },
+      {
+        "group": "Marketing & sales operations",
+        "items": [
+          {
+            "name": "Marketing ops support",
+            "desc": "Campaign planning, content pipeline hygiene, analytics basics (privacy-aware), and execution checklists."
+          },
+          {
+            "name": "Sales enablement",
+            "desc": "Offer structure, pitch decks, proposal templates, discovery scripts, and CRM-friendly processes."
+          },
+          {
+            "name": "Process & tooling cleanup",
+            "desc": "Reduce tool sprawl; define simple SOPs; align what people do with what’s tracked."
+          }
+        ]
+      }
+    ],
+
+    "store": {
+      "intro": "Catalog only — no checkout on this site. Requests open an email draft.",
+      "current": [
+        {
+          "item": "Ops starter pack (templates)",
+          "status": "available",
+          "desc": "A practical bundle: project brief template, weekly status format, QA checklist, and handoff docs.",
+          "variants": ["PDF", "Docs/Markdown", "Both"]
+        },
+        {
+          "item": "PM micro-sprint (2 weeks)",
+          "status": "available",
+          "desc": "A short engagement to define scope, deliver a slice, and leave behind a working cadence.",
+          "variants": ["Remote", "Hybrid (if possible)"]
+        },
+        {
+          "item": "Proposal & pitch kit",
+          "status": "available",
+          "desc": "Proposal structure + pricing table patterns + discovery questions + objection handling notes.",
+          "variants": ["Agency", "Solo/independent"]
+        }
+      ],
+      "past": [
+        {
+          "item": "Backoffice consolidation",
+          "desc": "Unified file structure, naming, and simple reporting rhythm to reduce operational drag."
+        },
+        {
+          "item": "Sales process clean-up",
+          "desc": "Streamlined lead stages, improved handoffs, and reduced lost context in follow-ups."
+        }
+      ]
+    },
+
+    "timeline": [
+      {
+        "year": "2025",
+        "title": "Operations playbook shipped",
+        "desc": "Delivered a lean set of templates and routines that made delivery status and ownership visible."
+      },
+      {
+        "year": "2024",
+        "title": "Agency workflow stabilization",
+        "desc": "Reduced rework by standardizing briefs, QA gates, and client feedback loops."
+      },
+      {
+        "year": "2023",
+        "title": "Sales enablement refresh",
+        "desc": "Improved proposal consistency and discovery quality with better scripts and structure."
+      }
+    ],
+
+    "contactTopicOptions": [
+      ["pm", "Project management"],
+      ["agency", "Agency operations support"],
+      ["backoffice", "Backoffice / admin support"],
+      ["marketing", "Marketing ops"],
+      ["sales", "Sales enablement"],
+      ["resource", "Templates / merch inquiry"],
+      ["other", "Other"]
+    ]
+  },
+
+  "engineer": {
+    "title": "Engineer",
+    "lead": "Software engineering focused on Python, simulation & synthetic data, and database systems — pragmatic delivery with testability and reproducibility.",
+    "pills": ["Python", "Simulation", "Synthetic data", "Databases", "Tooling/CI"],
+
+    "scopeNote": [
+      "Engineering services are delivered with documentation, versioning, and reproducible environments where feasible.",
+      "Security and privacy constraints are respected; synthetic data is used where it meaningfully reduces risk."
+    ],
+
+    "services": [
+      {
+        "group": "Data & simulation",
+        "items": [
+          {
+            "name": "Simulation pipelines",
+            "desc": "Design and implementation of simulation workflows: scenario generation, parameter sweeps, reproducible runs, and reporting."
+          },
+          {
+            "name": "Synthetic data generation",
+            "desc": "Configurable generators for structured test datasets; distributions, constraints, edge cases, and validation suites."
+          },
+          {
+            "name": "Data validation & QA",
+            "desc": "Schema checks, invariants, data contracts, and CI-friendly validation to prevent silent regressions."
+          }
+        ]
+      },
+      {
+        "group": "Databases & backend fundamentals",
+        "items": [
+          {
+            "name": "Database design & migrations",
+            "desc": "Schema design, normalization/denormalization choices, migration plans, and safe rollout strategies."
+          },
+          {
+            "name": "Performance & reliability",
+            "desc": "Indexing strategy, query tuning, caching patterns, and instrumentation to find bottlenecks early."
+          },
+          {
+            "name": "Data access layers",
+            "desc": "Clean, testable data access with consistent error handling, transaction boundaries, and observability hooks."
+          }
+        ]
+      },
+      {
+        "group": "Python engineering & tooling",
+        "items": [
+          {
+            "name": "Python tooling & automation",
+            "desc": "CLIs, batch processing, internal tooling, and automation that’s maintainable and documented."
+          },
+          {
+            "name": "Packaging & environments",
+            "desc": "Reproducible builds, dependency pinning, and deployment-friendly packaging patterns."
+          },
+          {
+            "name": "CI integration",
+            "desc": "Tests, linters, formatting, and checks wired into CI so quality is enforced continuously."
+          }
+        ]
+      }
+    ],
+
+    "store": {
+      "intro": "Catalog only — no checkout on this site. Requests open an email draft.",
+      "current": [
+        {
+          "item": "Project: Synthetic Data Toolkit",
+          "status": "active",
+          "desc": "Configurable generator for structured test datasets with constraints + validators.",
+          "variants": ["Python package", "CLI + templates", "Both"]
+        },
+        {
+          "item": "Service pack: DB performance review",
+          "status": "available",
+          "desc": "Short engagement: query review, indexing plan, and a prioritized improvement checklist.",
+          "variants": ["SQLite/Postgres", "MySQL/MariaDB", "Mixed/other"]
+        },
+        {
+          "item": "Tool: Data validation harness",
+          "status": "available",
+          "desc": "A small framework for schema checks + invariants with CI-friendly reports.",
+          "variants": ["Great Expectations-style", "Lightweight custom"]
+        }
+      ],
+      "past": [
+        {
+          "item": "Project: Legacy DB modernization",
+          "desc": "Migration planning, refactors, and performance stabilization for a legacy schema."
+        },
+        {
+          "item": "Project: Simulation reporting pipeline",
+          "desc": "Automated run orchestration + reporting artifacts for repeatable analysis."
+        },
+        {
+          "item": "Project: Internal Python CLI suite",
+          "desc": "Tooling for batch jobs, data import/export, and operational workflows."
+        },
+        {
+          "item": "Project: Synthetic edge-case generator",
+          "desc": "Focused generator for pathological/rare cases to harden validation and QA."
+        }
+      ]
+    },
+
+    "timeline": [
+      {
+        "year": "2025",
+        "title": "Simulation pipeline delivered",
+        "desc": "Reproducible workflow with testable outputs and automated reporting artifacts."
+      },
+      {
+        "year": "2024",
+        "title": "Database performance rescue",
+        "desc": "Stabilized slow queries and reliability issues through indexing and migration strategy."
+      },
+      {
+        "year": "2023",
+        "title": "Tooling consolidation",
+        "desc": "Reduced operational friction by standardizing Python tooling, environments, and CI checks."
+      }
+    ],
+
+    "contactTopicOptions": [
+      ["simulation", "Simulation / modeling"],
+      ["synthetic", "Synthetic data / QA datasets"],
+      ["database", "Databases / migrations / performance"],
+      ["tooling", "Python tooling / automation"],
+      ["resource", "Product/merch inquiry"],
+      ["other", "Other"]
+    ]
+},
+"hipster": {
+  "title": "Hipster",
+  "lead": "Games & apps, textiles, open-source hardware, prototypes — and the Saftladen corner where ideas become objects.",
+  "pills": ["Games/apps", "Textiles", "OSH", "Prototypes", "Saftladen"],
+
+  "scopeNote": [
+    "This is playful production work: prototypes, small batches, and experiments. Availability varies; some items are made-to-order.",
+    "No checkout on this site. Orders are email requests and confirmed manually."
+  ],
+
+  "services": [
+    {
+      "group": "Software (fun + useful)",
+      "items": [
+        { "name": "Games & interactive prototypes", "desc": "Small games, playful interaction, weird UI ideas, and rapid builds for testing a concept." },
+        { "name": "Apps & tools", "desc": "Tiny apps that solve one problem well: utilities, small workflows, “glue” software." }
+      ]
+    },
+    {
+      "group": "Objects (textiles + hardware)",
+      "items": [
+        { "name": "Textiles & small-batch merch", "desc": "Design + small production runs: patches, prints, tees, zines, soft goods." },
+        { "name": "Open-source hardware & prototypes", "desc": "OSH-friendly builds: proof-of-concept electronics, enclosures, documentation-first prototyping." }
+      ]
+    }
+  ],
+
+  "store": {
+    "intro": "Webshop (request-only) — choose quantity + variant and open an email order draft. No payment on-site.",
+    "current": [
+      {
+        "item": "Saftladen Sticker Pack",
+        "status": "in stock",
+        "desc": "Assorted stickers. Good for laptops, notebooks, existential dread.",
+        "variants": ["Small pack (10)", "Big pack (30)"]
+      },
+      {
+        "item": "Weichware Patch (embroidered)",
+        "status": "limited",
+        "desc": "Embroidered patch, sew-on or iron-on depending on batch.",
+        "variants": ["Sew-on", "Iron-on"]
+      },
+      {
+        "item": "Prototype Tee (small batch)",
+        "status": "made to order",
+        "desc": "Simple tee with a prototype label vibe.",
+        "variants": ["S", "M", "L", "XL"]
+      },
+      {
+        "item": "Mini zine: Saftladen Notes",
+        "status": "available",
+        "desc": "Short zine of sketches, fragments, and process notes.",
+        "variants": ["Print", "PDF"]
+      }
+    ],
+    "past": [
+      { "item": "One-off: OSH desk gadget", "desc": "Small electronics proof-of-concept with documentation-first approach." },
+      { "item": "Micro-game jam build", "desc": "Tiny game prototype delivered under time constraints with clean packaging." }
+    ]
+  },
+
+  "timeline": [
+    { "year": "2025", "title": "Saftladen batch run", "desc": "Small-batch merch run tested: packaging, variants, and request flow." },
+    { "year": "2024", "title": "Prototype sprint series", "desc": "Repeatable prototyping cadence across software + textiles." },
+    { "year": "2023", "title": "OSH documentation format", "desc": "Template for builds: BOM, assembly steps, caveats, maintenance notes." }
+  ],
+
+  "contactTopicOptions": [
+    ["webshop", "Webshop / merch order"],
+    ["games", "Games / interactive prototypes"],
+    ["apps", "Apps / small tools"],
+    ["textiles", "Textiles / small batch"],
+    ["osh", "Open-source hardware / prototypes"],
+    ["other", "Other"]
+  ]
+},
+"expert": {
+  "title": "Expert",
+  "lead": "Political analyses and interviews, justice-adjacent institutional knowledge, and information security auditing — method-first, evidence-forward.",
+  "pills": ["Political analysis", "Interviews", "Justice admin", "InfoSec auditing", "Methodology"],
+
+  "scopeNote": [
+    "Nothing here is legal advice. If you need legal counsel, consult a licensed attorney.",
+    "Analyses reflect methodological assessment and may be updated as new information becomes available."
+  ],
+
+  "services": [
+    {
+      "group": "Political analysis & interviews",
+      "items": [
+        { "name": "Political analysis (briefs)", "desc": "Structured briefs: actors, incentives, constraints, scenario space, and uncertainty notes." },
+        { "name": "Interviews & synthesis", "desc": "Interview prep, question design, and synthesis that separates claims from evidence." },
+        { "name": "Methodology review", "desc": "Make reasoning legible: sources, assumptions, and what would falsify the conclusion." }
+      ]
+    },
+    {
+      "group": "Institutional & security work",
+      "items": [
+        { "name": "Justice-adjacent process analysis", "desc": "Process mapping, role boundaries, and documentation around institutional workflows." },
+        { "name": "Information security & auditing", "desc": "Audit preparation, control mapping, evidence collection structure, and remediation planning." },
+        { "name": "Risk & compliance hygiene", "desc": "Practical risk registers, minimal viable documentation, and change-control discipline." }
+      ]
+    }
+  ],
+
+  "hideStore": true,
+
+  "timeline": [
+    { "year": "2025", "title": "Audit evidence workflow", "desc": "Built a repeatable evidence collection structure with clear ownership and traceability." },
+    { "year": "2024", "title": "Analysis format standardized", "desc": "Improved readability and falsifiability via structured briefs and uncertainty sections." },
+    { "year": "2023", "title": "Interview & synthesis practice", "desc": "Refined process for question design and separating claims, context, and evidence." }
+  ],
+
+  "contactTopicOptions": [
+    ["analysis", "Political analysis / brief"],
+    ["interview", "Interview / prep / synthesis"],
+    ["justice", "Justice-adjacent process work"],
+    ["infosec", "InfoSec / audit support"],
+    ["method", "Methodology / review"],
+    ["other", "Other"]
+  ]
+}
+
+
+
+
+}

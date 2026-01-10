@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Expert — Weichware Lohr</title>
+  <meta name="description" content="Political analyses and interviews, justice-adjacent institutional knowledge, and information security auditing." />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <meta name="color-scheme" content="light dark" />
+  <script src="/assets/site.js" defer></script>
+</head>
+
+<body class="page-expert" data-page="expert">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <!-- injected shared header -->
+  <div id="header-slot"></div>
+
+  <main id="main" class="container">
+    <header class="page-hero expert-hero">
+      <div class="byline" aria-hidden="true">
+        <span class="byline-dot"></span>
+        <span>Briefs · Interviews · Audit support</span>
+      </div>
+
+      <h1 data-title></h1>
+      <p class="lead" data-lead></p>
+      <div data-pills></div>
+
+      <div class="note-block" style="margin-top:14px;">
+        <h2 style="margin:0 0 8px; font-size:1.05rem;">Notes</h2>
+        <div data-scope></div>
+      </div>
+    </header>
+
+    <section class="section" aria-labelledby="services">
+      <h2 id="services">Services</h2>
+      <p class="fineprint">Grouped as collapsible sections to keep the page readable.</p>
+      <div data-services></div>
+    </section>
+
+    <!-- Store section intentionally present but will be hidden via page.hideStore -->
+    <section class="section" data-store-section aria-labelledby="store">
+      <h2 id="store">Publications & resources</h2>
+      <p class="fineprint">
+        This area is intentionally minimal on this page. If you need documents, briefs, or evidence packs, request them via contact.
+      </p>
+      <div data-store></div>
+    </section>
+
+    <section class="section" aria-labelledby="timeline">
+      <h2 id="timeline">Selected highlights</h2>
+      <div data-timeline></div>
+    </section>
+
+    <section class="section" aria-labelledby="contact">
+      <h2 id="contact">Contact</h2>
+
+      <p class="fineprint">
+        Email: <span data-email></span>
+      </p>
+
+      <form class="form" data-contact-form>
+        <div class="field" style="position:absolute; left:-9999px;" aria-hidden="true">
+          <label for="company-expert-contact">Company</label>
+          <input id="company-expert-contact" name="company" autocomplete="off" tabindex="-1" />
+        </div>
+
+        <div class="field">
+          <label for="name">Name</label>
+          <input id="name" name="name" autocomplete="name" required />
+        </div>
+
+        <div class="field">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" autocomplete="email" required />
+        </div>
+
+        <div class="field">
+          <label for="topic">Topic</label>
+          <select id="topic" name="topic" required></select>
+        </div>
+
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="6" required placeholder="What decision needs support? What’s the deadline? What sources exist?"></textarea>
+          <p class="fineprint" style="margin-top:6px;">
+            If it’s audit work: specify framework/context and what evidence already exists.
+          </p>
+        </div>
+
+        <div class="field checkbox">
+          <input id="consent" name="consent" type="checkbox" required />
+          <label for="consent">I agree that my data will be used to respond to my request.</label>
+        </div>
+
+        <p class="fineprint">
+          See <a href="/regulation/privacy/">Privacy</a>, <a href="/regulation/cookies/">Cookies</a>, and <a href="/regulation/imprint/">Imprint</a>.
+        </p>
+
+        <button class="button" type="submit">Open email draft</button>
+      </form>
+    </section>
+  </main>
+
+  <!-- injected shared footer -->
+  <div id="footer-slot"></div>
+</body>
+</html>

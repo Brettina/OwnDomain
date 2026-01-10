@@ -1,11 +1,101 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Weichware Lohr</title>
+  <meta name="description" content="Software, prototypes, textiles, analysis, and consulting. Explore five perspectives: Engineer, Hipster, Social worker, Expert, Consulting." />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <meta name="color-scheme" content="light dark" />
 </head>
-<body>
-  <h1>Weichware Lohr</h1>
-  <p>Textiles, software, publishing and therapeutic services.</p>
+<body class="page-home">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="/">Weichware Lohr</a>
+      <ul class="nav-list">
+        <li><a href="/webpages/engineer/">Engineer</a></li>
+        <li><a href="/webpages/hipster/">Hipster</a></li>
+        <li><a href="/webpages/social-worker/">Social worker</a></li>
+        <li><a href="/webpages/expert/">Expert</a></li>
+        <li><a href="/webpages/consulting/">Consulting</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" class="container">
+    <section class="hero">
+      <div class="hero-media" aria-hidden="true">
+        <!-- No external image required; pure HTML/CSS placeholder -->
+        <div class="avatar" title="Generic portrait placeholder"></div>
+      </div>
+      <div class="hero-text">
+        <h1>Weichware Lohr</h1>
+        <p class="lead">
+          A multi-disciplinary practice spanning software engineering, prototypes & textiles,
+          operational consulting, and reflective support work.
+        </p>
+        <p>
+          Choose a perspective below. Every page includes services, a products/projects catalog,
+          a timeline of selected highlights, and an email-based contact + order workflow.
+        </p>
+        <div class="cta-row">
+          <a class="button" href="/webpages/engineer/">Start with Engineering</a>
+          <a class="button button-secondary" href="/webpages/consulting/">Or Consulting</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid" aria-label="Explore">
+      <a class="card" href="/webpages/engineer/">
+        <h2>Engineer</h2>
+        <p>Software, Python, simulation & synthetic data, databases.</p>
+      </a>
+      <a class="card" href="/webpages/hipster/">
+        <h2>Hipster</h2>
+        <p>Games/apps, textiles, OSH, prototypes, “Saftladen”.</p>
+      </a>
+      <a class="card" href="/webpages/social-worker/">
+        <h2>Social worker</h2>
+        <p>Coaching, Schwarzes Kreuz, phenomenology, seelsorge.</p>
+      </a>
+      <a class="card" href="/webpages/expert/">
+        <h2>Expert</h2>
+        <p>Political analysis & interviews, justice admin, infosec audit.</p>
+      </a>
+      <a class="card" href="/webpages/consulting/">
+        <h2>Consulting</h2>
+        <p>Project management, agency/backoffice, marketing & sales ops.</p>
+      </a>
+    </section>
+
+    <section class="note-block">
+      <h2>Disclaimers (scope)</h2>
+      <p class="fineprint">
+        This site contains professional services and informational content. Nothing here constitutes legal advice,
+        medical treatment, or psychotherapy. Coaching / seelsorge / support work is offered outside regulated medical
+        frameworks unless explicitly stated otherwise. Political analysis reflects methodological assessment and may
+        contain uncertainty.
+      </p>
+      <p class="fineprint">
+        Some workflows or drafts may be AI-assisted; outputs are reviewed, but errors remain possible.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Weichware Lohr</p>
+    <ul class="footer-links">
+      <li><a href="/regulation/privacy/">Privacy</a></li>
+      <li><a href="/regulation/cookies/">Cookies</a></li>
+      <li><a href="/regulation/imprint/">Imprint</a></li>
+    </ul>
+  </footer>
+
+  <script src="/assets/site.js" defer></script>
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>

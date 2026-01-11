@@ -1,17 +1,21 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Hipster — Weichware Lohr</title>
-  <meta name="description" content="Games/apps, textiles, OSH, prototypes — Saftladen experiments and small-batch merch." />
+  <meta name="description" content="Games/Apps, Textiles, OSH, Prototypen — Saftladen-Experimente und kleine Serien zum Abholen." />
   <link rel="stylesheet" href="/assets/styles.css" />
   <meta name="color-scheme" content="light dark" />
   <script src="/assets/site.js" defer></script>
+
+  <!-- Map (Leaflet) - free + open source -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer crossorigin=""></script>
 </head>
 
 <body class="page-hipster" data-page="hipster">
-  <a class="skip-link" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
 
   <!-- injected shared header -->
   <div id="header-slot"></div>
@@ -19,8 +23,8 @@
   <main id="main" class="container">
     <header class="page-hero hipster-hero">
       <div class="sticker-row" aria-hidden="true">
-        <span class="sticker">NEW</span>
-        <span class="sticker">SMALL BATCH</span>
+        <span class="sticker">NEU</span>
+        <span class="sticker">KLEINE AUFLAGE</span>
         <span class="sticker">OSH</span>
         <span class="sticker">SAFTLADEN</span>
       </div>
@@ -30,35 +34,35 @@
       <div data-pills></div>
 
       <div class="note-block" style="margin-top:14px;">
-        <h2 style="margin:0 0 8px; font-size:1.05rem;">Notes</h2>
+        <h2 style="margin:0 0 8px; font-size:1.05rem;">Hinweise</h2>
         <div data-scope></div>
       </div>
     </header>
 
     <section class="section" aria-labelledby="services">
-      <h2 id="services">Services</h2>
-      <p class="fineprint">Grouped as collapsible sections to keep the page readable.</p>
+      <h2 id="services">Leistungen</h2>
+      <p class="fineprint">Als einklappbare Bereiche, damit die Seite lesbar bleibt.</p>
       <div data-services></div>
     </section>
 
-<section class="section" data-store-section aria-labelledby="store">
-      <h2 id="store">Webshop (request-only)</h2>
+    <section class="section" data-store-section aria-labelledby="store">
+      <h2 id="store">Webshop (Abholung nach Vereinbarung)</h2>
       <div data-store></div>
       <p class="fineprint" style="margin-top:10px;">
-        Tip: if you want a custom variant (color/material), pick any variant and describe the request in Notes.
+        Tipp: Wenn du eine Sondervariante willst (Farbe/Material), wähle irgendeine Variante und schreib’s in die Notizen.
       </p>
     </section>
 
     <section class="section" aria-labelledby="timeline">
-      <h2 id="timeline">Selected highlights</h2>
+      <h2 id="timeline">Ausgewählte Highlights</h2>
       <div data-timeline></div>
     </section>
 
     <section class="section" aria-labelledby="contact">
-      <h2 id="contact">Contact</h2>
+      <h2 id="contact">Kontakt</h2>
 
       <p class="fineprint">
-        Email: <span data-email></span>
+        E-Mail: <span data-email></span>
       </p>
 
       <form class="form" data-contact-form>
@@ -73,30 +77,31 @@
         </div>
 
         <div class="field">
-          <label for="email">Email</label>
+          <label for="email">E-Mail</label>
           <input id="email" name="email" type="email" autocomplete="email" required />
         </div>
 
         <div class="field">
-          <label for="topic">Topic</label>
+          <label for="topic">Thema</label>
           <select id="topic" name="topic" required></select>
         </div>
 
         <div class="field">
-          <label for="message">Message</label>
-          <textarea id="message" name="message" rows="6" required placeholder="What are you looking for? If it’s merch: item + size/variant + shipping country."></textarea>
+          <label for="message">Nachricht</label>
+          <textarea id="message" name="message" rows="6" required
+            placeholder="Worum geht’s? Wenn es Merch ist: Artikel + Menge/Variante + Abholort-Land/Region + Wunschdatum."></textarea>
         </div>
 
         <div class="field checkbox">
           <input id="consent" name="consent" type="checkbox" required />
-          <label for="consent">I agree that my data will be used to respond to my request.</label>
+          <label for="consent">Ich stimme zu, dass meine Daten zur Beantwortung meiner Anfrage verwendet werden.</label>
         </div>
 
         <p class="fineprint">
-          See <a href="/regulation/privacy/">Privacy</a>, <a href="/regulation/cookies/">Cookies</a>, and <a href="/regulation/imprint/">Imprint</a>.
+          Siehe <a href="/regulation/privacy/">Datenschutz</a>, <a href="/regulation/cookies/">Cookies</a>, <a href="/regulation/imprint/">Impressum</a>.
         </p>
 
-        <button class="button" type="submit">Open email draft</button>
+        <button class="button" type="submit">E-Mail-Entwurf öffnen</button>
       </form>
     </section>
   </main>

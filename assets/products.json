@@ -1,0 +1,75 @@
+{
+  "products": [
+    {
+      "id": "bademantel",
+      "page": "hipster",
+      "name": "Bademantel",
+      "description": "Flauschiger Bademantel aus der Saftladen-Ecke. Kleine Auflage.",
+      "image": "/img/bademantel.png",
+      "status": "verfügbar",
+      "variants": ["S", "M", "L", "XL"],
+      "unit": "Stück"
+    },
+    {
+      "id": "socken",
+      "page": "hipster",
+      "name": "Socken",
+      "description": "Alltagstauglich, aber mit leichtem Saftladen-Spin. Kleine Serie.",
+      "image": "/img/socken.png",
+      "status": "verfügbar",
+      "variants": ["36–38", "39–41", "42–44", "45–47"],
+      "unit": "Paar"
+    },
+    {
+      "id": "partner",
+      "page": "hipster",
+      "name": "Partner",
+      "description": "Motiv-Print (Experiment). Je nach Batch etwas anders.",
+      "image": "/img/partner.png",
+      "status": "kleine auflage",
+      "variants": ["A", "B"],
+      "unit": "Stück"
+    },
+    {
+      "id": "mythologie",
+      "page": "hipster",
+      "name": "Mythologie",
+      "description": "Motiv-Print / Patch-Artwork. Prototypencharakter.",
+      "image": "/img/mythologie.png",
+      "status": "made-to-order",
+      "variants": ["Standard"],
+      "unit": "Stück"
+    },
+    {
+      "id": "engl",
+      "page": "hipster",
+      "name": "ENGL",
+      "description": "Motiv-Print (kleine Serie).",
+      "image": "/img/engl.png",
+      "status": "verfügbar",
+      "variants": ["Standard"],
+      "unit": "Stück"
+    },
+    {
+      "id": "saftladen",
+      "page": "hipster",
+      "name": "Saftladen",
+      "description": "Saftladen-Produktbild wird auf der Seite leicht „juiceiger“ variiert (ohne neue Datei).",
+      "image": "/img/saftladen.png",
+      "status": "verfügbar",
+      "variants": ["Standard"],
+      "unit": "Stück",
+      "decorateJuice": true
+    }
+  ],
+
+  "order": {
+    "pickupHint": "Bestellung = Reservierung zur Abholung. Du wählst Ort + Zeitpunkt, ich bestätige per Mail.",
+    "defaultCenter": { "lat": 49.989, "lng": 9.578 },
+    "locations": [
+      { "label": "Lohr Zentrum", "lat": 49.989, "lng": 9.578 },
+      { "label": "Würzburg Hbf", "lat": 49.801, "lng": 9.936 },
+      { "label": "Aschaffenburg Hbf", "lat": 49.977, "lng": 9.145 }
+    ]
+  }
+}

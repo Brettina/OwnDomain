@@ -301,80 +301,51 @@
 },
 "hipster": {
   "title": "Hipster",
-  "lead": "Games & apps, textiles, open-source hardware, prototypes — and the Saftladen corner where ideas become objects.",
-  "pills": ["Games/apps", "Textiles", "OSH", "Prototypes", "Saftladen"],
+  "lead": "Games & Apps, Textiles, Open-Source-Hardware, Prototypen — und die Saftladen-Ecke, wo Ideen zu Dingen werden.",
+  "pills": ["Games/Apps", "Textiles", "OSH", "Prototypen", "Saftladen"],
 
   "scopeNote": [
-    "This is playful production work: prototypes, small batches, and experiments. Availability varies; some items are made-to-order.",
-    "No checkout on this site. Orders are email requests and confirmed manually."
+    "Das ist spielerische Produktionsarbeit: Prototypen, kleine Serien, Experimente. Verfügbarkeit variiert; manches ist made-to-order.",
+    "Kein Checkout auf der Seite: Bestellungen sind Abhol-Anfragen und werden manuell bestätigt."
   ],
 
   "services": [
     {
-      "group": "Software (fun + useful)",
+      "group": "Software (spaßig + nützlich)",
       "items": [
-        { "name": "Games & interactive prototypes", "desc": "Small games, playful interaction, weird UI ideas, and rapid builds for testing a concept." },
-        { "name": "Apps & tools", "desc": "Tiny apps that solve one problem well: utilities, small workflows, “glue” software." }
+        { "name": "Games & interaktive Prototypen", "desc": "Kleine Spiele, schräge UI-Ideen, schnelle Builds zum Testen eines Konzepts." },
+        { "name": "Apps & Tools", "desc": "Mini-Apps, die eine Sache gut lösen: Utilities, kleine Workflows, „Glue“-Software." }
       ]
     },
     {
-      "group": "Objects (textiles + hardware)",
+      "group": "Objekte (Textiles + Hardware)",
       "items": [
-        { "name": "Textiles & small-batch merch", "desc": "Design + small production runs: patches, prints, tees, zines, soft goods." },
-        { "name": "Open-source hardware & prototypes", "desc": "OSH-friendly builds: proof-of-concept electronics, enclosures, documentation-first prototyping." }
+        { "name": "Textiles & kleine Serien", "desc": "Design + kleine Produktionsläufe: Patches, Prints, Shirts, Zines, Softgoods." },
+        { "name": "Open-Source-Hardware & Prototypen", "desc": "OSH-freundliche Builds: Proof-of-Concept, Gehäuse, dokumentations-first." }
       ]
     }
   ],
 
   "store": {
-    "intro": "Webshop (request-only) — choose quantity + variant and open an email order draft. No payment on-site.",
-    "current": [
-      {
-        "item": "Saftladen Sticker Pack",
-        "status": "in stock",
-        "desc": "Assorted stickers. Good for laptops, notebooks, existential dread.",
-        "variants": ["Small pack (10)", "Big pack (30)"]
-      },
-      {
-        "item": "Weichware Patch (embroidered)",
-        "status": "limited",
-        "desc": "Embroidered patch, sew-on or iron-on depending on batch.",
-        "variants": ["Sew-on", "Iron-on"]
-      },
-      {
-        "item": "Prototype Tee (small batch)",
-        "status": "made to order",
-        "desc": "Simple tee with a prototype label vibe.",
-        "variants": ["S", "M", "L", "XL"]
-      },
-      {
-        "item": "Mini zine: Saftladen Notes",
-        "status": "available",
-        "desc": "Short zine of sketches, fragments, and process notes.",
-        "variants": ["Print", "PDF"]
-      }
-    ],
-    "past": [
-      { "item": "One-off: OSH desk gadget", "desc": "Small electronics proof-of-concept with documentation-first approach." },
-      { "item": "Micro-game jam build", "desc": "Tiny game prototype delivered under time constraints with clean packaging." }
-    ]
+    "intro": "Webshop (Abholung nach Vereinbarung) — Produkt auswählen, Menge/Variante angeben, Ort + Zeitpunkt wählen und eine E-Mail-Anfrage öffnen."
   },
 
   "timeline": [
-    { "year": "2025", "title": "Saftladen batch run", "desc": "Small-batch merch run tested: packaging, variants, and request flow." },
-    { "year": "2024", "title": "Prototype sprint series", "desc": "Repeatable prototyping cadence across software + textiles." },
-    { "year": "2023", "title": "OSH documentation format", "desc": "Template for builds: BOM, assembly steps, caveats, maintenance notes." }
+    { "year": "2025", "title": "Saftladen-Kleinserie", "desc": "Merch-Run getestet: Varianten, Verpackung, Abhol-Anfrage-Flow." },
+    { "year": "2024", "title": "Prototypen-Sprint-Serie", "desc": "Wiederholbare Taktung für Prototyping (Software + Textiles)." },
+    { "year": "2023", "title": "OSH-Dokumentationsformat", "desc": "Template: BOM, Assembly, Caveats, Maintenance." }
   ],
 
   "contactTopicOptions": [
-    ["webshop", "Webshop / merch order"],
-    ["games", "Games / interactive prototypes"],
-    ["apps", "Apps / small tools"],
-    ["textiles", "Textiles / small batch"],
-    ["osh", "Open-source hardware / prototypes"],
-    ["other", "Other"]
+    ["webshop", "Webshop / Merch-Bestellung"],
+    ["games", "Games / interaktive Prototypen"],
+    ["apps", "Apps / kleine Tools"],
+    ["textiles", "Textiles / kleine Serien"],
+    ["osh", "Open-Source-Hardware / Prototypen"],
+    ["other", "Sonstiges"]
   ]
-},
+}
+,
 "expert": {
   "title": "Expert",
   "lead": "Political analyses and interviews, justice-adjacent institutional knowledge, and information security auditing — method-first, evidence-forward.",

@@ -59,6 +59,7 @@
       "status": "verfügbar",
       "variants": ["Standard"],
       "unit": "Stück",
+        "pickupRequired": true,
       "decorateJuice": true
     }
   ],
@@ -67,9 +68,12 @@
     "pickupHint": "Bestellung = Reservierung zur Abholung. Du wählst Ort + Zeitpunkt, ich bestätige per Mail.",
     "defaultCenter": { "lat": 49.989, "lng": 9.578 },
     "locations": [
-      { "label": "Lohr Zentrum", "lat": 49.989, "lng": 9.578 },
-      { "label": "Würzburg Hbf", "lat": 49.801, "lng": 9.936 },
-      { "label": "Aschaffenburg Hbf", "lat": 49.977, "lng": 9.145 }
-    ]
+  { "label": "Lohr Zentrum", "lat": 49.989, "lng": 9.578 },
+
+  { "label": "Niederwürschnitz – Alte Ziegelei (Nach den Steegen 2)", "lat": 50.7357161, "lng": 12.7686627 },
+
+  { "label": "Chemnitz – Stadtpark", "lat": 50.8087278, "lng": 12.9012 }
+]
+
   }
 }

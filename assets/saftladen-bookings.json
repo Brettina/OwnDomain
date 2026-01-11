@@ -1,0 +1,7 @@
+{
+  "timezone": "Europe/Berlin",
+  "slots": [
+    { "start": "2026-01-14T16:30", "end": "2026-01-14T18:00", "location": "Lohr Zentrum", "note": "Saftladen Aufbau" },
+    { "start": "2026-01-18T11:00", "end": "2026-01-18T12:30", "location": "Würzburg Hbf", "note": "Batch pickup" }
+  ]
+}

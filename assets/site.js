@@ -1,8 +1,8 @@
 // --- NEW: partial loader + page renderer ---
 
 
-const CONTACT_EMAIL = "software_b_lohr@web.de"; // <-- put your real inbox here
-const DISPLAY_EMAIL = "software_b_lohr [at] web.de"; // shown on page
+const CONTACT_EMAIL = "anfrage@weichware-lohr.de"; // <-- put your real inbox here
+const DISPLAY_EMAIL = "anfrage [at] weichware-lohr.de"; // shown on page
 
 let PRODUCTS_CACHE = null;
 
@@ -44,6 +44,9 @@ function renderObfuscatedEmail() {
     host.replaceChildren(a);
   });
 }
+
+
+
 function openMailto({ subject, body }) {
   const url =
     `mailto:${CONTACT_EMAIL}` +
@@ -52,6 +55,36 @@ function openMailto({ subject, body }) {
 
   window.location.href = url;
 }
+
+async function sendHipsterMailIfNeeded({ pageKey, payload, statusEl }) {
+  // Only Hipster uses POST sending; every other page stays mailto.
+  if (pageKey !== "hipster") return false;
+
+  try {
+    if (statusEl) statusEl.textContent = "Sende …";
+
+    const res = await fetch("/api/hipster-mail", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      const t = await res.text().catch(() => "");
+      if (statusEl) statusEl.textContent = "Senden fehlgeschlagen — öffne Mail-Entwurf als Fallback.";
+      console.warn("hipster-mail failed:", res.status, t);
+      return false;
+    }
+
+    if (statusEl) statusEl.textContent = "Gesendet. Ich melde mich per Mail.";
+    return true;
+  } catch (e) {
+    if (statusEl) statusEl.textContent = "Senden fehlgeschlagen — öffne Mail-Entwurf als Fallback.";
+    console.warn("hipster-mail error:", e);
+    return false;
+  }
+}
+
 
 
 function attachContactFormHandler(pageKey) {
@@ -82,7 +115,28 @@ Message:
 ${message}
 `;
 
-    openMailto({ subject, body });
+const status = form.querySelector("[data-form-status]") || (() => {
+  const p = document.createElement("p");
+  p.className = "fineprint";
+  p.setAttribute("data-form-status", "");
+  p.style.marginTop = "10px";
+  form.appendChild(p);
+  return p;
+})();
+
+const payload = {
+  kind: "contact",
+  pageKey,
+  name,
+  email,
+  topic,
+  message
+};
+
+sendHipsterMailIfNeeded({ pageKey, payload, statusEl: status }).then((ok) => {
+  if (!ok) openMailto({ subject, body });
+  else form.reset();
+});
   });
 }
 
@@ -91,7 +145,6 @@ function attachOrderFormHandlers(pageKey) {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
 
-      // Honeypot: if filled => do nothing (spam)
       const honey = form.querySelector('input[name="company"]');
       if (honey && honey.value.trim() !== "") return;
 
@@ -107,7 +160,8 @@ function attachOrderFormHandlers(pageKey) {
       const subject = `[${pageKey}] Order request — ${item}`;
       const body =
 `Page: ${pageKey}
-Item: ${item}
+`
++ `Item: ${item}
 Quantity: ${qty}
 Variant: ${variant}
 
@@ -118,10 +172,12 @@ Notes:
 ${notes}
 `;
 
+      // Legacy forms always use mailto (the Hipster v2 form uses POST via sendHipsterMailIfNeeded).
       openMailto({ subject, body });
     });
   });
 }
+
 
 
 function el(tag, attrs = {}, children = []) {
@@ -173,13 +229,12 @@ function renderStore(store, target, { pageKey, productsData } = {}) {
 
   const productsAll = (productsData && productsData.products) ? productsData.products : [];
   const orderCfg = (productsData && productsData.order) ? productsData.order : null;
-
   const productsForPage = productsAll.filter(p => (p.page || "") === pageKey);
 
-  // Intro
+  // Intro text
   if (store.intro) target.appendChild(el("p", { class: "fineprint", text: store.intro }));
 
-  // If we have products.json items for this page, render them as buyable products
+  // If we have products for this page, render them
   if (productsForPage.length) {
     // Product grid
     target.appendChild(el("h3", { text: "Produkte" }));
@@ -188,7 +243,6 @@ function renderStore(store, target, { pageKey, productsData } = {}) {
     productsForPage.forEach((p) => {
       const imgWrap = el("div", { class: "product-imgwrap" });
 
-      // Saftladen “slightly different”: draw a small “juice overlay” variant in-canvas
       if (p.decorateJuice) {
         const canvas = el("canvas", {
           class: "product-img",
@@ -212,7 +266,12 @@ function renderStore(store, target, { pageKey, productsData } = {}) {
         el("span", { class: "badge", text: p.status || "—" })
       ]);
 
-      const pickBtn = el("button", { class: "button button-secondary", type: "button", text: "Für Bestellung auswählen" });
+      const pickBtn = el("button", {
+        class: "button button-secondary",
+        type: "button",
+        text: "Für Bestellung auswählen"
+      });
+
       pickBtn.addEventListener("click", () => {
         const sel = target.querySelector("select[data-order-product]");
         if (!sel) return;
@@ -235,7 +294,7 @@ function renderStore(store, target, { pageKey, productsData } = {}) {
 
     target.appendChild(grid);
 
-    // Order form (single form for all products)
+    // Order form
     target.appendChild(el("h3", { text: "Bestellung zur Abholung (Anfrage)" }));
     if (orderCfg && orderCfg.pickupHint) {
       target.appendChild(el("p", { class: "fineprint", text: orderCfg.pickupHint }));
@@ -244,7 +303,11 @@ function renderStore(store, target, { pageKey, productsData } = {}) {
     const form = el("form", { class: "form", "data-order-form-v2": "" });
 
     // Honeypot
-    form.appendChild(el("div", { class: "field", style: "position:absolute; left:-9999px;", "aria-hidden": "true" }, [
+    form.appendChild(el("div", {
+      class: "field",
+      style: "position:absolute; left:-9999px;",
+      "aria-hidden": "true"
+    }, [
       el("label", { for: "company-order-v2", text: "Company" }),
       el("input", { id: "company-order-v2", name: "company", autocomplete: "off", tabindex: "-1" })
     ]));
@@ -253,7 +316,12 @@ function renderStore(store, target, { pageKey, productsData } = {}) {
     form.appendChild(el("div", { class: "field" }, [
       el("label", { for: "order-product", text: "Produkt" }),
       (() => {
-        const sel = el("select", { id: "order-product", name: "product", required: "", "data-order-product": "" });
+        const sel = el("select", {
+          id: "order-product",
+          name: "product",
+          required: "",
+          "data-order-product": ""
+        });
         productsForPage.forEach(p => sel.appendChild(el("option", { value: p.id, text: p.name })));
         return sel;
       })()
@@ -265,38 +333,55 @@ function renderStore(store, target, { pageKey, productsData } = {}) {
       el("input", { id: "order-qty", name: "qty", type: "number", min: "1", max: "50", value: "1", required: "" })
     ]));
 
-    // Variant (dynamic)
+    // Variant
     const variantField = el("div", { class: "field" }, [
       el("label", { for: "order-variant", text: "Variante" }),
       el("select", { id: "order-variant", name: "variant" })
     ]);
     form.appendChild(variantField);
 
-    // Date/time
-    form.appendChild(el("div", { class: "field" }, [
-      el("label", { for: "order-dt", text: "Abhol-Zeitpunkt (Wunsch)" }),
-      el("input", { id: "order-dt", name: "datetime", type: "datetime-local", required: "" })
-    ]));
+    // Pickup block (ONLY for pickupRequired product)
+    const pickupBlock = el("div", {
+      class: "card",
+      "data-pickup-block": "",
+      style: "display:none; margin-top:14px;"
+    }, [
+      el("h4", { text: "Saftladen — Termin & Ort" }),
+      el("p", { class: "fineprint", text: "Nur für Saftladen nötig. Für andere Produkte reicht eine normale Anfrage." }),
 
-    // Location description
-    form.appendChild(el("div", { class: "field" }, [
-      el("label", { for: "order-location-label", text: "Abholort (kurz beschreiben)" }),
-      el("input", { id: "order-location-label", name: "location_label", placeholder: "z.B. Lohr Zentrum / Würzburg Hbf / Parkplatz …", required: "" })
-    ]));
+      el("div", { class: "field" }, [
+        el("label", { for: "order-pickup-dt", text: "Abhol-Zeitpunkt (Wunsch)" }),
+        el("input", { id: "order-pickup-dt", name: "datetime", type: "datetime-local" })
+      ]),
 
-    // Hidden lat/lng (set by map click)
-    form.appendChild(el("input", { type: "hidden", name: "lat", value: "" }));
-    form.appendChild(el("input", { type: "hidden", name: "lng", value: "" }));
+      el("div", { class: "field" }, [
+        el("label", { for: "order-pickup-location-label", text: "Abholort (kurz beschreiben)" }),
+        el("input", {
+          id: "order-pickup-location-label",
+          name: "location_label",
+          placeholder: "z.B. Lohr Zentrum / Würzburg Hbf / Parkplatz …"
+        })
+      ]),
 
-    // Map container
-    const mapBlock = el("div", { class: "field" }, [
-      el("label", { text: "Ort auf der Karte wählen (Klick setzt Marker)" }),
-      el("div", { class: "map", id: "order-map", role: "application", "aria-label": "Karte zur Ortsauswahl" }),
-      el("p", { class: "fineprint", text: "Wenn die Karte nicht lädt: Ort oben beschreiben; Koordinaten sind optional." })
+      el("input", { type: "hidden", name: "lat", value: "" }),
+      el("input", { type: "hidden", name: "lng", value: "" }),
+
+      el("div", { class: "field" }, [
+        el("label", { text: "Ort auf der Karte wählen (Klick setzt Marker)" }),
+        el("div", { class: "map", id: "order-map", role: "application", "aria-label": "Karte zur Ortsauswahl" }),
+        el("p", { class: "fineprint", text: "Wenn die Karte nicht lädt: Ort oben beschreiben; Koordinaten sind optional." })
+      ]),
+
+      el("div", { class: "field" }, [
+        el("label", { text: "Saftladen — bereits geplant (zum Dazukommen)" }),
+        el("div", { "data-saftladen-calendar": "" }),
+        el("p", { class: "fineprint", text: "Nur Anzeige. Bearbeitung nur durch Admin (JSON-Datei im Repo)." })
+      ])
     ]);
-    form.appendChild(mapBlock);
 
-    // Name / email / notes
+    form.appendChild(pickupBlock);
+
+    // Contact fields
     form.appendChild(el("div", { class: "field" }, [
       el("label", { for: "order-name", text: "Name" }),
       el("input", { id: "order-name", name: "name", autocomplete: "name", required: "" })
@@ -316,13 +401,18 @@ function renderStore(store, target, { pageKey, productsData } = {}) {
       el("label", { for: "order-consent", text: "Ich stimme zu, dass meine Daten zur Beantwortung meiner Bestellung verwendet werden." })
     ]));
 
-    form.appendChild(el("button", { class: "button", type: "submit", text: "Bestellung per E-Mail anfragen" }));
+    form.appendChild(el("button", { class: "button", type: "submit", text: "Bestellung absenden" }));
+
+    // Status message
+    const statusBox = el("p", { class: "fineprint", "data-form-status": "", style: "margin-top:10px;" }, []);
+    form.appendChild(statusBox);
 
     target.appendChild(form);
 
-    // Dynamic variant fill
+    // Variants
     const productSelect = form.querySelector("select[name=product]");
     const variantSelect = form.querySelector("select[name=variant]");
+
     const fillVariants = () => {
       const id = productSelect.value;
       const p = productsForPage.find(x => x.id === id);
@@ -330,11 +420,49 @@ function renderStore(store, target, { pageKey, productsData } = {}) {
       (p && p.variants && p.variants.length ? p.variants : ["Standard"])
         .forEach(v => variantSelect.appendChild(el("option", { value: v, text: v })));
     };
-    productSelect.addEventListener("change", fillVariants);
-    fillVariants();
 
-    // Submit handler => opens email draft
-    form.addEventListener("submit", (e) => {
+    // Pickup toggle
+    const setPickupRequired = (on) => {
+      const dt = form.querySelector('input[name="datetime"]');
+      const loc = form.querySelector('input[name="location_label"]');
+
+      pickupBlock.style.display = on ? "" : "none";
+
+      if (on) {
+        dt.setAttribute("required", "");
+        loc.setAttribute("required", "");
+      } else {
+        dt.removeAttribute("required");
+        loc.removeAttribute("required");
+        dt.value = "";
+        loc.value = "";
+        form.querySelector('input[name="lat"]').value = "";
+        form.querySelector('input[name="lng"]').value = "";
+      }
+    };
+
+    const syncPickupUI = () => {
+      const id = productSelect.value;
+      const p = productsForPage.find(x => x.id === id);
+      setPickupRequired(!!(p && p.pickupRequired));
+    };
+
+    productSelect.addEventListener("change", () => {
+      fillVariants();
+      syncPickupUI();
+    });
+
+    fillVariants();
+    syncPickupUI();
+
+    // Calendar (read-only)
+    renderSaftladenCalendar(
+      pickupBlock.querySelector("[data-saftladen-calendar]"),
+      "/assets/saftladen-bookings.json"
+    );
+
+    // Submit
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const honey = form.querySelector('input[name="company"]');
@@ -344,60 +472,77 @@ function renderStore(store, target, { pageKey, productsData } = {}) {
       const productId = (fd.get("product") || "").toString();
       const p = productsForPage.find(x => x.id === productId);
 
-      const qty = (fd.get("qty") || "1").toString().trim();
-      const variant = (fd.get("variant") || "Standard").toString().trim();
-      const dt = (fd.get("datetime") || "").toString().trim();
-      const locLabel = (fd.get("location_label") || "").toString().trim();
-      const lat = (fd.get("lat") || "").toString().trim();
-      const lng = (fd.get("lng") || "").toString().trim();
+      const payload = {
+        kind: "order",
+        pageKey,
+        productId,
+        productName: p ? p.name : productId,
+        qty: (fd.get("qty") || "1").toString().trim(),
+        variant: (fd.get("variant") || "Standard").toString().trim(),
+        datetime: (fd.get("datetime") || "").toString().trim(),
+        location_label: (fd.get("location_label") || "").toString().trim(),
+        lat: (fd.get("lat") || "").toString().trim(),
+        lng: (fd.get("lng") || "").toString().trim(),
+        name: (fd.get("name") || "").toString().trim(),
+        email: (fd.get("email") || "").toString().trim(),
+        notes: (fd.get("notes") || "").toString().trim()
+      };
 
-      const name = (fd.get("name") || "").toString().trim();
-      const email = (fd.get("email") || "").toString().trim();
-      const notes = (fd.get("notes") || "").toString().trim();
+      const status = form.querySelector("[data-form-status]");
+      const ok = await sendHipsterMailIfNeeded({ pageKey, payload, statusEl: status });
 
-      const productName = p ? p.name : productId;
-
-      const subject = `[${pageKey}] Bestellung (min. 2h vor Ort) — ${productName}`;
-      const body =
+      // fallback to mailto if POST not available or fails
+      if (!ok) {
+        const subject = `[${pageKey}] Bestellung — ${payload.productName}`;
+        const body =
 `Seite: ${pageKey}
 
-Produkt: ${productName}
-Menge: ${qty}
-Variante: ${variant}
+Produkt: ${payload.productName}
+Menge: ${payload.qty}
+Variante: ${payload.variant}
 
-Wir kommen für Sie vor Ort!
-Zeitpunkt: ${dt}
-Ort: ${locLabel}
-Koordinaten: ${lat && lng ? `${lat}, ${lng}` : "—"}
+${p && p.pickupRequired ? `Saftladen-Termin:
+Zeitpunkt: ${payload.datetime}
+Ort: ${payload.location_label}
+Koordinaten: ${payload.lat && payload.lng ? `${payload.lat}, ${payload.lng}` : "—"}
+` : ""}
 
 Kontakt:
-Name: ${name}
-E-Mail: ${email}
+Name: ${payload.name}
+E-Mail: ${payload.email}
 
 Notizen:
-${notes}
+${payload.notes}
 `;
-
-      openMailto({ subject, body });
+        openMailto({ subject, body });
+      } else {
+        form.reset();
+        fillVariants();
+        syncPickupUI();
+      }
     });
 
-    // Map init (Leaflet if available)
+    // Map init (only inside pickupBlock)
     initOrderMap({
-      root: target,
+      root: pickupBlock,
       orderCfg,
-      locations: orderCfg && orderCfg.locations ? orderCfg.locations : [],
-      pageKey
+      locations: orderCfg && orderCfg.locations ? orderCfg.locations : []
     });
 
-    // Decorate Saftladen canvas images
+    // Decorate “juice” canvases
     decorateJuiceCanvases(target);
 
     return;
   }
 
-  // Fallback: your old “current/past” rendering if no products.json match
-  target.appendChild(el("p", { class: "fineprint", text: "Hinweis: Keine Produkte aus products.json gefunden — fallback auf Seitenkonfiguration." }));
+  // Fallback (no products.json for page)
+  target.appendChild(el("p", {
+    class: "fineprint",
+    text: "Hinweis: Keine Produkte aus products.json gefunden — fallback auf Seitenkonfiguration."
+  }));
 }
+
+
 
 function initOrderMap({ root, orderCfg, locations }) {
   const mapEl = root.querySelector("#order-map");
@@ -452,6 +597,55 @@ function initOrderMap({ root, orderCfg, locations }) {
       btnRow.appendChild(b);
     });
     mapEl.insertAdjacentElement("afterend", btnRow);
+  }
+}
+async function renderSaftladenCalendar(host, url) {
+  if (!host) return;
+  host.innerHTML = "Lade Termine …";
+
+  try {
+    const res = await fetch(url, { cache: "no-cache" });
+    if (!res.ok) throw new Error("bookings load failed");
+    const data = await res.json();
+
+    const slots = Array.isArray(data.slots) ? data.slots.slice() : [];
+    slots.sort((a, b) => String(a.start).localeCompare(String(b.start)));
+
+    const wrap = document.createElement("div");
+    wrap.className = "card";
+    wrap.style.padding = "12px";
+
+    const title = document.createElement("div");
+    title.style.fontWeight = "600";
+    title.textContent = "Geplante Saftladen-Termine";
+    wrap.appendChild(title);
+
+    const ul = document.createElement("ul");
+    ul.className = "fineprint";
+    ul.style.margin = "10px 0 0";
+    ul.style.paddingLeft = "18px";
+
+    if (!slots.length) {
+      const li = document.createElement("li");
+      li.textContent = "Noch keine Termine eingetragen.";
+      ul.appendChild(li);
+    } else {
+      for (const s of slots) {
+        const li = document.createElement("li");
+        const start = (s.start || "").replace("T", " ");
+        const end = (s.end || "").replace("T", " ");
+        const loc = s.location || "—";
+        const note = s.note ? ` — ${s.note}` : "";
+        li.textContent = `${start}–${end} | ${loc}${note}`;
+        ul.appendChild(li);
+      }
+    }
+
+    wrap.appendChild(ul);
+    host.replaceChildren(wrap);
+  } catch (e) {
+    console.warn("renderSaftladenCalendar:", e);
+    host.textContent = "Termine konnten nicht geladen werden.";
   }
 }
 
@@ -565,7 +759,6 @@ async function initPageFromJSON() {
   (page.scopeNote || []).forEach(line => scope.appendChild(el("p", { class: "fineprint", text: line })));
 
   // services/store/timeline
-  renderServices(page.services, document.querySelector("[data-services]"));
    const productsData = await getProductsContent().catch(() => null);
 
 renderServices(page.services, document.querySelector("[data-services]"));

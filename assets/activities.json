@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "type": "project",
+      "date": "2026-01-12",
+      "title": "Unser Standpunkt",
+      "excerpt": "Kurztext…",
+      "image": "/img/mythologie.png",
+      "url": "/webpages/projects/unser-standpunkt/"
+    },
+    {
+      "type": "blog",
+      "date": "2026-01-09",
+      "title": "Daten, Praxis, Verantwortung",
+      "excerpt": "Kurztext…",
+      "image": "/img/concept.png",
+      "url": "/webpages/blog/daten-praxis-verantwortung/"
+    }
+  ]
+}

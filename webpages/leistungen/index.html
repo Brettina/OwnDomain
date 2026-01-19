@@ -11,34 +11,36 @@
   <link rel="apple-touch-icon" href="/img/webicon.png" />
   <meta name="color-scheme" content="light dark" />
 
-  <!-- If your shop uses the Saftladen map/calendar block, Leaflet is required (same as Hipster). -->
+  <!-- Keep Leaflet only if your shop view actually uses it (map/calendar). If not, you can remove both lines. -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer crossorigin=""></script>
 
   <script src="/assets/site.js" defer></script>
 
   <style>
-    /* Small page-local styling for the “Fachgebiet” tabs */
-    .facet-tabs {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      margin: 10px 0 6px;
+    /* Fachgebiet links (simple, readable, no “tabs”) */
+    .facet-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+      grid-template-columns: 1fr;
     }
-    .facet-tabs a {
-      display: inline-flex;
-      align-items: center;
-      padding: 8px 12px;
-      border-radius: 999px;
-      border: 1px solid currentColor;
+    @media (min-width: 800px) {
+      .facet-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+    .facet-card {
+      display: block;
+      padding: 16px;
+      border-radius: 16px;
       text-decoration: none;
-      opacity: 0.85;
     }
-    .facet-tabs a[aria-current="true"] {
-      opacity: 1;
+    .facet-card h3 {
+      margin: 0 0 6px;
     }
-    .facet-hint {
-      margin-top: 6px;
+    .facet-card p {
+      margin: 0;
     }
   </style>
 </head>
@@ -46,22 +48,27 @@
 <body class="page-leistungen" data-page="leistungen">
   <a class="skip-link" href="#main">Zum Inhalt springen</a>
 
-  <!-- injected shared header -->
-  <div id="header-slot"></div>
+  <!-- Same header structure as on the homepage (not identity tabs) -->
+  <header class="site-header">
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a class="brand" href="/">Bettina Lohr, M Sc.</a>
+      <ul class="nav-list">
+        <li><a href="/webpages/about/">Über mich</a></li>
+        <li><a href="/webpages/projects/">Aktuelle Projekte</a></li>
+        <li><a href="/webpages/leistungen/">Leistungen</a></li>
+        <li><a href="/webpages/blog/">Blog</a></li>
+        <li><a href="/webpages/projects-archive/">Vergangene Projekte</a></li>
+        <li><a href="/regulation/imprint/">Impressum</a></li>
+      </ul>
+    </nav>
+  </header>
 
   <main id="main" class="container">
     <header class="page-hero">
-      <h1 data-title></h1>
-      <p class="lead" data-lead></p>
-
-      <p class="fineprint facet-hint">nach Fachgebiet</p>
-      <nav class="facet-tabs" aria-label="Fachgebiete">
-        <a href="/webpages/engineer/">Engineer</a>
-        <a href="/webpages/hipster/">Hipster</a>
-        <a href="/webpages/social-worker/">Social worker</a>
-        <a href="/webpages/expert/">Expert</a>
-        <a href="/webpages/consulting/">Consulting</a>
-      </nav>
+      <h1 data-title>Leistungen</h1>
+      <p class="lead" data-lead>
+        Leistungen nach Fachgebiet — und Webshop (Bestellung per E-Mail-Workflow).
+      </p>
 
       <div class="note-block" style="margin-top:14px;">
         <h2 style="margin:0 0 8px; font-size:1.05rem;">Hinweise</h2>
@@ -69,13 +76,42 @@
       </div>
     </header>
 
-    <section class="section" aria-labelledby="services">
-      <h2 id="services">Leistungen</h2>
-      <p class="fineprint">Als einklappbare Bereiche, damit die Seite lesbar bleibt.</p>
-      <div data-services></div>
+    <!-- 1) Leistungen nach Fachgebiet -->
+    <section class="section" aria-labelledby="facets">
+      <h2 id="facets">Leistungen nach Fachgebiet</h2>
+      <p class="fineprint">
+        Die Detailseiten enthalten die jeweiligen Leistungsbereiche, Beispiele und ggf. spezifische Workflows.
+      </p>
+
+      <div class="facet-grid" aria-label="Fachgebiete">
+        <a class="card facet-card" href="/webpages/engineer/">
+          <h3>Engineer</h3>
+          <p class="fineprint">Software, Python, Simulation, Datenbanken.</p>
+        </a>
+
+        <a class="card facet-card" href="/webpages/consulting/">
+          <h3>Consulting</h3>
+          <p class="fineprint">Projektmanagement, Ops, Backoffice.</p>
+        </a>
+
+        <a class="card facet-card" href="/webpages/expert/">
+          <h3>Expert</h3>
+          <p class="fineprint">Analyse, Interviews, Audits.</p>
+        </a>
+
+        <a class="card facet-card" href="/webpages/hipster/">
+          <h3>Hipster</h3>
+          <p class="fineprint">Prototypen, Textiles, OSH.</p>
+        </a>
+
+        <a class="card facet-card" href="/webpages/social-worker/">
+          <h3>Social worker</h3>
+          <p class="fineprint">Coaching und reflexive Unterstützungsarbeit.</p>
+        </a>
+      </div>
     </section>
 
-    <!-- WEB SHOP -->
+    <!-- 2) Webshop (moved here) -->
     <section class="section" data-store-section aria-labelledby="store">
       <h2 id="store">Webshop</h2>
       <div data-store></div>
@@ -84,11 +120,7 @@
       </p>
     </section>
 
-    <section class="section" aria-labelledby="timeline">
-      <h2 id="timeline">Ausgewählte Highlights</h2>
-      <div data-timeline></div>
-    </section>
-
+    <!-- Kontakt (keep: useful for orders + inquiries) -->
     <section class="section" aria-labelledby="contact">
       <h2 id="contact">Kontakt</h2>
 
@@ -119,8 +151,13 @@
 
         <div class="field">
           <label for="message">Nachricht</label>
-          <textarea id="message" name="message" rows="6" required
-            placeholder="Worum geht’s? Wenn es Merch ist: Artikel + Menge/Variante + Abholort-Land/Region + Wunschdatum."></textarea>
+          <textarea
+            id="message"
+            name="message"
+            rows="6"
+            required
+            placeholder="Worum geht’s? Wenn es Merch ist: Artikel + Menge/Variante + Abholort-Land/Region + Wunschdatum."
+          ></textarea>
         </div>
 
         <div class="field checkbox">
@@ -137,7 +174,17 @@
     </section>
   </main>
 
-  <!-- injected shared footer -->
-  <div id="footer-slot"></div>
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Weichware Lohr</p>
+    <ul class="footer-links">
+      <li><a href="/regulation/privacy/">Datenschutz</a></li>
+      <li><a href="/regulation/cookies/">Cookies</a></li>
+      <li><a href="/regulation/imprint/">Impressum</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
 </body>
 </html>

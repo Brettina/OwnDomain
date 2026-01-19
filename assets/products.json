@@ -2,7 +2,7 @@
   "products": [
     {
       "id": "bademantel",
-      "page": "hipster",
+      "page": "leistungen",
       "name": "Bademantel",
       "description": "Flauschiger Bademantel aus der Saftladen-Ecke. Kleine Auflage.",
       "image": "/img/bademantel.png",
@@ -12,7 +12,7 @@
     },
     {
       "id": "socken",
-      "page": "hipster",
+      "page": "leistungen",
       "name": "Socken",
       "description": "Alltagstauglich, aber mit leichtem Saftladen-Spin. Kleine Serie.",
       "image": "/img/socken.png",
@@ -22,7 +22,7 @@
     },
     {
       "id": "partner",
-      "page": "hipster",
+      "page": "leistungen",
       "name": "Partner",
       "description": "Motiv-Print (Experiment). Je nach Batch etwas anders.",
       "image": "/img/partner.png",
@@ -32,7 +32,7 @@
     },
     {
       "id": "mythologie",
-      "page": "hipster",
+      "page": "leistungen",
       "name": "Mythologie",
       "description": "Motiv-Print / Patch-Artwork. Prototypencharakter.",
       "image": "/img/mythologie.png",
@@ -42,7 +42,7 @@
     },
     {
       "id": "engl",
-      "page": "hipster",
+      "page": "leistungen",
       "name": "ENGL",
       "description": "Motiv-Print (kleine Serie).",
       "image": "/img/engl.png",

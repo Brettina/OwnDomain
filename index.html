@@ -251,7 +251,7 @@
     <!-- NEUESTE PROJEKTE: center big with text, sides image-only, arrows + swipe -->
     <section class="section" aria-labelledby="projects-latest-title">
       <div class="section-head">
-        <h2 id="projects-latest-title" style="margin:0;">Neueste Projekte</h2>
+        <h2 id="projects-latest-title" style="margin:0;">Neueste Aktivitäten</h2>
         <p class="fineprint" style="margin:0;">
           Sortiert nach „zuletzt bearbeitet“. Mehr: <a href="/webpages/projects/">Aktuelle Projekte</a>
         </p>
@@ -271,7 +271,7 @@
             <div class="proj-overlay" aria-hidden="true"></div>
             <div class="proj-body">
               <div class="proj-meta">
-                <span class="proj-tag">Projekt</span>
+<span class="proj-tag" data-kind>Projekt</span>
                 <time class="fineprint" datetime="2026-01-12" style="color: rgba(255,255,255,0.9);">12. Jan 2026</time>
               </div>
               <h3 class="proj-title">Projekt-Titel (zuletzt bearbeitet)</h3>
@@ -403,198 +403,210 @@
   </footer>
 
   <script src="/assets/site.js" defer></script>
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
 
-    /**
-     * Carousel behavior:
-     * - shows 3 projects: prev (left), current (center), next (right)
-     * - arrows + swipe
-     *
-     * Recommended next step:
-     * - replace demoProjects with data loaded from /assets/activities.json (filtered to type=="project")
-     *   and sorted by lastEdited (or date).
-     */
-    (function () {
-      const root = document.querySelector("[data-project-carousel]");
-      if (!root) return;
+  (function () {
+    const root = document.querySelector("[data-project-carousel]");
+    if (!root) return;
 
-      const leftCard = root.querySelector('[data-slot="left"]');
-      const centerCard = root.querySelector('[data-slot="center"]');
-      const rightCard = root.querySelector('[data-slot="right"]');
+    const leftCard = root.querySelector('[data-slot="left"]');
+    const centerCard = root.querySelector('[data-slot="center"]');
+    const rightCard = root.querySelector('[data-slot="right"]');
 
-      const prevBtn = root.querySelector("[data-prev]");
-      const nextBtn = root.querySelector("[data-next]");
-      const dots = Array.from(root.querySelectorAll("[data-dot]"));
+    const prevBtn = root.querySelector("[data-prev]");
+    const nextBtn = root.querySelector("[data-next]");
+    const dots = Array.from(root.querySelectorAll("[data-dot]"));
 
-      const leftImg = leftCard.querySelector("img");
-      const rightImg = rightCard.querySelector("img");
-      const centerImg = centerCard.querySelector("img");
+    const leftImg = leftCard.querySelector("img");
+    const rightImg = rightCard.querySelector("img");
+    const centerImg = centerCard.querySelector("img");
 
-      const leftLabel = root.querySelector("[data-side-label-left]");
-      const rightLabel = root.querySelector("[data-side-label-right]");
+    const leftLabel = root.querySelector("[data-side-label-left]");
+    const rightLabel = root.querySelector("[data-side-label-right]");
 
-      const centerTime = centerCard.querySelector("time");
-      const centerTitle = centerCard.querySelector(".proj-title");
-      const centerExcerpt = centerCard.querySelector(".proj-excerpt");
-      const centerPrimaryLink = centerCard.querySelector(".proj-actions a.button.button-secondary");
+    const centerTime = centerCard.querySelector("time");
+    const centerTitle = centerCard.querySelector(".proj-title");
+    const centerExcerpt = centerCard.querySelector(".proj-excerpt");
+    const centerPrimaryLink = centerCard.querySelector(".proj-actions a.button.button-secondary");
+    const centerKind = centerCard.querySelector("[data-kind]");
 
-      // Fallback demo data (replace via JSON later)
-      const demoProjects = [
-        {
-          type: "project",
-          updated: "2026-01-12",
-          title: "Projekt-Titel (zuletzt bearbeitet)",
-          excerpt: "Kurztext / Status / Teaser (nur beim größten, aktuellen Projekt).",
-          image: "/img/concept.png",
-          url: "/webpages/projects/"
-        },
-        {
-          type: "project",
-          updated: "2026-01-12",
-          title: "Zweites Projekt",
-          excerpt: "Kurztext für zweites Projekt.",
-          image: "/img/concept_leistungen.png",
-          url: "/webpages/projects/"
-        },
-        {
-          type: "project",
-          updated: "2026-01-12",
-          title: "Drittes Projekt",
-          excerpt: "Kurztext für drittes Projekt.",
-          image: "/img/mythologie.png",
-          url: "/webpages/projects/"
-        }
-      ];
-
-      let items = [];
-      let index = 0;
-
-      function mod(n, m) {
-        return ((n % m) + m) % m;
-      }
-
-      function setDots() {
-        dots.forEach((d) => d.classList.remove("is-active"));
-        // With 3 fixed dots, show "position among the visible 3" when we only display 3 items total.
-        // If you later load more than 3 projects, we can switch dots to "page" style.
-        const active = dots[0];
-        if (active) active.classList.add("is-active");
-      }
-
-      function render() {
-        if (!items.length) return;
-
-        const current = items[index];
-        const prev = items[mod(index - 1, items.length)];
-        const next = items[mod(index + 1, items.length)];
-
-        // Center
-        centerImg.src = current.image;
-        centerImg.alt = "Projekt-Vorschau: " + current.title;
-
-        centerTitle.textContent = current.title;
-        centerExcerpt.textContent = current.excerpt || "";
-
-        if (centerTime) {
-          centerTime.dateTime = current.updated || "";
-const d = new Date(current.updated || "");
-centerTime.textContent = isNaN(d.getTime())
-  ? (current.updated || "")
-  : d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" });
+    // Helpers
+    function kindLabel(x) {
+      return x?.type === "blog" ? "Blog" : "Projekt";
+    }
+    function defaultUrl(x) {
+      return x?.type === "blog" ? "/webpages/blog/" : "/webpages/projects/";
+    }
+    function safeImage(x) {
+      // If an item has no image (common for blog), use a stable fallback
+      return x?.cover || "/img/concept.png";
+    }
+    function safeTitle(x) {
+      return x?.title || x?.slug || (x?.type === "blog" ? "Blog" : "Projekt");
+    }
+    function formatDate(iso) {
+      const d = new Date(iso || "");
+      if (isNaN(d.getTime())) return iso || "";
+      return d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" });
     }
 
-        if (centerPrimaryLink) centerPrimaryLink.href = current.url || "/webpages/projects/";
+    // Fallback demo data
+    // NOTE: you can add a blog demo item too, but not required
+    const demoItems = [
+      {
+        type: "project",
+        updated: "2026-01-12",
+        title: "Projekt-Titel (Demo)",
+        excerpt: "Kurztext / Status / Teaser.",
+        image: "/img/concept.png",
+        url: "/webpages/projects/"
+      },
+      {
+        type: "blog",
+        updated: "2026-01-11",
+        title: "Blogartikel (Demo)",
+        excerpt: "Demo-Text für Blogartikel.",
+        image: "/img/concept_leistungen.png",
+        url: "/webpages/blog/"
+      },
+      {
+        type: "project",
+        updated: "2026-01-10",
+        title: "Zweites Projekt (Demo)",
+        excerpt: "Kurztext für zweites Projekt.",
+        image: "/img/mythologie.png",
+        url: "/webpages/projects/"
+      }
+    ];
 
-        // Left/Right (image only, no excerpt)
-        leftImg.src = prev.image;
-        leftImg.alt = "Projekt-Vorschau: " + prev.title;
-        leftLabel.textContent = prev.title;
+    let items = [];
+    let index = 0;
 
-        rightImg.src = next.image;
-        rightImg.alt = "Projekt-Vorschau: " + next.title;
-        rightLabel.textContent = next.title;
+    function mod(n, m) {
+      return ((n % m) + m) % m;
+    }
 
-        setDots();
+    function setDots() {
+      dots.forEach((d) => d.classList.remove("is-active"));
+      if (dots[0]) dots[0].classList.add("is-active");
+    }
+
+    function render() {
+      if (!items.length) return;
+
+      const current = items[index];
+      const prev = items[mod(index - 1, items.length)];
+      const next = items[mod(index + 1, items.length)];
+
+      // Center
+      if (centerKind) centerKind.textContent = kindLabel(current);
+
+      centerImg.src = safeImage(current);
+      centerImg.alt = `${kindLabel(current)}: ${safeTitle(current)}`;
+
+      centerTitle.textContent = safeTitle(current);
+      centerExcerpt.textContent = current.excerpt || "";
+
+      if (centerTime) {
+        centerTime.dateTime = current.updated || "";
+        centerTime.textContent = formatDate(current.updated);
       }
 
-      function goPrev() {
-        index = mod(index - 1, items.length);
-        render();
+      if (centerPrimaryLink) {
+        centerPrimaryLink.href = current.url || defaultUrl(current);
+        centerPrimaryLink.textContent = (current.type === "blog") ? "Zum Artikel" : "Zum Projekt";
       }
 
-      function goNext() {
-        index = mod(index + 1, items.length);
-        render();
+      // Left / Right (image-only)
+      leftImg.src = safeImage(prev);
+      leftImg.alt = `${kindLabel(prev)}: ${safeTitle(prev)}`;
+      leftLabel.textContent = `${kindLabel(prev)}: ${safeTitle(prev)}`;
+
+      rightImg.src = safeImage(next);
+      rightImg.alt = `${kindLabel(next)}: ${safeTitle(next)}`;
+      rightLabel.textContent = `${kindLabel(next)}: ${safeTitle(next)}`;
+
+      setDots();
+    }
+
+    function goPrev() {
+      index = mod(index - 1, items.length);
+      render();
+    }
+
+    function goNext() {
+      index = mod(index + 1, items.length);
+      render();
+    }
+
+    prevBtn?.addEventListener("click", goPrev);
+    nextBtn?.addEventListener("click", goNext);
+
+    leftCard.addEventListener("click", goPrev);
+    rightCard.addEventListener("click", goNext);
+
+    function keyNav(e, dir) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        dir();
       }
+    }
+    leftCard.addEventListener("keydown", (e) => keyNav(e, goPrev));
+    rightCard.addEventListener("keydown", (e) => keyNav(e, goNext));
 
-      prevBtn?.addEventListener("click", goPrev);
-      nextBtn?.addEventListener("click", goNext);
+    // Swipe
+    let startX = 0;
+    let startY = 0;
+    let isPointerDown = false;
 
-      // Clicking side cards also navigates
-      leftCard.addEventListener("click", goPrev);
-      rightCard.addEventListener("click", goNext);
+    root.addEventListener("pointerdown", (e) => {
+      isPointerDown = true;
+      startX = e.clientX;
+      startY = e.clientY;
+    });
 
-      // Keyboard accessibility on side cards
-      function keyNav(e, dir) {
-        if (e.key === "Enter" || e.key === " ") {
-          e.preventDefault();
-          dir();
-        }
-      }
-      leftCard.addEventListener("keydown", (e) => keyNav(e, goPrev));
-      rightCard.addEventListener("keydown", (e) => keyNav(e, goNext));
+    root.addEventListener("pointerup", (e) => {
+      if (!isPointerDown) return;
+      isPointerDown = false;
 
-      // Swipe
-      let startX = 0;
-      let startY = 0;
-      let isPointerDown = false;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (Math.abs(dy) > Math.abs(dx)) return;
 
-      root.addEventListener("pointerdown", (e) => {
-        isPointerDown = true;
-        startX = e.clientX;
-        startY = e.clientY;
-      });
+      if (dx > 35) goPrev();
+      if (dx < -35) goNext();
+    });
 
-      root.addEventListener("pointerup", (e) => {
-        if (!isPointerDown) return;
-        isPointerDown = false;
+    root.addEventListener("pointercancel", () => { isPointerDown = false; });
 
-        const dx = e.clientX - startX;
-        const dy = e.clientY - startY;
-
-        // ignore mostly-vertical gestures
-        if (Math.abs(dy) > Math.abs(dx)) return;
-
-        if (dx > 35) goPrev();
-        if (dx < -35) goNext();
-      });
-
-      root.addEventListener("pointercancel", () => { isPointerDown = false; });
-
-async function loadProjects() {
+    async function loadActivitiesForCarousel() {
   try {
-    const res = await fetch("/assets/activities.json", { cache: "no-store" });
-    if (!res.ok) throw new Error("activities.json missing");
+    const res = await fetch("/assets/activities-index.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("activities-index.json missing");
     const data = await res.json();
 
-    const projects = (data.items || [])
-      .filter(x => x.type === "project")
-      .sort((a, b) => String(b.updated).localeCompare(String(a.updated)))
+    const latest = (data.items || [])
+      .filter(x => x && (x.type === "project" || x.type === "blog"))
+      .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")))
       .slice(0, 3);
 
-    items = projects.length ? projects : demoProjects.slice(0, 3);
+    items = latest.length ? latest : demoItems.slice(0, 3);
     index = 0;
     render();
   } catch (e) {
-    items = demoProjects.slice(0, 3);
+    items = demoItems.slice(0, 3);
     index = 0;
     render();
   }
 }
 
-loadProjects();
-    })();
-  </script>
+
+    loadActivitiesForCarousel();
+  })();
+</script>
+
+
+
 </body>
 </html>

@@ -11,16 +11,6 @@
       "contentUrl": "/assets/content/blog/ef-konferenz 2026.html"
     },
     {
-      "type": "blog",
-      "slug": "julius-faucher-medaille",
-      "title": "julius-faucher-medaille",
-      "updated": "2026-01-19",
-      "image": "/assets/blog/julius-faucher-medaille/ef.jpg",
-      "excerpt": "this text is about the julius fuacher excerpt",
-      "url": "/webpages/blog/julius-faucher-medaille/",
-      "contentUrl": "/assets/content/blog/julius-faucher-medaille.html"
-    },
-    {
       "type": "project",
       "slug": "eigene rebellenkollektion",
       "title": "eigene rebellenkollektion",
@@ -39,6 +29,16 @@
       "excerpt": "zu himmelfahrt und pfingsten in sachsen",
       "url": "/webpages/projects/saftladen/",
       "contentUrl": ""
+    },
+    {
+      "type": "blog",
+      "slug": "julius-faucher-medaille",
+      "title": "Schuld und Unschuld der Boomer",
+      "updated": "2025-12-19",
+      "image": "/assets/blog/julius-faucher-medaille/ef.jpg",
+      "excerpt": "this text is about the julius fuacher excerpt",
+      "url": "/webpages/blog/julius-faucher-medaille/",
+      "contentUrl": "/assets/content/blog/julius-faucher-medaille.html"
     }
   ]
 }

@@ -1,2 +1,3 @@
 node .\assets\tools\generate-activities.mjs
 node .\assets\tools\generate-products.mjs
+node .\assets\tools\generate-indexes.mjs

@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2026-01-19T18:52:54.637Z",
+  "items": [
+    {
+      "type": "project",
+      "slug": "saftladen",
+      "title": "saftladen",
+      "updated": "2026-01-19T17:09:17Z",
+      "excerpt": "zu himmelfahrt und pfingsten in sachsen",
+      "cover": "/assets/projects/saftladen/saftladen.png",
+      "contentUrl": "/assets/projects/saftladen/erkl.txt",
+      "metaUrl": "/assets/projects/saftladen/meta.json"
+    },
+    {
+      "type": "project",
+      "slug": "eigene rebellenkollektion",
+      "title": "eigene rebellenkollektion",
+      "updated": "2026-01-19T17:09:14Z",
+      "excerpt": "ich mach tshirts und das ist der erklärungstext",
+      "cover": "/assets/projects/eigene rebellenkollektion/engl.png",
+      "contentUrl": "/assets/projects/eigene rebellenkollektion/erklaerung.txt",
+      "metaUrl": "/assets/projects/eigene rebellenkollektion/meta.json"
+    },
+    {
+      "type": "blog",
+      "slug": "ef-konferenz 2026",
+      "title": "Samstag Vormittag der EF-Konferenz",
+      "updated": "2026-01-19",
+      "excerpt": "this text is about the ef konferenz excerpt",
+      "cover": "/assets/blog/ef-konferenz 2026/konf.jpg",
+      "contentUrl": "/assets/blog/ef-konferenz 2026/article.html",
+      "metaUrl": "/assets/blog/ef-konferenz 2026/meta.json",
+      "alsoPublished": [
+        {
+          "label": "LinkedIn",
+          "url": "https://www.linkedin.com/..."
+        },
+        {
+          "label": "Medium",
+          "url": "https://medium.com/..."
+        }
+      ]
+    },
+    {
+      "type": "blog",
+      "slug": "julius-faucher-medaille",
+      "title": "Schuld und Unschuld der Boomer",
+      "updated": "2025-12-19",
+      "excerpt": "this text is about the julius fuacher excerpt",
+      "cover": "/assets/blog/julius-faucher-medaille/ef.jpg",
+      "contentUrl": "/assets/blog/julius-faucher-medaille/text.md",
+      "metaUrl": "/assets/blog/julius-faucher-medaille/meta.json",
+      "alsoPublished": [
+        {
+          "label": "LinkedIn",
+          "url": "https://www.linkedin.com/..."
+        },
+        {
+          "label": "Medium",
+          "url": "https://medium.com/..."
+        }
+      ]
+    }
+  ]
+}

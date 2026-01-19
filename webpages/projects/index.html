@@ -1,31 +1,431 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
 <head>
   <meta charset="utf-8" />
-  <title>Impressum</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-<script src="/assets/site.js" defer></script>
+  <title>Projekte — Weichware Lohr</title>
 
+  <meta name="description" content="Projekte — zum Aufklappen. Neueste zuerst." />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <link rel="icon" href="/img/webicon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/img/webicon.png" />
+  <meta name="color-scheme" content="light dark" />
 
+  <style>
+    .page-head {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
 
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      align-items: end;
+      margin-top: 12px;
+    }
+    @media (min-width: 900px) {
+      .controls { grid-template-columns: 1fr 0.7fr; }
+    }
 
+    .list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .entry {
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .toggle {
+      width: 100%;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: baseline;
+      text-align: left;
+      padding: 14px 14px;
+      background: transparent;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 1.05rem;
+      line-height: 1.25;
+    }
+
+    .meta {
+      display: inline-flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      opacity: 0.9;
+      margin-top: 6px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 3px 10px;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      font-size: 0.85em;
+      opacity: 0.85;
+      white-space: nowrap;
+    }
+
+    .chev {
+      flex: 0 0 auto;
+      opacity: 0.8;
+      transform: rotate(0deg);
+      transition: transform 140ms ease;
+      margin-left: 12px;
+    }
+
+    .entry[open] .chev { transform: rotate(180deg); }
+
+    .body {
+      padding: 0 14px 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .content {
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .content .prose > *:first-child { margin-top: 0; }
+    .content .prose > *:last-child { margin-bottom: 0; }
+
+    .refs {
+      display: grid;
+      gap: 6px;
+    }
+    .refs ul {
+      margin: 6px 0 0;
+      padding-left: 18px;
+    }
+
+    .empty {
+      opacity: 0.85;
+      padding: 14px;
+      border-radius: 14px;
+      margin-top: 14px;
+    }
+  </style>
 </head>
-<body>
 
-    <!-- Same header structure as on the homepage (not identity tabs) -->
+<body class="page-projects">
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
   <header class="site-header">
     <nav class="nav" aria-label="Hauptnavigation">
       <a class="brand" href="/">Bettina Lohr, M Sc.</a>
       <ul class="nav-list">
         <li><a href="/webpages/about/">Über mich</a></li>
-        <li><a href="/webpages/projects/">Aktuelle Projekte</a></li>
+        <li><a href="/webpages/projects/" aria-current="page">Projekte</a></li>
         <li><a href="/webpages/leistungen/">Leistungen</a></li>
-        <li><a href="/webpages/blog/">Blog</a></li>
         <li><a href="/webpages/webshop/">Webshop</a></li>
+        <li><a href="/webpages/blog/">Blog</a></li>
         <li><a href="/regulation/imprint/">Impressum</a></li>
       </ul>
     </nav>
   </header>
 
+  <main id="main" class="container">
+    <header class="page-hero page-head">
+      <h1>Projekte</h1>
+      <p class="lead" style="margin:0;">
+        Neueste zuerst. Klick auf eine Überschrift, um Details zu öffnen (erneut zum Schließen).
+      </p>
+
+      <div class="controls">
+        <div class="field">
+          <label for="q">Suche</label>
+          <input id="q" type="search" placeholder="Titel / Text durchsuchen…" />
+        </div>
+
+        <div class="field">
+          <label for="filter">Filter</label>
+          <select id="filter">
+            <option value="all">Alle</option>
+            <option value="project">Nur Projekte</option>
+          </select>
+        </div>
+      </div>
+    </header>
+
+    <section class="section" aria-labelledby="entries-title">
+      <h2 id="entries-title">Projekte</h2>
+      <div id="entries" class="list" aria-live="polite"></div>
+
+      <div id="empty" class="card empty" style="display:none;">
+        <p class="fineprint" style="margin:0;">
+          Keine Projekte gefunden. (Prüfen: <code>/assets/activities.json</code> enthält Items mit <code>type: "project"</code>?)
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Weichware Lohr</p>
+    <ul class="footer-links">
+      <li><a href="/regulation/privacy/">Datenschutz</a></li>
+      <li><a href="/regulation/cookies/">Cookies</a></li>
+      <li><a href="/regulation/imprint/">Impressum</a></li>
+    </ul>
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    const entriesEl = document.getElementById("entries");
+    const emptyEl = document.getElementById("empty");
+    const qEl = document.getElementById("q");
+    const filterEl = document.getElementById("filter");
+
+    let items = [];
+    let openSlug = "";
+
+    function norm(s) {
+      return (s || "").toString().toLowerCase().trim();
+    }
+
+    function escapeHtml(s) {
+      return (s || "").toString()
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function formatDate(iso) {
+      const d = new Date(iso);
+      if (isNaN(d.getTime())) return iso || "";
+      return d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" });
+    }
+
+    function buildRefs(meta) {
+      // meta.refs can be array [{label,url}] or object map
+      const refs = meta?.refs || meta?.alsoPublished;
+      const out = [];
+      if (!refs) return out;
+
+      if (Array.isArray(refs)) {
+        for (const r of refs) {
+          if (!r) continue;
+          if (typeof r === "string") out.push({ label: r, url: r });
+          else if (typeof r === "object" && r.url) out.push({ label: r.label || r.url, url: r.url });
+        }
+        return out;
+      }
+
+      if (typeof refs === "object") {
+        for (const [label, url] of Object.entries(refs)) {
+          if (typeof url === "string" && url.trim()) out.push({ label, url });
+        }
+      }
+      return out;
+    }
+
+    async function loadActivities() {
+      const res = await fetch("/assets/activities.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("activities.json missing");
+      const data = await res.json();
+      const list = Array.isArray(data.items) ? data.items : [];
+
+      items = list
+        .filter(x => x && x.type === "project")
+        .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")));
+    }
+
+    async function loadMetaFor(slug) {
+      try {
+        const res = await fetch(`/assets/projects/${encodeURIComponent(slug)}/meta.json`, { cache: "no-store" });
+        if (!res.ok) return null;
+        return await res.json();
+      } catch {
+        return null;
+      }
+    }
+
+    async function loadContentHtml(item) {
+      if (item.contentUrl) {
+        const res = await fetch(item.contentUrl, { cache: "no-store" });
+        if (!res.ok) throw new Error("contentUrl fetch failed");
+        const html = await res.text();
+        const match = html.match(/<article[\s\S]*<\/article>/i);
+        return match ? match[0] : html;
+      }
+
+      const excerpt = item.excerpt
+        ? `<p>${escapeHtml(item.excerpt)}</p>`
+        : `<p class="fineprint">Kein Inhalt verlinkt (contentUrl fehlt). Generator laufen lassen oder Content-Datei ergänzen.</p>`;
+      return `<div class="prose">${excerpt}</div>`;
+    }
+
+    function makeCard(item) {
+      const wrapper = document.createElement("article");
+      wrapper.className = "card entry";
+      wrapper.dataset.slug = item.slug || "";
+
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "toggle";
+      btn.setAttribute("aria-expanded", "false");
+
+      const left = document.createElement("div");
+      left.style.minWidth = "0";
+
+      const title = document.createElement("h3");
+      title.className = "title";
+      title.textContent = item.title || item.slug || "Projekt";
+
+      const metaRow = document.createElement("div");
+      metaRow.className = "meta";
+
+      const pill = document.createElement("span");
+      pill.className = "pill";
+      pill.textContent = "Projekt";
+
+      const time = document.createElement("span");
+      time.className = "fineprint";
+      time.textContent = formatDate(item.updated || "");
+
+      metaRow.appendChild(pill);
+      if (item.updated) metaRow.appendChild(time);
+
+      left.appendChild(title);
+      left.appendChild(metaRow);
+
+      const chev = document.createElement("span");
+      chev.className = "chev";
+      chev.setAttribute("aria-hidden", "true");
+      chev.textContent = "▾";
+
+      btn.appendChild(left);
+      btn.appendChild(chev);
+
+      const body = document.createElement("div");
+      body.className = "body";
+      body.style.display = "none";
+
+      const content = document.createElement("div");
+      content.className = "card content";
+      content.innerHTML = `<div class="prose"><p class="fineprint">Öffnen zum Lesen…</p></div>`;
+
+      const refsWrap = document.createElement("div");
+      refsWrap.className = "refs";
+
+      body.appendChild(content);
+      body.appendChild(refsWrap);
+
+      btn.addEventListener("click", async () => {
+        const slug = item.slug || "";
+        const open = wrapper.hasAttribute("open");
+
+        if (open) {
+          wrapper.removeAttribute("open");
+          btn.setAttribute("aria-expanded", "false");
+          body.style.display = "none";
+          openSlug = "";
+          return;
+        }
+
+        if (openSlug) {
+          const other = entriesEl.querySelector(`.entry[open][data-slug="${CSS.escape(openSlug)}"]`);
+          if (other) {
+            const otherBtn = other.querySelector(".toggle");
+            const otherBody = other.querySelector(".body");
+            other.removeAttribute("open");
+            otherBtn?.setAttribute("aria-expanded", "false");
+            if (otherBody) otherBody.style.display = "none";
+          }
+        }
+
+        wrapper.setAttribute("open", "true");
+        btn.setAttribute("aria-expanded", "true");
+        body.style.display = "grid";
+        openSlug = slug;
+
+        if (!wrapper.dataset.loaded) {
+          wrapper.dataset.loaded = "true";
+          const meta = await loadMetaFor(slug);
+          const html = await loadContentHtml(item);
+          content.innerHTML = html;
+
+          const refs = buildRefs(meta);
+          refsWrap.innerHTML = "";
+          if (refs.length) {
+            const h = document.createElement("div");
+            h.innerHTML = `<strong>Links / Veröffentlichungen</strong>`;
+            const ul = document.createElement("ul");
+            for (const r of refs) {
+              const li = document.createElement("li");
+              const a = document.createElement("a");
+              a.href = r.url;
+              a.target = "_blank";
+              a.rel = "noopener";
+              a.textContent = r.label;
+              li.appendChild(a);
+              ul.appendChild(li);
+            }
+            refsWrap.appendChild(h);
+            refsWrap.appendChild(ul);
+          }
+        }
+      });
+
+      wrapper.appendChild(btn);
+      wrapper.appendChild(body);
+      return wrapper;
+    }
+
+    async function render() {
+      entriesEl.innerHTML = "";
+
+      const qq = norm(qEl.value);
+      const filter = filterEl.value;
+
+      let list = items.slice();
+
+      if (filter === "project") {
+        list = list.filter(x => x.type === "project");
+      }
+
+      if (qq) {
+        list = list.filter(x => {
+          const hay = norm(x.title) + " " + norm(x.slug) + " " + norm(x.excerpt);
+          return hay.includes(qq);
+        });
+      }
+
+      emptyEl.style.display = list.length ? "none" : "block";
+
+      for (const item of list) {
+        entriesEl.appendChild(makeCard(item));
+      }
+    }
+
+    qEl.addEventListener("input", render);
+    filterEl.addEventListener("input", render);
+
+    (async function init() {
+      try {
+        await loadActivities();
+      } catch {
+        items = [];
+      }
+      await render();
+    })();
+  </script>
 </body>
 </html>

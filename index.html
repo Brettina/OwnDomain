@@ -4,10 +4,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Bettina Lohr, M. Sc</title>
-  <link rel="icon" href="/img/webicon.png" type="image/png" />
-<link rel="apple-touch-icon" href="/img/webicon.png" />
 
-  <meta name="description" content="Software, Prototypen, Textiles, Analyse und Consulting. Fünf Perspektiven: Engineer, Hipster, Social Worker, Expert, Consulting." />
+  <link rel="icon" href="/img/webicon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/img/webicon.png" />
+
+  <meta
+    name="description"
+    content="Weichware Lohr — interdisziplinäre Praxis: Engineering, Prototyping & Textiles, Analyse und Consulting. Neu: Blog & Aktivitäten (Blog + Projekte)."
+  />
   <link rel="stylesheet" href="/assets/styles.css" />
   <meta name="color-scheme" content="light dark" />
 </head>
@@ -18,69 +22,177 @@
   <header class="site-header">
     <nav class="nav" aria-label="Hauptnavigation">
       <a class="brand" href="/">Bettina Lohr, M Sc.</a>
+
       <ul class="nav-list">
-        <li><a href="/webpages/engineer/">Softwareentwicklerin</a></li>
-        <li><a href="/webpages/consulting/">Projektleiterin</a></li>
-        <li><a href="/webpages/expert/">Expertin</a></li>
-        <li><a href="/webpages/hipster/">Querdenkerin</a></li>
-        <li><a href="/webpages/social-worker/">Soziale Arbeit</a></li>
-        
+        <li><a href="#about" data-nav="about">Über mich</a></li>
+        <li><a href="#current-projects" data-nav="current-projects">Aktuelle Projekte</a></li>
+        <li><a href="/webpages/leistungen/" data-nav="leistungen">Leistungen</a></li>
+        <li><a href="/webpages/blog/" data-nav="blog">Blog</a></li>
+        <li><a href="#past-projects" data-nav="past-projects">Vergangene Projekte</a></li>
+        <li><a href="/regulation/imprint/" data-nav="imprint">Impressum</a></li>
       </ul>
     </nav>
   </header>
 
   <main id="main" class="container">
-    <!-- HERO -->
-    <section class="hero">
-      <div class="hero-media" aria-hidden="true">
-        <div class="avatar" title="Abstraktes Platzhalter-Porträt"></div>
+    <!-- HERO / ABOUT -->
+    <section class="hero" id="about" aria-label="Über mich">
+      <div class="hero-media">
+        <img
+          class="avatar"
+          src="/img/profile.png"
+          alt="Profilfoto von Bettina Lohr"
+          loading="eager"
+          decoding="async"
+          style="object-fit: cover;"
+        />
       </div>
 
       <div class="hero-text">
         <h1>Weichware Lohr</h1>
         <p class="lead">
           Hallo zusammen!
-          Als Freiberuflerin im Softwarebereich führe ich eine interdisziplinäre Praxis, die von Software Engineering, Prototyping & Textiles,
-          Analyse und Consulting bis hin zu reflexiver Unterstützungsarbeit geht.
-
+          Als Freiberuflerin im Softwarebereich führe ich eine interdisziplinäre Praxis, die von Software Engineering,
+          Prototyping & Textiles, Analyse und Consulting bis hin zu reflexiver Unterstützungsarbeit geht.
         </p>
         <p>
-          Wähle unten eine Perspektive. Jede Seite enthält Leistungen, einen
-          Projekt- bzw. Produktbereich, ausgewählte Highlights und einen
-          E-Mail-basierten Kontakt- bzw. Bestell-Workflow.
+          Unter <strong>Leistungen</strong> sind die fünf Perspektiven gebündelt
+          (Engineer, Hipster, Social Worker, Expert, Consulting) – inklusive Webshop.
         </p>
+
         <div class="cta-row">
-          <a class="button" href="/webpages/engineer/">Mit Engineering starten</a>
-          <a class="button button-secondary" href="/webpages/consulting/">Oder Consulting</a>
+          <a class="button" href="/webpages/leistungen/">Zu den Leistungen</a>
+          <a class="button button-secondary" href="#activity">Neu: Aktivitäten</a>
         </div>
       </div>
     </section>
 
-    <!-- PERSPEKTIVEN -->
-    <section class="grid" aria-label="Perspektiven erkunden">
-      <a class="card" href="/webpages/engineer/">
+    <!-- QUICK LINKS: PERSPEKTIVEN (unter Leistungen) -->
+    <section class="grid" aria-label="Perspektiven unter Leistungen">
+      <a class="card" href="/webpages/leistungen/#engineer">
         <h2>Engineer</h2>
         <p>Software, Python, Simulation & Synthetic Data, Datenbanken.</p>
       </a>
-      <a class="card" href="/webpages/hipster/">
+      <a class="card" href="/webpages/leistungen/#hipster">
         <h2>Hipster</h2>
-        <p>Games & Apps, Textiles, OSH, Prototypen, Saftladen.</p>
+        <p>Games & Apps, Textiles, OSH, Prototypen – inkl. Webshop.</p>
       </a>
-      <a class="card" href="/webpages/social-worker/">
+      <a class="card" href="/webpages/leistungen/#social-worker">
         <h2>Social Worker</h2>
         <p>Coaching, Schwarzes Kreuz, Phänomenologie, Seelsorge.</p>
       </a>
-      <a class="card" href="/webpages/expert/">
+      <a class="card" href="/webpages/leistungen/#expert">
         <h2>Expert</h2>
         <p>Politische Analyse & Interviews, Justizverwaltung, Infosec-Audits.</p>
       </a>
-      <a class="card" href="/webpages/consulting/">
+      <a class="card" href="/webpages/leistungen/#consulting">
         <h2>Consulting</h2>
         <p>Projektmanagement, Agentur-/Backoffice, Marketing- & Sales-Ops.</p>
       </a>
     </section>
 
-    <!-- EXTERNE PROFILE + QR -->
+    <!-- AKTIVITÄTEN: 3 JÜNGSTE (BLOG + PROJEKTE) -->
+    <section class="section" id="activity" aria-labelledby="activity-title">
+      <div style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <h2 id="activity-title" style="margin:0;">Aktivitäten</h2>
+        <p class="fineprint" style="margin:0;">
+          Auswahl der drei jüngsten Updates (Blogartikel & Projekte).
+          <a href="/webpages/blog/">Zum Blog</a>
+        </p>
+      </div>
+
+      <div class="cards" style="margin-top:14px;">
+        <!-- Aktivität 1 (Beispiel: Projekt) -->
+        <article class="card">
+          <p class="fineprint" style="margin-top:0;">
+            <strong>Projekt</strong> · <time datetime="2026-01-12">12. Jan 2026</time>
+          </p>
+
+          <h3 style="margin-top:8px;">Projekt: „Unser Standpunkt“ – Update</h3>
+
+          <p class="fineprint">
+            Kurzer Status & nächster Schritt. (Ersetze diesen Text durch deinen echten Kurztext.)
+          </p>
+
+          <img
+            src="/img/mythologie.png"
+            alt="Vorschaubild zur Aktivität"
+            loading="lazy"
+            style="width:100%; height:auto; border-radius:12px; margin-top:10px;"
+          />
+
+          <p style="margin-top:12px;">
+            <a class="button button-secondary" href="#current-projects">Zum Projektbereich</a>
+          </p>
+        </article>
+
+        <!-- Aktivität 2 (Beispiel: Blogartikel) -->
+        <article class="card">
+          <p class="fineprint" style="margin-top:0;">
+            <strong>Blog</strong> · <time datetime="2026-01-09">09. Jan 2026</time>
+          </p>
+
+          <h3 style="margin-top:8px;">Artikel: „Daten, Praxis, Verantwortung“</h3>
+
+          <p class="fineprint">
+            Kurztext zum Artikel. (Ersetze diesen Text durch deinen echten Teaser.)
+          </p>
+
+          <img
+            src="/img/concept.png"
+            alt="Vorschaubild zum Blogartikel"
+            loading="lazy"
+            style="width:100%; height:auto; border-radius:12px; margin-top:10px;"
+          />
+
+          <p style="margin-top:12px;">
+            <a class="button button-secondary" href="/webpages/blog/">Zum Artikel</a>
+          </p>
+        </article>
+
+        <!-- Aktivität 3 (Beispiel: Projekt) -->
+        <article class="card">
+          <p class="fineprint" style="margin-top:0;">
+            <strong>Projekt</strong> · <time datetime="2026-01-05">05. Jan 2026</time>
+          </p>
+
+          <h3 style="margin-top:8px;">Projekt: Prototyping & Textiles</h3>
+
+          <p class="fineprint">
+            Mini-Update mit Kontext, Ergebnis oder offener Frage. (Ersetze diesen Text durch deinen echten Kurztext.)
+          </p>
+
+          <img
+            src="/img/concept_leistungen.png"
+            alt="Vorschaubild zum Projekt"
+            loading="lazy"
+            style="width:100%; height:auto; border-radius:12px; margin-top:10px;"
+          />
+
+          <p style="margin-top:12px;">
+            <a class="button button-secondary" href="#current-projects">Zu den Projekten</a>
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- AKTUELLE PROJEKTE (Anker für Menü + Ziel für Aktivitätskarten) -->
+    <section class="section" id="current-projects" aria-labelledby="current-projects-title">
+      <h2 id="current-projects-title">Aktuelle Projekte</h2>
+      <p class="fineprint">
+        (Platzhalter) — Hier können aktuelle Projekte als Cards / Timeline folgen.
+      </p>
+    </section>
+
+    <!-- VERGANGENE PROJEKTE (Anker für Menü) -->
+    <section class="section" id="past-projects" aria-labelledby="past-projects-title">
+      <h2 id="past-projects-title">Vergangene Projekte</h2>
+      <p class="fineprint">
+        (Platzhalter) — Hier kann ein Archiv / Auswahl vergangener Projekte folgen.
+      </p>
+    </section>
+
+    <!-- EXTERNE PROFILE + QR (NACH den Aktivitäten) -->
     <section class="section" aria-labelledby="profiles">
       <h2 id="profiles">Profile & Präsenz</h2>
 

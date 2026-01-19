@@ -1,12 +1,13 @@
 {
-  "title": "Rebellenkollektion",
-  "updated": "2026-01-15",
+  "title": "Saftladen",
+  "updated": "2026-01-18",
   "startDate": "2025-11-01",
   "endDate": "",
-  "tags": ["kollektion", "mode", "wikinger"],
-  "summary": "Kleine Serien, Prototypen, Abholung nach Vereinbarung.",
-  "refs": {
-    "Instagram": "https://example.com",
-    "GitHub": "https://example.com"
+  "tags": ["saftladen", "textiles", "prototype"],
+  "cover": "engl.png",
+  "excerpt": "Kurzbeschreibung / Status.",
+  "links": {
+    "Repo": "https://example.com",
+    "Artikel": "https://example.com"
   }
 }

@@ -169,7 +169,7 @@
 
       <div id="empty" class="card empty" style="display:none;">
         <p class="fineprint" style="margin:0;">
-          Keine Projekte gefunden. (Prüfen: <code>/assets/activities.json</code> enthält Items mit <code>type: "project"</code>?)
+Keine Projekte gefunden. (Prüfen: <code>/assets/projects-index.json</code> existiert und enthält <code>items</code>.)
         </p>
       </div>
     </section>
@@ -184,248 +184,388 @@
     </ul>
   </footer>
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
 
-    const entriesEl = document.getElementById("entries");
-    const emptyEl = document.getElementById("empty");
-    const qEl = document.getElementById("q");
-    const filterEl = document.getElementById("filter");
+  const entriesEl = document.getElementById("entries");
+  const emptyEl = document.getElementById("empty");
+  const qEl = document.getElementById("q");
+  const filterEl = document.getElementById("filter");
 
-    let items = [];
-    let openSlug = "";
+  let items = [];        // from /assets/projects-index.json
+  let calendarItems = []; // from /assets/calendar-index.json
+  let openSlug = "";
 
-    function norm(s) {
-      return (s || "").toString().toLowerCase().trim();
-    }
+  function norm(s) {
+    return (s || "").toString().toLowerCase().trim();
+  }
 
-    function escapeHtml(s) {
-      return (s || "").toString()
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;");
-    }
+  function escapeHtml(s) {
+    return (s || "").toString()
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+  }
 
-    function formatDate(iso) {
-      const d = new Date(iso);
-      if (isNaN(d.getTime())) return iso || "";
-      return d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" });
-    }
+  function formatDate(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return iso || "";
+    return d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" });
+  }
 
-    function buildRefs(meta) {
-      // meta.refs can be array [{label,url}] or object map
-      const refs = meta?.refs || meta?.alsoPublished;
-      const out = [];
-      if (!refs) return out;
+  function asArray(x) {
+    return Array.isArray(x) ? x : (x ? [x] : []);
+  }
 
-      if (Array.isArray(refs)) {
-        for (const r of refs) {
-          if (!r) continue;
-          if (typeof r === "string") out.push({ label: r, url: r });
-          else if (typeof r === "object" && r.url) out.push({ label: r.label || r.url, url: r.url });
-        }
-        return out;
-      }
+  function buildRefs(meta) {
+    const refs = meta?.refs || meta?.links || meta?.alsoPublished;
+    const out = [];
+    if (!refs) return out;
 
-      if (typeof refs === "object") {
-        for (const [label, url] of Object.entries(refs)) {
-          if (typeof url === "string" && url.trim()) out.push({ label, url });
-        }
+    if (Array.isArray(refs)) {
+      for (const r of refs) {
+        if (!r) continue;
+        if (typeof r === "string") out.push({ label: r, url: r });
+        else if (typeof r === "object" && r.url) out.push({ label: r.label || r.url, url: r.url });
       }
       return out;
     }
 
-    async function loadActivities() {
-      const res = await fetch("/assets/activities.json", { cache: "no-store" });
-      if (!res.ok) throw new Error("activities.json missing");
+    if (typeof refs === "object") {
+      for (const [label, url] of Object.entries(refs)) {
+        if (typeof url === "string" && url.trim()) out.push({ label, url });
+      }
+    }
+    return out;
+  }
+
+  function overlapTags(a, b) {
+    const A = new Set(asArray(a).map(x => norm(x)).filter(Boolean));
+    const B = new Set(asArray(b).map(x => norm(x)).filter(Boolean));
+    for (const t of A) if (B.has(t)) return true;
+    return false;
+  }
+
+  function relevantEventsForProject(slug, projectTags) {
+    const s = norm(slug);
+    return calendarItems
+      .filter(ev => {
+        const evProjects = asArray(ev.projects).map(x => norm(x));
+        const bySlug = evProjects.includes(s);
+        const byTags = overlapTags(ev.tags, projectTags);
+        return bySlug || byTags;
+      })
+      .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
+  }
+
+  async function loadProjectsIndex() {
+    const res = await fetch("/assets/projects-index.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("projects-index.json missing");
+    const data = await res.json();
+    const list = Array.isArray(data.items) ? data.items : [];
+
+    // newest first (already should be, but enforce)
+    items = list
+      .filter(x => x && x.type === "project")
+      .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")));
+  }
+
+  async function loadCalendarIndex() {
+    try {
+      const res = await fetch("/assets/calendar-index.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("calendar-index.json missing");
       const data = await res.json();
-      const list = Array.isArray(data.items) ? data.items : [];
-
-      items = list
-        .filter(x => x && x.type === "project")
-        .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")));
+      calendarItems = Array.isArray(data.items) ? data.items : [];
+    } catch {
+      calendarItems = [];
     }
+  }
 
-    async function loadMetaFor(slug) {
-      try {
-        const res = await fetch(`/assets/projects/${encodeURIComponent(slug)}/meta.json`, { cache: "no-store" });
-        if (!res.ok) return null;
-        return await res.json();
-      } catch {
-        return null;
-      }
+  async function loadMetaFor(slug) {
+    try {
+      const res = await fetch(`/assets/projects/${encodeURIComponent(slug)}/meta.json`, { cache: "no-store" });
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
     }
+  }
 
-    async function loadContentHtml(item) {
-      if (item.contentUrl) {
-        const res = await fetch(item.contentUrl, { cache: "no-store" });
-        if (!res.ok) throw new Error("contentUrl fetch failed");
-        const html = await res.text();
-        const match = html.match(/<article[\s\S]*<\/article>/i);
-        return match ? match[0] : html;
-      }
-
+  async function loadContent(item) {
+    // item.contentUrl may be txt/md/html. We’ll show it safely.
+    if (!item.contentUrl) {
       const excerpt = item.excerpt
         ? `<p>${escapeHtml(item.excerpt)}</p>`
-        : `<p class="fineprint">Kein Inhalt verlinkt (contentUrl fehlt). Generator laufen lassen oder Content-Datei ergänzen.</p>`;
+        : `<p class="fineprint">Kein Textfile gefunden. (Optional: eine .txt/.md/.html in den Projektordner legen.)</p>`;
       return `<div class="prose">${excerpt}</div>`;
     }
 
-    function makeCard(item) {
-      const wrapper = document.createElement("article");
-      wrapper.className = "card entry";
-      wrapper.dataset.slug = item.slug || "";
+    const res = await fetch(item.contentUrl, { cache: "no-store" });
+    if (!res.ok) {
+      return `<div class="prose"><p class="fineprint">Content konnte nicht geladen werden.</p></div>`;
+    }
 
-      const btn = document.createElement("button");
-      btn.type = "button";
-      btn.className = "toggle";
-      btn.setAttribute("aria-expanded", "false");
+    const ext = (item.contentUrl.split(".").pop() || "").toLowerCase();
+    const raw = await res.text();
 
-      const left = document.createElement("div");
-      left.style.minWidth = "0";
+    if (ext === "html") {
+      // If it contains <article> use that; else use whole
+      const match = raw.match(/<article[\s\S]*<\/article>/i);
+      return match ? match[0] : raw;
+    }
 
-      const title = document.createElement("h3");
-      title.className = "title";
-      title.textContent = item.title || item.slug || "Projekt";
+    // txt/md: render as pre-ish (simple, robust, no markdown parser)
+    return `<div class="prose"><pre style="white-space:pre-wrap; margin:0;">${escapeHtml(raw)}</pre></div>`;
+  }
 
-      const metaRow = document.createElement("div");
-      metaRow.className = "meta";
+  function metaBlock(meta, item) {
+    const start = meta?.startDate ? formatDate(meta.startDate) : "";
+    const end = meta?.endDate ? formatDate(meta.endDate) : "";
+    const tags = asArray(meta?.tags).filter(Boolean);
 
-      const pill = document.createElement("span");
-      pill.className = "pill";
-      pill.textContent = "Projekt";
+    const range =
+      start && end ? `${start} — ${end}` :
+      start && !end ? `seit ${start}` :
+      (!start && end) ? `bis ${end}` : "";
 
-      const time = document.createElement("span");
-      time.className = "fineprint";
-      time.textContent = formatDate(item.updated || "");
+    const summary = meta?.summary ? `<p class="fineprint" style="margin:0;">${escapeHtml(meta.summary)}</p>` : "";
 
-      metaRow.appendChild(pill);
-      if (item.updated) metaRow.appendChild(time);
+    const tagHtml = tags.length
+      ? `<div class="post-meta" style="margin-top:8px;">${
+          tags.map(t => `<span class="post-pill">${escapeHtml(t)}</span>`).join("")
+        }</div>`
+      : "";
 
-      left.appendChild(title);
-      left.appendChild(metaRow);
+    const updated = item?.updated ? `<div class="fineprint" style="margin-top:6px;">Zuletzt bearbeitet: ${formatDate(item.updated)}</div>` : "";
 
-      const chev = document.createElement("span");
-      chev.className = "chev";
-      chev.setAttribute("aria-hidden", "true");
-      chev.textContent = "▾";
+    const rangeHtml = range ? `<div class="fineprint" style="margin-top:6px;">Zeitraum: ${escapeHtml(range)}</div>` : "";
 
-      btn.appendChild(left);
-      btn.appendChild(chev);
+    return `
+      <div class="card" style="padding:12px;">
+        <strong>Meta</strong>
+        ${summary}
+        ${rangeHtml}
+        ${updated}
+        ${tagHtml}
+      </div>
+    `;
+  }
 
-      const body = document.createElement("div");
-      body.className = "body";
-      body.style.display = "none";
+  function coverBlock(item) {
+    const cover = item?.cover || "";
+    if (!cover) return "";
+    const alt = item?.title ? `Cover: ${item.title}` : "Projektbild";
+    return `
+      <div class="card" style="overflow:hidden; padding:0;">
+        <img src="${cover}" alt="${escapeHtml(alt)}" loading="lazy" style="width:100%; height:260px; object-fit:cover; display:block;">
+      </div>
+    `;
+  }
 
-      const content = document.createElement("div");
-      content.className = "card content";
-      content.innerHTML = `<div class="prose"><p class="fineprint">Öffnen zum Lesen…</p></div>`;
+  function eventsBlock(events) {
+    if (!events.length) {
+      return `
+        <div class="card" style="padding:12px;">
+          <strong>Relevante Termine</strong>
+          <p class="fineprint" style="margin:6px 0 0;">Keine Termine zugeordnet (per slug oder Tags).</p>
+        </div>
+      `;
+    }
 
-      const refsWrap = document.createElement("div");
-      refsWrap.className = "refs";
+    const rows = events.map(ev => {
+      const where = ev.where ? ` · ${escapeHtml(ev.where)}` : "";
+      const note = ev.note ? `<div class="fineprint" style="margin-top:4px;">${escapeHtml(ev.note)}</div>` : "";
+      return `
+        <div class="card" style="padding:12px; margin-top:10px;">
+          <strong>${escapeHtml(ev.title || "Termin")}</strong>
+          <div class="fineprint">${escapeHtml(ev.date || "")}${where}</div>
+          ${note}
+        </div>
+      `;
+    }).join("");
 
-      body.appendChild(content);
-      body.appendChild(refsWrap);
+    return `
+      <div>
+        <strong>Relevante Termine</strong>
+        ${rows}
+      </div>
+    `;
+  }
 
-      btn.addEventListener("click", async () => {
-        const slug = item.slug || "";
-        const open = wrapper.hasAttribute("open");
+  function refsBlock(refs) {
+    if (!refs.length) return "";
+    const ul = refs.map(r => `
+      <li><a href="${r.url}" target="_blank" rel="noopener">${escapeHtml(r.label)}</a></li>
+    `).join("");
+    return `
+      <div class="card" style="padding:12px;">
+        <strong>Links</strong>
+        <ul style="margin:8px 0 0; padding-left:18px;">${ul}</ul>
+      </div>
+    `;
+  }
 
-        if (open) {
-          wrapper.removeAttribute("open");
-          btn.setAttribute("aria-expanded", "false");
-          body.style.display = "none";
-          openSlug = "";
-          return;
+  function makeCard(item) {
+    const wrapper = document.createElement("article");
+    wrapper.className = "card entry";
+    wrapper.dataset.slug = item.slug || "";
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "toggle";
+    btn.setAttribute("aria-expanded", "false");
+
+    const left = document.createElement("div");
+    left.style.minWidth = "0";
+
+    const title = document.createElement("h3");
+    title.className = "title";
+    title.textContent = item.title || item.slug || "Projekt";
+
+    const metaRow = document.createElement("div");
+    metaRow.className = "meta";
+
+    const pill = document.createElement("span");
+    pill.className = "pill";
+    pill.textContent = "Projekt";
+
+    const time = document.createElement("span");
+    time.className = "fineprint";
+    time.textContent = formatDate(item.updated || "");
+
+    metaRow.appendChild(pill);
+    if (item.updated) metaRow.appendChild(time);
+
+    left.appendChild(title);
+    left.appendChild(metaRow);
+
+    const chev = document.createElement("span");
+    chev.className = "chev";
+    chev.setAttribute("aria-hidden", "true");
+    chev.textContent = "▾";
+
+    btn.appendChild(left);
+    btn.appendChild(chev);
+
+    const body = document.createElement("div");
+    body.className = "body";
+    body.style.display = "none";
+
+    // We render these when opened
+    const content = document.createElement("div");
+    content.className = "card content";
+    content.innerHTML = `<div class="prose"><p class="fineprint">Öffnen zum Lesen…</p></div>`;
+
+    body.appendChild(content);
+
+    btn.addEventListener("click", async () => {
+      const slug = item.slug || "";
+      const open = wrapper.hasAttribute("open");
+
+      if (open) {
+        wrapper.removeAttribute("open");
+        btn.setAttribute("aria-expanded", "false");
+        body.style.display = "none";
+        openSlug = "";
+        return;
+      }
+
+      // close others (single-open behavior)
+      if (openSlug) {
+        const other = entriesEl.querySelector(`.entry[open][data-slug="${CSS.escape(openSlug)}"]`);
+        if (other) {
+          const otherBtn = other.querySelector(".toggle");
+          const otherBody = other.querySelector(".body");
+          other.removeAttribute("open");
+          otherBtn?.setAttribute("aria-expanded", "false");
+          if (otherBody) otherBody.style.display = "none";
         }
+      }
 
-        if (openSlug) {
-          const other = entriesEl.querySelector(`.entry[open][data-slug="${CSS.escape(openSlug)}"]`);
-          if (other) {
-            const otherBtn = other.querySelector(".toggle");
-            const otherBody = other.querySelector(".body");
-            other.removeAttribute("open");
-            otherBtn?.setAttribute("aria-expanded", "false");
-            if (otherBody) otherBody.style.display = "none";
-          }
-        }
+      wrapper.setAttribute("open", "true");
+      btn.setAttribute("aria-expanded", "true");
+      body.style.display = "grid";
+      openSlug = slug;
 
-        wrapper.setAttribute("open", "true");
-        btn.setAttribute("aria-expanded", "true");
-        body.style.display = "grid";
-        openSlug = slug;
+      if (!wrapper.dataset.loaded) {
+        wrapper.dataset.loaded = "true";
 
-        if (!wrapper.dataset.loaded) {
-          wrapper.dataset.loaded = "true";
-          const meta = await loadMetaFor(slug);
-          const html = await loadContentHtml(item);
-          content.innerHTML = html;
+        const meta = await loadMetaFor(slug);
+        const html = await loadContent(item);
+        const refs = buildRefs(meta);
+        const projectTags = asArray(meta?.tags);
+        const relEvents = relevantEventsForProject(slug, projectTags);
 
-          const refs = buildRefs(meta);
-          refsWrap.innerHTML = "";
-          if (refs.length) {
-            const h = document.createElement("div");
-            h.innerHTML = `<strong>Links / Veröffentlichungen</strong>`;
-            const ul = document.createElement("ul");
-            for (const r of refs) {
-              const li = document.createElement("li");
-              const a = document.createElement("a");
-              a.href = r.url;
-              a.target = "_blank";
-              a.rel = "noopener";
-              a.textContent = r.label;
-              li.appendChild(a);
-              ul.appendChild(li);
-            }
-            refsWrap.appendChild(h);
-            refsWrap.appendChild(ul);
-          }
-        }
+        // compose
+        const blocks = [];
+        blocks.push(coverBlock(item));
+        blocks.push(metaBlock(meta, item));
+        blocks.push(`<div class="card content" style="padding:14px;">${html}</div>`);
+        blocks.push(eventsBlock(relEvents));
+        blocks.push(refsBlock(refs));
+
+        body.innerHTML = blocks.filter(Boolean).join("");
+      }
+    });
+
+    wrapper.appendChild(btn);
+    wrapper.appendChild(body);
+    return wrapper;
+  }
+
+  async function render() {
+    entriesEl.innerHTML = "";
+
+    const qq = norm(qEl.value);
+    const filter = filterEl.value;
+
+    let list = items.slice();
+
+    if (filter === "project") list = list.filter(x => x.type === "project");
+
+    if (qq) {
+      list = list.filter(x => {
+        const hay = norm(x.title) + " " + norm(x.slug) + " " + norm(x.excerpt);
+        return hay.includes(qq);
       });
-
-      wrapper.appendChild(btn);
-      wrapper.appendChild(body);
-      return wrapper;
     }
 
-    async function render() {
-      entriesEl.innerHTML = "";
+    emptyEl.style.display = list.length ? "none" : "block";
 
-      const qq = norm(qEl.value);
-      const filter = filterEl.value;
-
-      let list = items.slice();
-
-      if (filter === "project") {
-        list = list.filter(x => x.type === "project");
-      }
-
-      if (qq) {
-        list = list.filter(x => {
-          const hay = norm(x.title) + " " + norm(x.slug) + " " + norm(x.excerpt);
-          return hay.includes(qq);
-        });
-      }
-
-      emptyEl.style.display = list.length ? "none" : "block";
-
-      for (const item of list) {
-        entriesEl.appendChild(makeCard(item));
-      }
+    for (const item of list) {
+      entriesEl.appendChild(makeCard(item));
     }
+  }
 
-    qEl.addEventListener("input", render);
-    filterEl.addEventListener("input", render);
+  function autoOpenFromUrl() {
+    const params = new URLSearchParams(location.search);
+    const slug = params.get("open");
+    if (!slug) return;
 
-    (async function init() {
-      try {
-        await loadActivities();
-      } catch {
-        items = [];
-      }
-      await render();
-    })();
-  </script>
+    // Find the entry and click it after initial render
+    const card = entriesEl.querySelector(`.entry[data-slug="${CSS.escape(slug)}"]`);
+    const btn = card?.querySelector(".toggle");
+    if (btn) {
+      btn.click();
+      // optional: scroll into view
+      card.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
+
+  qEl.addEventListener("input", render);
+  filterEl.addEventListener("input", render);
+
+  (async function init() {
+    try {
+      await Promise.all([loadProjectsIndex(), loadCalendarIndex()]);
+    } catch {
+      items = [];
+    }
+    await render();
+    autoOpenFromUrl();
+  })();
+</script>
+
 </body>
 </html>

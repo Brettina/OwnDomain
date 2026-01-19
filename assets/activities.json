@@ -13,20 +13,30 @@
     {
       "type": "project",
       "slug": "eigene rebellenkollektion",
-      "title": "eigene rebellenkollektion",
-      "updated": "2026-01-19",
+      "title": "Rebellenkollektion",
+      "updated": "2026-01-15",
       "image": "/assets/projects/eigene rebellenkollektion/engl.png",
-      "excerpt": "ich mach tshirts und das ist der erklärungstext",
+      "excerpt": "Kreuzritter sind jetzt erst in?\r\nPff - die Kollektion gibts seit Anfang 2025 :}\r\nSchaut gern im Webshop vorbei!",
       "url": "/webpages/projects/eigene rebellenkollektion/",
       "contentUrl": ""
     },
     {
       "type": "project",
+      "slug": "janich",
+      "title": "Janich Demo",
+      "updated": "2026-01-15",
+      "image": "/assets/projects/janich/janich.png",
+      "excerpt": "demo anlässlich politischer gefangenen in D",
+      "url": "/webpages/projects/janich/",
+      "contentUrl": ""
+    },
+    {
+      "type": "project",
       "slug": "saftladen",
-      "title": "saftladen",
-      "updated": "2026-01-19",
+      "title": "Saftladen",
+      "updated": "2026-01-15",
       "image": "/assets/projects/saftladen/saftladen.png",
-      "excerpt": "zu himmelfahrt und pfingsten in sachsen",
+      "excerpt": "ich quetsche mir einen ab um euch frischen orangensaft zu bescheren.\r\nkommt gern vorbei - näheres dazu im kalender.",
       "url": "/webpages/projects/saftladen/",
       "contentUrl": ""
     },
@@ -39,6 +49,26 @@
       "excerpt": "this text is about the julius fuacher excerpt",
       "url": "/webpages/blog/julius-faucher-medaille/",
       "contentUrl": "/assets/content/blog/julius-faucher-medaille.html"
+    },
+    {
+      "type": "blog",
+      "slug": "400000",
+      "title": "400.000",
+      "updated": "2023-03-30",
+      "image": "/assets/blog/400000/400000.png",
+      "excerpt": "Endlich wieder ein Volksentscheid…\r\n… aber mit ganz anderem Ergebnis als erwartet!",
+      "url": "/webpages/blog/400000/",
+      "contentUrl": "/assets/content/blog/400000.html"
+    },
+    {
+      "type": "blog",
+      "slug": "lebensraum",
+      "title": "Neuer Lebensraum im Osten",
+      "updated": "2023-02-18",
+      "image": "/assets/blog/lebensraum/hinten.png",
+      "excerpt": "anlässlich des ukrainekriegs",
+      "url": "/webpages/blog/lebensraum/",
+      "contentUrl": "/assets/content/blog/lebensraum.html"
     }
   ]
 }

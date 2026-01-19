@@ -309,17 +309,37 @@
     </section>
 
     <!-- KALENDER (wieder drin) -->
-    <section class="section" aria-labelledby="calendar-title">
-      <h2 id="calendar-title">Kalender mit aktuellen Terminen</h2>
-      <p class="fineprint">
-        (Platzhalter) — Hier kannst du z.B. einen eingebetteten Kalender (iframe) oder eine Terminliste einfügen.
-      </p>
-      <div class="card" style="padding: 18px;">
-        <p class="fineprint" style="margin:0;">
-          Kalender-Einbindung kommt hier hin.
-        </p>
+<section class="section" aria-labelledby="calendar-title">
+  <div class="section-head">
+    <h2 id="calendar-title" style="margin:0;">Kalender</h2>
+    <p class="fineprint" style="margin:0;">Klick auf ein Datum → relevante Projekte / Termine</p>
+  </div>
+
+  <div class="card" style="padding: 16px;">
+    <div style="display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+      <div>
+        <strong id="cal-month-label">Monat</strong>
+        <div class="fineprint" id="cal-hint" style="margin-top:4px;">Termine werden geladen…</div>
       </div>
-    </section>
+      <div style="display:flex; gap:8px;">
+        <button class="button button-secondary" type="button" id="cal-prev">←</button>
+        <button class="button button-secondary" type="button" id="cal-today">Heute</button>
+        <button class="button button-secondary" type="button" id="cal-next">→</button>
+      </div>
+    </div>
+
+    <div id="cal-grid" style="margin-top:12px;"></div>
+
+    <div id="cal-panel" class="card" style="margin-top:12px; padding:12px; display:none;">
+      <div style="display:flex; justify-content:space-between; gap:12px; align-items:baseline;">
+        <strong id="cal-panel-title">Datum</strong>
+        <button class="button button-secondary" type="button" id="cal-panel-close">Schließen</button>
+      </div>
+      <div id="cal-panel-body" style="margin-top:10px;"></div>
+    </div>
+  </div>
+</section>
+
 
     <!-- PROFILE & PRÄSENZ (wieder drin) -->
     <section class="section" aria-labelledby="profiles">
@@ -403,6 +423,174 @@
   </footer>
 
   <script src="/assets/site.js" defer></script>
+
+  <script>
+(async function () {
+  const grid = document.getElementById("cal-grid");
+  if (!grid) return;
+
+  const monthLabel = document.getElementById("cal-month-label");
+  const hint = document.getElementById("cal-hint");
+  const panel = document.getElementById("cal-panel");
+  const panelTitle = document.getElementById("cal-panel-title");
+  const panelBody = document.getElementById("cal-panel-body");
+
+  const btnPrev = document.getElementById("cal-prev");
+  const btnNext = document.getElementById("cal-next");
+  const btnToday = document.getElementById("cal-today");
+  const btnClose = document.getElementById("cal-panel-close");
+
+  function ymd(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function startOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+  function endOfMonth(d) { return new Date(d.getFullYear(), d.getMonth() + 1, 0); }
+
+  function monthName(d) {
+    return d.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+  }
+
+  function escapeHtml(s) {
+    return (s || "").toString()
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+  }
+
+  let events = [];
+  let cursor = new Date();
+
+  try {
+    const res = await fetch("/assets/calendar-index.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("calendar-index.json missing");
+    const data = await res.json();
+    events = Array.isArray(data.items) ? data.items : [];
+    hint.textContent = events.length ? "Markierte Tage haben Termine." : "Noch keine Termine.";
+  } catch {
+    events = [];
+    hint.textContent = "Kalender konnte nicht geladen werden (calendar-index.json fehlt).";
+  }
+
+  const byDate = new Map();
+  for (const e of events) {
+    const k = String(e.date || "");
+    if (!k) continue;
+    if (!byDate.has(k)) byDate.set(k, []);
+    byDate.get(k).push(e);
+  }
+
+  function openPanel(dateStr) {
+    const list = byDate.get(dateStr) || [];
+    panelTitle.textContent = dateStr;
+
+    if (!list.length) {
+      panelBody.innerHTML = `<p class="fineprint" style="margin:0;">Keine Termine.</p>`;
+      panel.style.display = "block";
+      return;
+    }
+
+    // Build a list of events; each event links to a project slug if present.
+    const html = list.map(ev => {
+      const projects = Array.isArray(ev.projects) ? ev.projects : [];
+      const projectLinks = projects.map(slug => {
+        // this link will auto-open the project (we add this behavior below)
+        return `<a href="/webpages/projects/?open=${encodeURIComponent(slug)}#entries-title">${escapeHtml(slug)}</a>`;
+      }).join(", ");
+
+      const where = ev.where ? `<div class="fineprint">Ort: ${escapeHtml(ev.where)}</div>` : "";
+      const note = ev.note ? `<div class="fineprint">${escapeHtml(ev.note)}</div>` : "";
+
+      return `
+        <div class="card" style="padding:12px; margin-bottom:10px;">
+          <strong>${escapeHtml(ev.title || "Termin")}</strong>
+          ${where}
+          ${note}
+          ${projectLinks ? `<div class="fineprint" style="margin-top:6px;">Projekt: ${projectLinks}</div>` : ""}
+        </div>
+      `;
+    }).join("");
+
+    panelBody.innerHTML = html;
+    panel.style.display = "block";
+  }
+
+  function renderMonth() {
+    const first = startOfMonth(cursor);
+    const last = endOfMonth(cursor);
+
+    monthLabel.textContent = monthName(cursor);
+
+    // weekday header (Mon..Sun)
+    const header = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+    let html = `
+      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px;">
+        ${header.map(h => `<div class="fineprint" style="text-align:center; opacity:.8;">${h}</div>`).join("")}
+    `;
+
+    // align start: Monday-based
+    const startDay = (first.getDay() + 6) % 7; // Sun(0)->6, Mon(1)->0
+    const totalDays = last.getDate();
+
+    // empty cells
+    for (let i = 0; i < startDay; i++) {
+      html += `<div></div>`;
+    }
+
+    const todayStr = ymd(new Date());
+
+    for (let day = 1; day <= totalDays; day++) {
+      const d = new Date(cursor.getFullYear(), cursor.getMonth(), day);
+      const key = ymd(d);
+      const has = byDate.has(key);
+      const isToday = key === todayStr;
+
+      html += `
+        <button type="button"
+          data-date="${key}"
+          style="
+            padding:10px 8px;
+            border-radius:12px;
+            border:1px solid currentColor;
+            background:transparent;
+            cursor:pointer;
+            opacity:${has ? 1 : 0.65};
+            position:relative;
+            text-align:left;
+            min-height:44px;
+          "
+          aria-label="${key}${has ? " (Termine vorhanden)" : ""}"
+        >
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <strong>${day}</strong>
+            ${isToday ? `<span class="fineprint">heute</span>` : ``}
+          </div>
+          ${has ? `<div style="position:absolute; right:10px; bottom:10px; width:8px; height:8px; border-radius:999px; border:1px solid currentColor;"></div>` : ``}
+        </button>
+      `;
+    }
+
+    html += `</div>`;
+    grid.innerHTML = html;
+
+    grid.querySelectorAll("button[data-date]").forEach(btn => {
+      btn.addEventListener("click", () => openPanel(btn.dataset.date));
+    });
+  }
+
+  btnPrev?.addEventListener("click", () => { cursor = new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1); renderMonth(); });
+  btnNext?.addEventListener("click", () => { cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1); renderMonth(); });
+  btnToday?.addEventListener("click", () => { cursor = new Date(); renderMonth(); });
+  btnClose?.addEventListener("click", () => { panel.style.display = "none"; });
+
+  renderMonth();
+})();
+</script>
+
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
 

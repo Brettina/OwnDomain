@@ -34,6 +34,38 @@ const OUT_ACTIVITIES = path.join(ASSETS, "activities-index.json");
 const IMAGE_EXT = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif"]);
 const TEXT_EXT = new Set([".txt", ".md", ".html"]);
 
+const CALENDAR_DIR = path.join(ASSETS, "calendar");
+const OUT_CALENDAR = path.join(ASSETS, "calendar-index.json");
+
+function buildCalendarIndex() {
+  if (!isDir(CALENDAR_DIR)) return { generatedAt: new Date().toISOString(), items: [] };
+
+  const files = fs.readdirSync(CALENDAR_DIR)
+    .filter(f => f.toLowerCase().endsWith(".json"));
+
+  const items = [];
+  for (const f of files) {
+    const p = path.join(CALENDAR_DIR, f);
+    const ev = safeReadJson(p);
+    if (!ev || !ev.date) continue;
+
+    items.push({
+      id: ev.id || f.replace(/\.json$/i, ""),
+      date: String(ev.date || "").slice(0, 10),
+      title: ev.title || "Termin",
+      projects: Array.isArray(ev.projects) ? ev.projects : [],
+      tags: Array.isArray(ev.tags) ? ev.tags : [],
+      where: ev.where || "",
+      note: ev.note || ""
+    });
+  }
+
+  // sort ascending by date (calendar view), but you can also sort desc for “next up”
+  items.sort((a, b) => String(a.date).localeCompare(String(b.date)));
+
+  return { generatedAt: new Date().toISOString(), items };
+}
+
 function isDir(p) {
   try {
     return fs.statSync(p).isDirectory();
@@ -216,10 +248,14 @@ function main() {
   const blogIndex = buildBlogIndex();
   const projectsIndex = buildProjectsIndex();
   const activitiesIndex = mergeActivities(blogIndex, projectsIndex);
+  const calendarIndex = buildCalendarIndex();
 
   writeJson(OUT_BLOG, blogIndex);
   writeJson(OUT_PROJECTS, projectsIndex);
   writeJson(OUT_ACTIVITIES, activitiesIndex);
+  writeJson(OUT_CALENDAR, calendarIndex);
 }
 
 main();
+
+

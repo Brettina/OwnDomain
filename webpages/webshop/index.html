@@ -5,20 +5,163 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Webshop — Weichware Lohr</title>
 
-  <meta name="description" content="Webshop — Bestellungen per E-Mail-Workflow." />
+  <meta name="description" content="Webshop — kleine Serien & Prototypen. Bestellung per E-Mail." />
   <link rel="stylesheet" href="/assets/styles.css" />
   <link rel="icon" href="/img/webicon.png" type="image/png" />
   <link rel="apple-touch-icon" href="/img/webicon.png" />
   <meta name="color-scheme" content="light dark" />
 
-  <!-- Keep Leaflet only if your current shop flow uses map/pickup UI -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="" />
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer crossorigin=""></script>
+  <style>
+    /* Webshop-local layout (keeps your global styles intact) */
+    .shop-head {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .shop-controls {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr;
+      align-items: end;
+    }
+    @media (min-width: 900px) {
+      .shop-controls {
+        grid-template-columns: 1.2fr 0.8fr 0.8fr;
+      }
+    }
 
-  <script src="/assets/site.js" defer></script>
+    .shop-search {
+      width: 100%;
+    }
+
+    .shop-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    @media (min-width: 720px) {
+      .shop-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (min-width: 1100px) {
+      .shop-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    .shop-card {
+      overflow: hidden;
+      border-radius: 16px;
+    }
+    .shop-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+    .shop-body {
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .shop-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .shop-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.85em;
+      border: 1px solid currentColor;
+      opacity: 0.85;
+      white-space: nowrap;
+    }
+
+    .shop-row {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+    }
+    .shop-row .field { margin: 0; }
+    .shop-row input, .shop-row select {
+      width: 100%;
+    }
+
+    .shop-add {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .cart {
+      margin-top: 18px;
+    }
+    .cart-items {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .cart-item {
+      display: grid;
+      gap: 8px;
+      padding: 12px;
+      border-radius: 14px;
+    }
+    .cart-item-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .cart-item-meta {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      opacity: 0.9;
+    }
+    .cart-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    .btn-mini {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .checkout-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 900px) {
+      .checkout-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .empty {
+      opacity: 0.8;
+      padding: 14px;
+      border-radius: 14px;
+    }
+  </style>
 </head>
 
-<body class="page-webshop" data-page="webshop">
+<body class="page-webshop">
   <a class="skip-link" href="#main">Zum Inhalt springen</a>
 
   <!-- same nav as index -->
@@ -27,90 +170,147 @@
       <a class="brand" href="/">Bettina Lohr, M Sc.</a>
       <ul class="nav-list">
         <li><a href="/webpages/about/">Über mich</a></li>
-        <li><a href="/webpages/projects/">Aktuelle Projekte</a></li>
+        <li><a href="/webpages/projects/">Projekte</a></li>
         <li><a href="/webpages/leistungen/">Leistungen</a></li>
         <li><a href="/webpages/webshop/" aria-current="page">Webshop</a></li>
         <li><a href="/webpages/blog/">Blog</a></li>
-        <li><a href="/webpages/projects-archive/">Vergangene Projekte</a></li>
         <li><a href="/regulation/imprint/">Impressum</a></li>
       </ul>
     </nav>
   </header>
 
   <main id="main" class="container">
-    <header class="page-hero">
+    <header class="page-hero shop-head">
       <h1>Webshop</h1>
-      <p class="lead">
-        Kleine Serien / Prototypen. Keine Zahlung auf der Website — Bestellungen werden als E-Mail-Entwurf erstellt.
+      <p class="lead" style="margin:0;">
+        Kleine Serien / Prototypen. Keine Zahlung auf der Website — du stellst hier eine Auswahl zusammen und öffnest einen E-Mail-Entwurf.
       </p>
 
-      <div class="note-block" style="margin-top:14px;">
-        <h2 style="margin:0 0 8px; font-size:1.05rem;">Hinweise</h2>
+      <div class="note-block" style="margin-top:12px;">
         <p class="fineprint" style="margin:0;">
-          Bestellung = Reservierung / Anfrage. Abholung nach Vereinbarung; ich bestätige per Mail.
+          Bestellung = Anfrage/Reservierung. Ich bestätige per Mail. Sonderwünsche (Material/Farbe) einfach in die Notizen.
         </p>
       </div>
     </header>
 
-    <!-- SHOP -->
-    <section class="section" data-store-section aria-labelledby="store">
-      <h2 id="store">Produkte</h2>
-      <div data-store></div>
-      <p class="fineprint" style="margin-top:10px;">
-        Tipp: Wenn du eine Sondervariante willst (Farbe/Material), wähle irgendeine Variante und schreib’s in die Notizen.
-      </p>
+    <section class="section" aria-labelledby="shop">
+      <div class="section-head">
+        <h2 id="shop" style="margin:0;">Produkte</h2>
+        <p class="fineprint" style="margin:0;">
+          Quelle: <code>/assets/products.json</code> (generiert aus <code>/assets/shop/*</code>)
+        </p>
+      </div>
+
+      <div class="shop-controls" style="margin-top:12px;">
+        <div class="field">
+          <label for="q">Suche</label>
+          <input id="q" class="shop-search" type="search" placeholder="z.B. bademantel, socken, mythologie …" />
+        </div>
+
+        <div class="field">
+          <label for="status">Status</label>
+          <select id="status">
+            <option value="">Alle</option>
+            <option value="verfügbar">verfügbar</option>
+            <option value="kleine auflage">kleine auflage</option>
+            <option value="made-to-order">made-to-order</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="sort">Sortierung</label>
+          <select id="sort">
+            <option value="name">Name (A–Z)</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="shop-grid" class="shop-grid" aria-live="polite"></div>
+
+      <div id="shop-empty" class="card empty" style="display:none; margin-top:14px;">
+        <p class="fineprint" style="margin:0;">
+          Keine Treffer. (Falls alles leer ist: prüfe, ob <code>/assets/products.json</code> auf dem Server existiert und Produkte enthält.)
+        </p>
+      </div>
     </section>
 
-    <!-- CONTACT (reused store/contact workflow) -->
-    <section class="section" aria-labelledby="contact">
-      <h2 id="contact">Kontakt</h2>
-
-      <p class="fineprint">
-        E-Mail: <span data-email></span>
+    <section class="section cart" aria-labelledby="cart">
+      <h2 id="cart">Deine Auswahl</h2>
+      <p class="fineprint" style="margin-top:6px;">
+        Du kannst mehrere Produkte sammeln und dann eine einzige Anfrage schicken.
       </p>
 
-      <form class="form" data-contact-form>
-        <div class="field" style="position:absolute; left:-9999px;" aria-hidden="true">
-          <label for="company-webshop-contact">Company</label>
-          <input id="company-webshop-contact" name="company" autocomplete="off" tabindex="-1" />
+      <div id="cart-items" class="cart-items"></div>
+
+      <div id="cart-empty" class="card empty" style="margin-top:12px;">
+        <p class="fineprint" style="margin:0;">Noch nichts ausgewählt. Klick bei einem Produkt auf „Hinzufügen“.</p>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="checkout">
+      <h2 id="checkout">Anfrage senden</h2>
+
+      <div class="checkout-grid">
+        <div class="card" style="padding:14px;">
+          <h3 style="margin-top:0;">Kontakt</h3>
+
+          <form id="checkout-form" class="form">
+            <div class="field" style="position:absolute; left:-9999px;" aria-hidden="true">
+              <label for="company-webshop">Company</label>
+              <input id="company-webshop" name="company" autocomplete="off" tabindex="-1" />
+            </div>
+
+            <div class="field">
+              <label for="name">Name</label>
+              <input id="name" name="name" autocomplete="name" required />
+            </div>
+
+            <div class="field">
+              <label for="email">E-Mail</label>
+              <input id="email" name="email" type="email" autocomplete="email" required />
+            </div>
+
+            <div class="field">
+              <label for="notes">Notizen</label>
+              <textarea id="notes" name="notes" rows="4" placeholder="Sonderwünsche, Alternativ-Zeiten, Material/Farbe, etc."></textarea>
+            </div>
+
+            <div class="field checkbox">
+              <input id="consent" name="consent" type="checkbox" required />
+              <label for="consent">Ich stimme zu, dass meine Daten zur Beantwortung meiner Anfrage verwendet werden.</label>
+            </div>
+
+            <p class="fineprint">
+              Siehe <a href="/regulation/privacy/">Datenschutz</a>, <a href="/regulation/cookies/">Cookies</a>, <a href="/regulation/imprint/">Impressum</a>.
+            </p>
+
+            <button class="button" type="submit" id="send-btn" disabled>E-Mail-Entwurf öffnen</button>
+            <p class="fineprint" id="send-hint" style="margin-top:10px; opacity:0.9;"></p>
+          </form>
         </div>
 
-        <div class="field">
-          <label for="name">Name</label>
-          <input id="name" name="name" autocomplete="name" required />
+        <div class="card" style="padding:14px;">
+          <h3 style="margin-top:0;">Abholung (falls nötig)</h3>
+          <p class="fineprint" style="margin-top:6px;">
+            Nur relevant, wenn ein ausgewählter Artikel Abholung erfordert.
+          </p>
+
+          <div class="field">
+            <label for="pickup-when">Wunschzeit</label>
+            <input id="pickup-when" type="datetime-local" />
+          </div>
+
+          <div class="field">
+            <label for="pickup-where">Ort (kurz beschreiben)</label>
+            <input id="pickup-where" placeholder="z.B. Lohr Zentrum / Würzburg Hbf / Parkplatz …" />
+          </div>
+
+          <div class="note-block" id="pickup-hint" style="display:none; margin-top:12px;">
+            <p class="fineprint" style="margin:0;" id="pickup-hint-text"></p>
+          </div>
         </div>
-
-        <div class="field">
-          <label for="email">E-Mail</label>
-          <input id="email" name="email" type="email" autocomplete="email" required />
-        </div>
-
-        <div class="field">
-          <label for="topic">Thema</label>
-          <select id="topic" name="topic" required></select>
-        </div>
-
-        <div class="field">
-          <label for="message">Nachricht</label>
-          <textarea
-            id="message"
-            name="message"
-            rows="6"
-            required
-            placeholder="Wenn es Shop ist: Artikel + Menge/Variante + Abholort + Wunschdatum."></textarea>
-        </div>
-
-        <div class="field checkbox">
-          <input id="consent" name="consent" type="checkbox" required />
-          <label for="consent">Ich stimme zu, dass meine Daten zur Beantwortung meiner Anfrage verwendet werden.</label>
-        </div>
-
-        <p class="fineprint">
-          Siehe <a href="/regulation/privacy/">Datenschutz</a>, <a href="/regulation/cookies/">Cookies</a>, <a href="/regulation/imprint/">Impressum</a>.
-        </p>
-
-        <button class="button" type="submit">E-Mail-Entwurf öffnen</button>
-      </form>
+      </div>
     </section>
   </main>
 
@@ -125,6 +325,360 @@
 
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    // If you want, later read this from pages.json – for now: keep it explicit and robust.
+    const CONTACT_EMAIL = "anfrage@weichware-lohr.de";
+
+    const $ = (s) => document.querySelector(s);
+    const grid = $("#shop-grid");
+    const empty = $("#shop-empty");
+
+    const q = $("#q");
+    const status = $("#status");
+    const sort = $("#sort");
+
+    const cartWrap = $("#cart-items");
+    const cartEmpty = $("#cart-empty");
+
+    const form = $("#checkout-form");
+    const sendBtn = $("#send-btn");
+    const sendHint = $("#send-hint");
+
+    const pickupWhen = $("#pickup-when");
+    const pickupWhere = $("#pickup-where");
+    const pickupHint = $("#pickup-hint");
+    const pickupHintText = $("#pickup-hint-text");
+
+    let products = [];
+    let cart = []; // {id, name, variant, qty, unit, pickupRequired}
+
+    function normalize(s) { return (s || "").toString().toLowerCase().trim(); }
+
+    function compare(a, b) { return a < b ? -1 : a > b ? 1 : 0; }
+
+    function getFilteredProducts() {
+      const qq = normalize(q.value);
+      const st = normalize(status.value);
+
+      let list = products.slice();
+
+      if (qq) {
+        list = list.filter(p => {
+          const hay = normalize(p.name) + " " + normalize(p.description) + " " + normalize(p.id);
+          return hay.includes(qq);
+        });
+      }
+      if (st) {
+        list = list.filter(p => normalize(p.status) === st);
+      }
+
+      const mode = sort.value;
+      list.sort((a, b) => {
+        if (mode === "status") return compare(normalize(a.status), normalize(b.status)) || compare(normalize(a.name), normalize(b.name));
+        return compare(normalize(a.name), normalize(b.name));
+      });
+
+      return list;
+    }
+
+    function renderProducts() {
+      const list = getFilteredProducts();
+      grid.innerHTML = "";
+
+      empty.style.display = list.length ? "none" : "block";
+
+      list.forEach(p => {
+        const card = document.createElement("article");
+        card.className = "card shop-card";
+
+        const img = document.createElement("img");
+        img.className = "shop-img";
+        img.loading = "lazy";
+        img.alt = p.name || p.id;
+        img.src = p.image || "/img/webicon.png";
+
+        const body = document.createElement("div");
+        body.className = "shop-body";
+
+        const top = document.createElement("div");
+        top.className = "shop-topline";
+
+        const h = document.createElement("h3");
+        h.style.margin = "0";
+        h.textContent = p.name || p.id;
+
+        const badge = document.createElement("span");
+        badge.className = "shop-badge";
+        badge.textContent = p.status || "—";
+
+        top.appendChild(h);
+        top.appendChild(badge);
+
+        const desc = document.createElement("p");
+        desc.className = "fineprint";
+        desc.style.margin = "0";
+        desc.textContent = p.description || "";
+
+        const row = document.createElement("div");
+        row.className = "shop-row";
+
+        const variantField = document.createElement("div");
+        variantField.className = "field";
+        const vLabel = document.createElement("label");
+        vLabel.textContent = "Variante";
+        const vSel = document.createElement("select");
+        (Array.isArray(p.variants) && p.variants.length ? p.variants : ["Standard"]).forEach(v => {
+          const opt = document.createElement("option");
+          opt.value = v;
+          opt.textContent = v;
+          vSel.appendChild(opt);
+        });
+        variantField.appendChild(vLabel);
+        variantField.appendChild(vSel);
+
+        const qtyField = document.createElement("div");
+        qtyField.className = "field";
+        const qLabel = document.createElement("label");
+        qLabel.textContent = "Menge";
+        const qIn = document.createElement("input");
+        qIn.type = "number";
+        qIn.min = "1";
+        qIn.max = "50";
+        qIn.value = "1";
+        qtyField.appendChild(qLabel);
+        qtyField.appendChild(qIn);
+
+        row.appendChild(variantField);
+        row.appendChild(qtyField);
+
+        const addRow = document.createElement("div");
+        addRow.className = "shop-add";
+
+        const pickNote = document.createElement("span");
+        pickNote.className = "fineprint";
+        pickNote.style.margin = "0";
+        pickNote.textContent = p.pickupRequired ? "Abholung erforderlich" : (p.unit ? `Einheit: ${p.unit}` : "");
+
+        const add = document.createElement("button");
+        add.type = "button";
+        add.className = "button button-secondary";
+        add.textContent = "Hinzufügen";
+
+        add.addEventListener("click", () => {
+          const variant = vSel.value || "Standard";
+          const qty = Math.max(1, parseInt(qIn.value || "1", 10));
+
+          // merge same product+variant
+          const existing = cart.find(x => x.id === p.id && x.variant === variant);
+          if (existing) existing.qty += qty;
+          else cart.push({
+            id: p.id,
+            name: p.name || p.id,
+            variant,
+            qty,
+            unit: p.unit || "Stück",
+            pickupRequired: !!p.pickupRequired
+          });
+
+          renderCart();
+          syncCheckoutState();
+          document.getElementById("cart").scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+
+        addRow.appendChild(pickNote);
+        addRow.appendChild(add);
+
+        body.appendChild(top);
+        body.appendChild(desc);
+        body.appendChild(row);
+        body.appendChild(addRow);
+
+        card.appendChild(img);
+        card.appendChild(body);
+        grid.appendChild(card);
+      });
+    }
+
+    function renderCart() {
+      cartWrap.innerHTML = "";
+
+      cartEmpty.style.display = cart.length ? "none" : "block";
+
+      cart.forEach((it, idx) => {
+        const box = document.createElement("div");
+        box.className = "card cart-item";
+
+        const top = document.createElement("div");
+        top.className = "cart-item-top";
+
+        const title = document.createElement("strong");
+        title.textContent = it.name;
+
+        const meta = document.createElement("div");
+        meta.className = "cart-item-meta";
+        meta.appendChild(document.createTextNode(`${it.qty} ${it.unit}`));
+        meta.appendChild(document.createTextNode("•"));
+        meta.appendChild(document.createTextNode(`Variante: ${it.variant}`));
+        if (it.pickupRequired) {
+          meta.appendChild(document.createTextNode("•"));
+          meta.appendChild(document.createTextNode("Abholung erforderlich"));
+        }
+
+        top.appendChild(title);
+        top.appendChild(meta);
+
+        const actions = document.createElement("div");
+        actions.className = "cart-actions";
+
+        const minus = document.createElement("button");
+        minus.className = "btn-mini";
+        minus.type = "button";
+        minus.textContent = "−";
+        minus.addEventListener("click", () => {
+          it.qty = Math.max(1, it.qty - 1);
+          renderCart();
+          syncCheckoutState();
+        });
+
+        const plus = document.createElement("button");
+        plus.className = "btn-mini";
+        plus.type = "button";
+        plus.textContent = "+";
+        plus.addEventListener("click", () => {
+          it.qty = Math.min(50, it.qty + 1);
+          renderCart();
+          syncCheckoutState();
+        });
+
+        const remove = document.createElement("button");
+        remove.className = "btn-mini";
+        remove.type = "button";
+        remove.textContent = "Entfernen";
+        remove.addEventListener("click", () => {
+          cart.splice(idx, 1);
+          renderCart();
+          syncCheckoutState();
+        });
+
+        actions.appendChild(minus);
+        actions.appendChild(plus);
+        actions.appendChild(remove);
+
+        box.appendChild(top);
+        box.appendChild(actions);
+
+        cartWrap.appendChild(box);
+      });
+
+      // pickup hint visibility
+      const needsPickup = cart.some(x => x.pickupRequired);
+      pickupHint.style.display = needsPickup ? "block" : "none";
+      pickupHintText.textContent = needsPickup
+        ? "Mindestens ein ausgewählter Artikel erfordert Abholung. Bitte Wunschzeit und Ort ergänzen."
+        : "";
+    }
+
+    function syncCheckoutState() {
+      const ok = cart.length > 0;
+      sendBtn.disabled = !ok;
+
+      if (!ok) {
+        sendHint.textContent = "Füge mindestens ein Produkt hinzu, dann kannst du den E-Mail-Entwurf öffnen.";
+        return;
+      }
+
+      const needsPickup = cart.some(x => x.pickupRequired);
+      sendHint.textContent = needsPickup
+        ? "Hinweis: Für Abholung bitte Wunschzeit & Ort ergänzen."
+        : "Du kannst jetzt den E-Mail-Entwurf öffnen.";
+    }
+
+    function buildEmail(fd) {
+      const name = (fd.get("name") || "").toString().trim();
+      const email = (fd.get("email") || "").toString().trim();
+      const notes = (fd.get("notes") || "").toString().trim();
+
+      const needsPickup = cart.some(x => x.pickupRequired);
+      const when = (pickupWhen.value || "").trim();
+      const where = (pickupWhere.value || "").trim();
+
+      const lines = [];
+      lines.push("Webshop Anfrage");
+      lines.push("");
+      lines.push(`Name: ${name}`);
+      lines.push(`E-Mail: ${email}`);
+      lines.push("");
+
+      lines.push("Auswahl:");
+      cart.forEach(it => {
+        lines.push(`- ${it.name} — ${it.qty} ${it.unit} — Variante: ${it.variant}${it.pickupRequired ? " (Abholung erforderlich)" : ""}`);
+      });
+
+      if (needsPickup) {
+        lines.push("");
+        lines.push("Abholung (Wunsch):");
+        lines.push(`- Zeitpunkt: ${when || "—"}`);
+        lines.push(`- Ort: ${where || "—"}`);
+      }
+
+      if (notes) {
+        lines.push("");
+        lines.push("Notizen:");
+        lines.push(notes);
+      }
+
+      const subject = `[webshop] Anfrage — ${cart.length} Position(en)`;
+      const body = lines.join("\n");
+
+      return { subject, body };
+    }
+
+    function openMailto({ subject, body }) {
+      const url =
+        `mailto:${CONTACT_EMAIL}` +
+        `?subject=${encodeURIComponent(subject)}` +
+        `&body=${encodeURIComponent(body)}`;
+      window.location.href = url;
+    }
+
+    async function loadProducts() {
+      const res = await fetch("/assets/products.json", { cache: "no-store" });
+      if (!res.ok) throw new Error("products.json missing");
+      const data = await res.json();
+      products = Array.isArray(data.products) ? data.products : [];
+    }
+
+    // Wire controls
+    [q, status, sort].forEach(el => el.addEventListener("input", renderProducts));
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      // honeypot
+      const honey = form.querySelector('input[name="company"]');
+      if (honey && honey.value.trim() !== "") return;
+
+      if (!cart.length) return;
+
+      const fd = new FormData(form);
+      const consent = form.querySelector("#consent");
+      if (consent && !consent.checked) return;
+
+      const { subject, body } = buildEmail(fd);
+      openMailto({ subject, body });
+    });
+
+    // init
+    (async function init() {
+      try {
+        await loadProducts();
+      } catch (e) {
+        products = [];
+      }
+      renderProducts();
+      renderCart();
+      syncCheckoutState();
+    })();
   </script>
 </body>
 </html>

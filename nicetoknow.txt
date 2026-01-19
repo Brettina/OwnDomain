@@ -1,0 +1,2 @@
+node .\assets\tools\generate-activities.mjs
+node .\assets\tools\generate-products.mjs

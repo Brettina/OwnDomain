@@ -2,78 +2,112 @@
   "products": [
     {
       "id": "bademantel",
-      "page": "leistungen",
+      "page": "webshop",
       "name": "Bademantel",
       "description": "Flauschiger Bademantel aus der Saftladen-Ecke. Kleine Auflage.",
-      "image": "/img/bademantel.png",
+      "image": "/assets/shop/bademantel/bademantel.png",
       "status": "verfügbar",
-      "variants": ["S", "M", "L", "XL"],
-      "unit": "Stück"
-    },
-    {
-      "id": "socken",
-      "page": "leistungen",
-      "name": "Socken",
-      "description": "Alltagstauglich, aber mit leichtem Saftladen-Spin. Kleine Serie.",
-      "image": "/img/socken.png",
-      "status": "verfügbar",
-      "variants": ["36–38", "39–41", "42–44", "45–47"],
-      "unit": "Paar"
-    },
-    {
-      "id": "partner",
-      "page": "leistungen",
-      "name": "Partner",
-      "description": "Motiv-Print (Experiment). Je nach Batch etwas anders.",
-      "image": "/img/partner.png",
-      "status": "kleine auflage",
-      "variants": ["A", "B"],
-      "unit": "Stück"
-    },
-    {
-      "id": "mythologie",
-      "page": "leistungen",
-      "name": "Mythologie",
-      "description": "Motiv-Print / Patch-Artwork. Prototypencharakter.",
-      "image": "/img/mythologie.png",
-      "status": "made-to-order",
-      "variants": ["Standard"],
-      "unit": "Stück"
+      "variants": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "unit": "Stück",
+      "pickupRequired": true,
+      "decorateJuice": false
     },
     {
       "id": "engl",
-      "page": "leistungen",
-      "name": "ENGL",
-      "description": "Motiv-Print (kleine Serie).",
-      "image": "/img/engl.png",
+      "page": "webshop",
+      "name": "Bademantel",
+      "description": "engl Kleine Auflage.",
+      "image": "/assets/shop/engl/engl.png",
       "status": "verfügbar",
-      "variants": ["Standard"],
-      "unit": "Stück"
+      "variants": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "unit": "Stück",
+      "pickupRequired": true,
+      "decorateJuice": false
     },
     {
-      "id": "saftladen",
-      "page": "hipster",
-      "name": "Saftladen",
-      "description": "Saftladen-Produktbild wird auf der Seite leicht „juiceiger“ variiert (ohne neue Datei).",
-      "image": "/img/saftladen.png",
+      "id": "mythologie",
+      "page": "webshop",
+      "name": "Bademantel",
+      "description": "für realisten. Kleine Auflage.",
+      "image": "/assets/shop/mythologie/mythologie.png",
       "status": "verfügbar",
-      "variants": ["Standard"],
+      "variants": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
       "unit": "Stück",
-        "pickupRequired": true,
-      "decorateJuice": true
+      "pickupRequired": true,
+      "decorateJuice": false
+    },
+    {
+      "id": "partner",
+      "page": "webshop",
+      "name": "Bademantel",
+      "description": "für schizophrene. Kleine Auflage.",
+      "image": "/assets/shop/partner/partner.png",
+      "status": "verfügbar",
+      "variants": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "unit": "Stück",
+      "pickupRequired": true,
+      "decorateJuice": false
+    },
+    {
+      "id": "socken",
+      "page": "webshop",
+      "name": "Bademantel",
+      "description": "für schizos. Kleine Auflage.",
+      "image": "/assets/shop/socken/socken.png",
+      "status": "verfügbar",
+      "variants": [
+        "S",
+        "M",
+        "L",
+        "XL"
+      ],
+      "unit": "Stück",
+      "pickupRequired": true,
+      "decorateJuice": false
     }
   ],
-
   "order": {
     "pickupHint": "Bestellung = Reservierung zur Abholung. Du wählst Ort + Zeitpunkt, ich bestätige per Mail.",
-    "defaultCenter": { "lat": 49.989, "lng": 9.578 },
+    "defaultCenter": {
+      "lat": 49.989,
+      "lng": 9.578
+    },
     "locations": [
-  { "label": "Lohr Zentrum", "lat": 49.989, "lng": 9.578 },
-
-  { "label": "Niederwürschnitz – Alte Ziegelei (Nach den Steegen 2)", "lat": 50.7357161, "lng": 12.7686627 },
-
-  { "label": "Chemnitz – Stadtpark", "lat": 50.8087278, "lng": 12.9012 }
-]
-
+      {
+        "label": "Lohr Zentrum",
+        "lat": 49.989,
+        "lng": 9.578
+      },
+      {
+        "label": "Niederwürschnitz – Alte Ziegelei (Nach den Steegen 2)",
+        "lat": 50.7357161,
+        "lng": 12.7686627
+      },
+      {
+        "label": "Chemnitz – Stadtpark",
+        "lat": 50.8087278,
+        "lng": 12.9012
+      }
+    ]
   }
 }

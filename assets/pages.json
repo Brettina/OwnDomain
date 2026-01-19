@@ -299,6 +299,16 @@
       ["other", "Other"]
     ]
 },
+"webshop": {
+  "email": "dein@email.de",
+  "contactTopicOptions": [
+    ["shop", "Shop / Bestellung"],
+    ["question", "Frage"],
+    ["other", "Sonstiges"]
+  ],
+  "scopeNote": ["Bestellungen erfolgen als Anfrage/Reservierung per E-Mail."]
+}
+,
 "hipster": {
   "title": "Hipster",
   "lead": "Games & Apps, Textiles, Open-Source-Hardware, Prototypen — und die Saftladen-Ecke, wo Ideen zu Dingen werden.",

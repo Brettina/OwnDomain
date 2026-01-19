@@ -1,20 +1,44 @@
 {
   "items": [
     {
-      "type": "project",
-      "date": "2026-01-12",
-      "title": "Unser Standpunkt",
-      "excerpt": "Kurztext…",
-      "image": "/img/mythologie.png",
-      "url": "/webpages/projects/unser-standpunkt/"
+      "type": "blog",
+      "slug": "ef-konferenz 2026",
+      "title": "ef-konferenz 2026",
+      "updated": "2026-01-19",
+      "image": "/assets/blog/ef-konferenz 2026/konf.jpg",
+      "excerpt": "this text is about the ef konferenz excerpt",
+      "url": "/webpages/blog/ef-konferenz 2026/",
+      "contentUrl": "/assets/content/blog/ef-konferenz 2026.html"
     },
     {
       "type": "blog",
-      "date": "2026-01-09",
-      "title": "Daten, Praxis, Verantwortung",
-      "excerpt": "Kurztext…",
-      "image": "/img/concept.png",
-      "url": "/webpages/blog/daten-praxis-verantwortung/"
+      "slug": "julius-faucher-medaille",
+      "title": "julius-faucher-medaille",
+      "updated": "2026-01-19",
+      "image": "/assets/blog/julius-faucher-medaille/ef.jpg",
+      "excerpt": "this text is about the julius fuacher excerpt",
+      "url": "/webpages/blog/julius-faucher-medaille/",
+      "contentUrl": "/assets/content/blog/julius-faucher-medaille.html"
+    },
+    {
+      "type": "project",
+      "slug": "eigene rebellenkollektion",
+      "title": "eigene rebellenkollektion",
+      "updated": "2026-01-19",
+      "image": "/assets/projects/eigene rebellenkollektion/engl.png",
+      "excerpt": "ich mach tshirts und das ist der erklärungstext",
+      "url": "/webpages/projects/eigene rebellenkollektion/",
+      "contentUrl": ""
+    },
+    {
+      "type": "project",
+      "slug": "saftladen",
+      "title": "saftladen",
+      "updated": "2026-01-19",
+      "image": "/assets/projects/saftladen/saftladen.png",
+      "excerpt": "zu himmelfahrt und pfingsten in sachsen",
+      "url": "/webpages/projects/saftladen/",
+      "contentUrl": ""
     }
   ]
 }

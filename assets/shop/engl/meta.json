@@ -1,0 +1,8 @@
+{
+  "name": "Bademantel",
+  "description": "engl Kleine Auflage.",
+  "status": "verfügbar",
+  "variants": ["S", "M", "L", "XL"],
+  "unit": "Stück",
+  "pickupRequired": true
+}

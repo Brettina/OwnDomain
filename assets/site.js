@@ -229,7 +229,12 @@ function renderStore(store, target, { pageKey, productsData } = {}) {
 
   const productsAll = (productsData && productsData.products) ? productsData.products : [];
   const orderCfg = (productsData && productsData.order) ? productsData.order : null;
-  const productsForPage = productsAll.filter(p => (p.page || "") === pageKey);
+const productsFromPages =
+  (store && Array.isArray(store.productsFromPages) && store.productsFromPages.length)
+    ? store.productsFromPages
+    : [pageKey];
+
+const productsForPage = productsAll.filter(p => productsFromPages.includes(p.page || ""));
 
   // Intro text
   if (store.intro) target.appendChild(el("p", { class: "fineprint", text: store.intro }));

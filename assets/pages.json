@@ -327,7 +327,9 @@
   ],
 
   "store": {
-    "intro": "Webshop (Abholung nach Vereinbarung) — Produkt auswählen, Menge/Variante angeben, Ort + Zeitpunkt wählen und eine E-Mail-Anfrage öffnen."
+  "intro": "Katalog — keine Zahlung auf dieser Website. Bestellungen öffnen eine E-Mail-Anfrage.",
+    "productsFromPages": ["hipster"]
+
   },
 
   "timeline": [

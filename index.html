@@ -443,7 +443,7 @@
       const demoProjects = [
         {
           type: "project",
-          lastEdited: "2026-01-12",
+          updated: "2026-01-12",
           title: "Projekt-Titel (zuletzt bearbeitet)",
           excerpt: "Kurztext / Status / Teaser (nur beim größten, aktuellen Projekt).",
           image: "/img/concept.png",
@@ -451,7 +451,7 @@
         },
         {
           type: "project",
-          lastEdited: "2026-01-09",
+          updated: "2026-01-12",
           title: "Zweites Projekt",
           excerpt: "Kurztext für zweites Projekt.",
           image: "/img/concept_leistungen.png",
@@ -459,7 +459,7 @@
         },
         {
           type: "project",
-          lastEdited: "2026-01-05",
+          updated: "2026-01-12",
           title: "Drittes Projekt",
           excerpt: "Kurztext für drittes Projekt.",
           image: "/img/mythologie.png",
@@ -467,7 +467,7 @@
         }
       ];
 
-      let items = demoProjects.slice(); // replace with loaded list later
+      let items = [];
       let index = 0;
 
       function mod(n, m) {
@@ -497,13 +497,12 @@
         centerExcerpt.textContent = current.excerpt || "";
 
         if (centerTime) {
-          centerTime.dateTime = current.lastEdited;
-          const d = new Date(current.lastEdited);
-          // simple locale formatting without dependencies
-          centerTime.textContent = isNaN(d.getTime())
-            ? current.lastEdited
-            : d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" });
-        }
+          centerTime.dateTime = current.updated || "";
+const d = new Date(current.updated || "");
+centerTime.textContent = isNaN(d.getTime())
+  ? (current.updated || "")
+  : d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" });
+    }
 
         if (centerPrimaryLink) centerPrimaryLink.href = current.url || "/webpages/projects/";
 
@@ -573,7 +572,28 @@
 
       root.addEventListener("pointercancel", () => { isPointerDown = false; });
 
-      render();
+async function loadProjects() {
+  try {
+    const res = await fetch("/assets/activities.json", { cache: "no-store" });
+    if (!res.ok) throw new Error("activities.json missing");
+    const data = await res.json();
+
+    const projects = (data.items || [])
+      .filter(x => x.type === "project")
+      .sort((a, b) => String(b.updated).localeCompare(String(a.updated)))
+      .slice(0, 3);
+
+    items = projects.length ? projects : demoProjects.slice(0, 3);
+    index = 0;
+    render();
+  } catch (e) {
+    items = demoProjects.slice(0, 3);
+    index = 0;
+    render();
+  }
+}
+
+loadProjects();
     })();
   </script>
 </body>

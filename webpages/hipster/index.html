@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="/assets/styles.css" />
   <link rel="icon" href="/img/webicon.png" type="image/png" />
 <link rel="apple-touch-icon" href="/img/webicon.png" />
->
+
   <meta name="color-scheme" content="light dark" />
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer crossorigin=""></script>
@@ -19,8 +19,32 @@
 <body class="page-hipster" data-page="hipster">
   <a class="skip-link" href="#main">Zum Inhalt springen</a>
 
-  <!-- injected shared header -->
-  <div id="header-slot"></div>
+  <!-- Main navigation (same as homepage) -->
+  <header class="site-header">
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a class="brand" href="/">Bettina Lohr, M Sc.</a>
+      <ul class="nav-list">
+        <li><a href="/webpages/about/">Über mich</a></li>
+        <li><a href="/webpages/projects/">Projekte</a></li>
+        <li><a href="/webpages/leistungen/">Leistungen</a></li>
+        <li><a href="/webpages/blog/">Blog</a></li>
+        <li><a href="/webpages/webshop/">Webshop</a></li>
+        <li><a href="/regulation/imprint/">Impressum</a></li>
+      </ul>
+    </nav>
+
+    <!-- Leistungen sub navigation (Fachbereiche) -->
+    <nav class="nav" aria-label="Leistungen – Fachbereiche" style="margin-top: 6px;">
+      <ul class="nav-list" style="flex-wrap:wrap; gap:8px;">
+        <li><a href="/webpages/engineer/">Engineer</a></li>
+        <li><a href="/webpages/hipster/" aria-current="page">Hipster</a></li>
+        <li><a href="/webpages/social-worker/">Social worker</a></li>
+        <li><a href="/webpages/expert/">Expert</a></li>
+        <li><a href="/webpages/consulting/">Consulting</a></li>
+      </ul>
+    </nav>
+  </header>
+
 
   <main id="main" class="container">
     <header class="page-hero hipster-hero">

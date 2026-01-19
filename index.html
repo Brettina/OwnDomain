@@ -10,15 +10,14 @@
 
   <meta
     name="description"
-    content="Weichware Lohr — Software, Prototypen, Textiles, Analyse und Consulting. Aktuelle Projekte und Blog."
+    content="Weichware Lohr — Software, Prototypen, Textiles, Analyse und Consulting. Neueste Projekte, Termine (Kalender) und Kontakt."
   />
   <link rel="stylesheet" href="/assets/styles.css" />
   <meta name="color-scheme" content="light dark" />
 
-  <!-- Minimal homepage-only styling for the swipe gallery -->
+  <!-- Homepage-only: project carousel layout -->
   <style>
-    /* Keep this local so you don't have to touch styles.css yet */
-    .activity-head {
+    .section-head {
       display: flex;
       align-items: baseline;
       justify-content: space-between;
@@ -26,49 +25,78 @@
       flex-wrap: wrap;
     }
 
-    .activity-swipe {
+    /* --- Project carousel: 3-up, center featured, sides image-only --- */
+    .proj-carousel {
       margin-top: 14px;
-      display: grid;
-      gap: 12px;
-    }
-
-    .swipe-row {
-      display: flex;
-      gap: 14px;
-      overflow-x: auto;
-      padding: 6px 4px 14px;
-      scroll-snap-type: x mandatory;
-      -webkit-overflow-scrolling: touch;
-    }
-
-    .swipe-row::-webkit-scrollbar { height: 10px; }
-    .swipe-row::-webkit-scrollbar-thumb { border-radius: 999px; }
-
-    .activity-card {
-      scroll-snap-align: start;
-      flex: 0 0 auto;
-      width: min(78vw, 520px);
-      border-radius: 16px;
-      overflow: hidden;
       position: relative;
     }
 
-    /* The newest item: visually dominant */
-    .activity-card.is-featured {
-      width: min(88vw, 680px);
-      transform: none;
-      opacity: 1;
+    .proj-stage {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      align-items: stretch;
+      justify-items: stretch;
     }
 
-    /* The other two: smaller + backgrounded */
-    .activity-card.is-secondary {
-      width: min(70vw, 460px);
-      opacity: 0.72;
+    /* On wider screens: left - center - right */
+    @media (min-width: 900px) {
+      .proj-stage {
+        grid-template-columns: 0.9fr 1.25fr 0.9fr;
+        align-items: center;
+      }
+    }
+
+    .proj-card {
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      min-height: 220px;
+    }
+
+    .proj-card img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+
+    @media (min-width: 900px) {
+      .proj-card img {
+        height: 240px;
+      }
+    }
+
+    .proj-card.is-side {
+      opacity: 0.62;
       transform: scale(0.96);
       filter: saturate(0.92);
+      cursor: pointer;
     }
 
-    .activity-meta {
+    .proj-card.is-center {
+      opacity: 1;
+      transform: none;
+      cursor: default;
+    }
+
+    .proj-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.68), rgba(0,0,0,0.05) 55%);
+      pointer-events: none;
+    }
+
+    .proj-body {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 14px 16px 16px;
+      pointer-events: auto;
+    }
+
+    .proj-meta {
       display: flex;
       align-items: center;
       gap: 10px;
@@ -76,45 +104,96 @@
       margin: 0 0 8px;
     }
 
-    .activity-tag {
+    .proj-tag {
       display: inline-flex;
       align-items: center;
       gap: 6px;
       padding: 3px 10px;
       border-radius: 999px;
       font-size: 0.85em;
-      border: 1px solid currentColor;
-      opacity: 0.85;
+      border: 1px solid rgba(255,255,255,0.65);
+      color: rgba(255,255,255,0.92);
+      opacity: 0.92;
+      backdrop-filter: blur(2px);
     }
 
-    .activity-cover {
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-      display: block;
-    }
-
-    .activity-body {
-      padding: 14px 16px 16px;
-    }
-
-    .activity-title {
+    .proj-title {
       margin: 0 0 6px;
+      color: #fff;
+      font-size: 1.2rem;
+      line-height: 1.25;
     }
 
-    .activity-excerpt {
+    .proj-excerpt {
       margin: 0;
+      color: rgba(255,255,255,0.9);
     }
 
-    .activity-link {
-      display: inline-block;
+    .proj-actions {
+      margin-top: 12px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .proj-side-label {
+      position: absolute;
+      left: 12px;
+      bottom: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.85em;
+      background: rgba(0,0,0,0.52);
+      color: rgba(255,255,255,0.9);
+      backdrop-filter: blur(2px);
+    }
+
+    /* Arrow controls */
+    .proj-controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
       margin-top: 12px;
     }
 
-    @media (min-width: 900px) {
-      .activity-cover { height: 260px; }
-      .activity-card.is-secondary { width: min(360px, 26vw); }
-      .activity-card.is-featured { width: min(620px, 46vw); }
+    .proj-arrow {
+      appearance: none;
+      border: 1px solid currentColor;
+      background: transparent;
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .proj-arrow:focus {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+
+    .proj-dots {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .proj-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      opacity: 0.45;
+    }
+
+    .proj-dot.is-active {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+
+    /* Improve swipe feel */
+    .proj-swipe-area {
+      touch-action: pan-y;
+      user-select: none;
     }
   </style>
 </head>
@@ -158,8 +237,8 @@
           Prototyping &amp; Textiles, Analyse und Consulting bis hin zu reflexiver Unterstützungsarbeit geht.
         </p>
         <p>
-          Für Details: <a href="/webpages/leistungen/">Leistungen</a>.
-          Für Updates: <a href="/webpages/blog/">Blog</a> und <a href="/webpages/projects/">Projekte</a>.
+          <a href="/webpages/leistungen/">Leistungen</a> bündelt die Perspektiven.
+          <a href="/webpages/projects/">Projekte</a> und <a href="/webpages/blog/">Blog</a> sammeln Updates.
         </p>
 
         <div class="cta-row">
@@ -169,74 +248,148 @@
       </div>
     </section>
 
-    <!-- ACTIVITIES: swipe gallery with 3 newest items (projects + blog) -->
-    <section class="section" aria-labelledby="activity-title">
-      <div class="activity-head">
-        <h2 id="activity-title" style="margin:0;">Neueste Aktivitäten</h2>
+    <!-- NEUESTE PROJEKTE: center big with text, sides image-only, arrows + swipe -->
+    <section class="section" aria-labelledby="projects-latest-title">
+      <div class="section-head">
+        <h2 id="projects-latest-title" style="margin:0;">Neueste Projekte</h2>
         <p class="fineprint" style="margin:0;">
-          Blog &amp; Projekte gemischt. Mehr:
-          <a href="/webpages/projects/">Projekte</a> · <a href="/webpages/blog/">Blog</a>
+          Sortiert nach „zuletzt bearbeitet“. Mehr: <a href="/webpages/projects/">Aktuelle Projekte</a>
         </p>
       </div>
 
-      <!--
-        This is the swipe row.
-        Fallback is static. Recommended: let /assets/site.js replace these cards
-        by fetching /assets/activities.json and rendering the newest 3.
-      -->
-      <div class="activity-swipe" data-activities="latest-3">
-        <div class="swipe-row" aria-label="Galerie: neueste Aktivitäten">
+      <div class="proj-carousel proj-swipe-area" data-project-carousel>
+        <div class="proj-stage" aria-label="Karussell: Neueste Projekte">
+          <!-- LEFT (image-only) -->
+          <article class="card proj-card is-side" data-slot="left" tabindex="0" role="button" aria-label="Vorheriges Projekt anzeigen">
+            <img src="/img/concept_leistungen.png" alt="Projekt-Vorschau" loading="lazy" />
+            <span class="proj-side-label" data-side-label-left>Projekt</span>
+          </article>
 
-          <!-- 1) Featured (newest) -->
-          <article class="card activity-card is-featured" data-activity-slot="0">
-            <img class="activity-cover" src="/img/concept.png" alt="Vorschaubild zur neuesten Aktivität" loading="lazy" />
-            <div class="activity-body">
-              <div class="activity-meta">
-                <span class="activity-tag">Aktivität</span>
-                <time class="fineprint" datetime="2026-01-12">12. Jan 2026</time>
+          <!-- CENTER (featured, with text) -->
+          <article class="card proj-card is-center" data-slot="center">
+            <img src="/img/concept.png" alt="Projekt-Vorschau des aktuellen Projekts" loading="lazy" />
+            <div class="proj-overlay" aria-hidden="true"></div>
+            <div class="proj-body">
+              <div class="proj-meta">
+                <span class="proj-tag">Projekt</span>
+                <time class="fineprint" datetime="2026-01-12" style="color: rgba(255,255,255,0.9);">12. Jan 2026</time>
               </div>
-              <h3 class="activity-title">Neuestes Update (Projekt oder Blog)</h3>
-              <p class="fineprint activity-excerpt">
-                Kurztext / Teaser. (Fallback – wird idealerweise aus activities.json befüllt.)
+              <h3 class="proj-title">Projekt-Titel (zuletzt bearbeitet)</h3>
+              <p class="proj-excerpt fineprint">
+                Kurztext / Status / Teaser (nur beim größten, aktuellen Projekt).
               </p>
-              <a class="activity-link button button-secondary" href="/webpages/projects/">Öffnen</a>
+              <div class="proj-actions">
+                <a class="button button-secondary" href="/webpages/projects/">Zum Projekt</a>
+                <a class="button" href="/webpages/projects/">Alle Projekte</a>
+              </div>
             </div>
           </article>
 
-          <!-- 2) Secondary -->
-          <article class="card activity-card is-secondary" data-activity-slot="1">
-            <img class="activity-cover" src="/img/mythologie.png" alt="Vorschaubild" loading="lazy" />
-            <div class="activity-body">
-              <div class="activity-meta">
-                <span class="activity-tag">Aktivität</span>
-                <time class="fineprint" datetime="2026-01-09">09. Jan 2026</time>
-              </div>
-              <h3 class="activity-title">Zweites Update</h3>
-              <p class="fineprint activity-excerpt">
-                Kurztext / Teaser. (Fallback – wird idealerweise aus activities.json befüllt.)
-              </p>
-              <a class="activity-link" href="/webpages/blog/">Weiter</a>
-            </div>
+          <!-- RIGHT (image-only) -->
+          <article class="card proj-card is-side" data-slot="right" tabindex="0" role="button" aria-label="Nächstes Projekt anzeigen">
+            <img src="/img/mythologie.png" alt="Projekt-Vorschau" loading="lazy" />
+            <span class="proj-side-label" data-side-label-right>Projekt</span>
           </article>
-
-          <!-- 3) Secondary -->
-          <article class="card activity-card is-secondary" data-activity-slot="2">
-            <img class="activity-cover" src="/img/concept_leistungen.png" alt="Vorschaubild" loading="lazy" />
-            <div class="activity-body">
-              <div class="activity-meta">
-                <span class="activity-tag">Aktivität</span>
-                <time class="fineprint" datetime="2026-01-05">05. Jan 2026</time>
-              </div>
-              <h3 class="activity-title">Drittes Update</h3>
-              <p class="fineprint activity-excerpt">
-                Kurztext / Teaser. (Fallback – wird idealerweise aus activities.json befüllt.)
-              </p>
-              <a class="activity-link" href="/webpages/projects-archive/">Weiter</a>
-            </div>
-          </article>
-
         </div>
+
+        <div class="proj-controls" aria-label="Karussell-Steuerung">
+          <button class="proj-arrow" type="button" data-prev aria-label="Vorheriges Projekt">←</button>
+          <div class="proj-dots" aria-hidden="true">
+            <span class="proj-dot is-active" data-dot="0"></span>
+            <span class="proj-dot" data-dot="1"></span>
+            <span class="proj-dot" data-dot="2"></span>
+          </div>
+          <button class="proj-arrow" type="button" data-next aria-label="Nächstes Projekt">→</button>
+        </div>
+
+        <p class="fineprint" style="margin-top:10px;">
+          Tipp: Wischen auf Mobilgeräten oder Pfeile nutzen.
+        </p>
       </div>
+    </section>
+
+    <!-- KALENDER (wieder drin) -->
+    <section class="section" aria-labelledby="calendar-title">
+      <h2 id="calendar-title">Kalender mit aktuellen Terminen</h2>
+      <p class="fineprint">
+        (Platzhalter) — Hier kannst du z.B. einen eingebetteten Kalender (iframe) oder eine Terminliste einfügen.
+      </p>
+      <div class="card" style="padding: 18px;">
+        <p class="fineprint" style="margin:0;">
+          Kalender-Einbindung kommt hier hin.
+        </p>
+      </div>
+    </section>
+
+    <!-- PROFILE & PRÄSENZ (wieder drin) -->
+    <section class="section" aria-labelledby="profiles">
+      <h2 id="profiles">Profile &amp; Präsenz</h2>
+
+      <div class="cards">
+        <!-- LinkedIn -->
+        <article class="card">
+          <h3>LinkedIn</h3>
+          <p class="fineprint">Berufliches Profil, Laufbahn, öffentliche Einordnung.</p>
+          <p>
+            <a href="https://www.linkedin.com/in/bettina-lohr-215756337" target="_blank" rel="noopener">
+              linkedin.com/in/bettina-lohr
+            </a>
+          </p>
+          <img
+            src="/img/qr-code linkedin.png"
+            alt="QR-Code zum LinkedIn-Profil von Bettina Lohr"
+            loading="lazy"
+            style="max-width:180px; margin-top:10px;"
+          />
+        </article>
+
+        <!-- Contra -->
+        <article class="card">
+          <h3>Contra</h3>
+          <p class="fineprint">Freelance-Profil (AR/VR, Mobile, Engineering).</p>
+          <p>
+            <a
+              href="https://contra.com/lohr_bettina_68155kak/work?r=lohr_bettina_68155kak"
+              target="_blank"
+              rel="noopener"
+            >
+              contra.com/lohr_bettina
+            </a>
+          </p>
+          <img
+            src="/img/qr-code contra.png"
+            alt="QR-Code zum Contra-Profil von Bettina Lohr"
+            loading="lazy"
+            style="max-width:180px; margin-top:10px;"
+          />
+          <p class="fineprint" style="margin-top:10px;">
+            ✦ Featured auf Contra:
+            <a
+              href="https://contra.com/hire/german-speaking-mobile-engineers?featuredUserProfileId=WyJVc2VyUHJvZmlsZSIsMzU0ODE0ODRd"
+              target="_blank"
+              rel="noopener"
+            >
+              „Best German-speaking freelance mobile engineers to hire (2026)“
+            </a>
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- HINWEISE -->
+    <section class="note-block">
+      <h2>Hinweise (Geltungsbereich)</h2>
+      <p class="fineprint">
+        Diese Website enthält professionelle Dienstleistungen und Informationsangebote.
+        Nichts hiervon stellt Rechtsberatung, medizinische Behandlung oder Psychotherapie dar.
+        Coaching / Seelsorge / Unterstützungsarbeit erfolgt außerhalb regulierter medizinischer
+        Rahmen, sofern nicht ausdrücklich anders angegeben.
+        Politische Analysen beruhen auf methodischer Bewertung und können Unsicherheiten enthalten.
+      </p>
+      <p class="fineprint">
+        Teile von Workflows oder Entwürfen können KI-unterstützt sein; Ergebnisse werden geprüft,
+        dennoch sind Fehler möglich.
+      </p>
     </section>
   </main>
 
@@ -252,6 +405,176 @@
   <script src="/assets/site.js" defer></script>
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    /**
+     * Carousel behavior:
+     * - shows 3 projects: prev (left), current (center), next (right)
+     * - arrows + swipe
+     *
+     * Recommended next step:
+     * - replace demoProjects with data loaded from /assets/activities.json (filtered to type=="project")
+     *   and sorted by lastEdited (or date).
+     */
+    (function () {
+      const root = document.querySelector("[data-project-carousel]");
+      if (!root) return;
+
+      const leftCard = root.querySelector('[data-slot="left"]');
+      const centerCard = root.querySelector('[data-slot="center"]');
+      const rightCard = root.querySelector('[data-slot="right"]');
+
+      const prevBtn = root.querySelector("[data-prev]");
+      const nextBtn = root.querySelector("[data-next]");
+      const dots = Array.from(root.querySelectorAll("[data-dot]"));
+
+      const leftImg = leftCard.querySelector("img");
+      const rightImg = rightCard.querySelector("img");
+      const centerImg = centerCard.querySelector("img");
+
+      const leftLabel = root.querySelector("[data-side-label-left]");
+      const rightLabel = root.querySelector("[data-side-label-right]");
+
+      const centerTime = centerCard.querySelector("time");
+      const centerTitle = centerCard.querySelector(".proj-title");
+      const centerExcerpt = centerCard.querySelector(".proj-excerpt");
+      const centerPrimaryLink = centerCard.querySelector(".proj-actions a.button.button-secondary");
+
+      // Fallback demo data (replace via JSON later)
+      const demoProjects = [
+        {
+          type: "project",
+          lastEdited: "2026-01-12",
+          title: "Projekt-Titel (zuletzt bearbeitet)",
+          excerpt: "Kurztext / Status / Teaser (nur beim größten, aktuellen Projekt).",
+          image: "/img/concept.png",
+          url: "/webpages/projects/"
+        },
+        {
+          type: "project",
+          lastEdited: "2026-01-09",
+          title: "Zweites Projekt",
+          excerpt: "Kurztext für zweites Projekt.",
+          image: "/img/concept_leistungen.png",
+          url: "/webpages/projects/"
+        },
+        {
+          type: "project",
+          lastEdited: "2026-01-05",
+          title: "Drittes Projekt",
+          excerpt: "Kurztext für drittes Projekt.",
+          image: "/img/mythologie.png",
+          url: "/webpages/projects/"
+        }
+      ];
+
+      let items = demoProjects.slice(); // replace with loaded list later
+      let index = 0;
+
+      function mod(n, m) {
+        return ((n % m) + m) % m;
+      }
+
+      function setDots() {
+        dots.forEach((d) => d.classList.remove("is-active"));
+        // With 3 fixed dots, show "position among the visible 3" when we only display 3 items total.
+        // If you later load more than 3 projects, we can switch dots to "page" style.
+        const active = dots[0];
+        if (active) active.classList.add("is-active");
+      }
+
+      function render() {
+        if (!items.length) return;
+
+        const current = items[index];
+        const prev = items[mod(index - 1, items.length)];
+        const next = items[mod(index + 1, items.length)];
+
+        // Center
+        centerImg.src = current.image;
+        centerImg.alt = "Projekt-Vorschau: " + current.title;
+
+        centerTitle.textContent = current.title;
+        centerExcerpt.textContent = current.excerpt || "";
+
+        if (centerTime) {
+          centerTime.dateTime = current.lastEdited;
+          const d = new Date(current.lastEdited);
+          // simple locale formatting without dependencies
+          centerTime.textContent = isNaN(d.getTime())
+            ? current.lastEdited
+            : d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" });
+        }
+
+        if (centerPrimaryLink) centerPrimaryLink.href = current.url || "/webpages/projects/";
+
+        // Left/Right (image only, no excerpt)
+        leftImg.src = prev.image;
+        leftImg.alt = "Projekt-Vorschau: " + prev.title;
+        leftLabel.textContent = prev.title;
+
+        rightImg.src = next.image;
+        rightImg.alt = "Projekt-Vorschau: " + next.title;
+        rightLabel.textContent = next.title;
+
+        setDots();
+      }
+
+      function goPrev() {
+        index = mod(index - 1, items.length);
+        render();
+      }
+
+      function goNext() {
+        index = mod(index + 1, items.length);
+        render();
+      }
+
+      prevBtn?.addEventListener("click", goPrev);
+      nextBtn?.addEventListener("click", goNext);
+
+      // Clicking side cards also navigates
+      leftCard.addEventListener("click", goPrev);
+      rightCard.addEventListener("click", goNext);
+
+      // Keyboard accessibility on side cards
+      function keyNav(e, dir) {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          dir();
+        }
+      }
+      leftCard.addEventListener("keydown", (e) => keyNav(e, goPrev));
+      rightCard.addEventListener("keydown", (e) => keyNav(e, goNext));
+
+      // Swipe
+      let startX = 0;
+      let startY = 0;
+      let isPointerDown = false;
+
+      root.addEventListener("pointerdown", (e) => {
+        isPointerDown = true;
+        startX = e.clientX;
+        startY = e.clientY;
+      });
+
+      root.addEventListener("pointerup", (e) => {
+        if (!isPointerDown) return;
+        isPointerDown = false;
+
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        // ignore mostly-vertical gestures
+        if (Math.abs(dy) > Math.abs(dx)) return;
+
+        if (dx > 35) goPrev();
+        if (dx < -35) goNext();
+      });
+
+      root.addEventListener("pointercancel", () => { isPointerDown = false; });
+
+      render();
+    })();
   </script>
 </body>
 </html>

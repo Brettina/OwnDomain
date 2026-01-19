@@ -1,20 +1,19 @@
 {
-  "generatedAt": "2026-01-19T00:00:00Z",
+  "generatedAt": "2026-01-19T19:43:46.616Z",
   "items": [
     {
-      "date": "2026-02-03",
-      "title": "Saftladen – Abholung / Treffen",
+      "id": "2026-02-12-saftladen-popup",
+      "date": "2026-02-12",
+      "title": "Saftladen: Abholung / Popup",
+      "projects": [
+        "saftladen"
+      ],
+      "tags": [
+        "saftladen",
+        "pickup"
+      ],
       "where": "Lohr Zentrum",
-      "note": "Zeitfenster wird per Mail bestätigt.",
-      "projects": ["saftladen"],
-      "tags": ["saftladen"]
-    },
-    {
-      "date": "2026-02-10",
-      "title": "Vortrag / Termin (ohne Projekt)",
-      "where": "Chemnitz",
-      "note": "Öffentlich – Details folgen",
-      "tags": ["talk"]
+      "note": "Bring your confirmation email."
     }
   ]
 }

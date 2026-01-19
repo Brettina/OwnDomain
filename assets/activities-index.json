@@ -1,26 +1,6 @@
 {
-  "generatedAt": "2026-01-19T18:52:54.637Z",
+  "generatedAt": "2026-01-19T19:43:46.615Z",
   "items": [
-    {
-      "type": "project",
-      "slug": "saftladen",
-      "title": "saftladen",
-      "updated": "2026-01-19T17:09:17Z",
-      "excerpt": "zu himmelfahrt und pfingsten in sachsen",
-      "cover": "/assets/projects/saftladen/saftladen.png",
-      "contentUrl": "/assets/projects/saftladen/erkl.txt",
-      "metaUrl": "/assets/projects/saftladen/meta.json"
-    },
-    {
-      "type": "project",
-      "slug": "eigene rebellenkollektion",
-      "title": "eigene rebellenkollektion",
-      "updated": "2026-01-19T17:09:14Z",
-      "excerpt": "ich mach tshirts und das ist der erklärungstext",
-      "cover": "/assets/projects/eigene rebellenkollektion/engl.png",
-      "contentUrl": "/assets/projects/eigene rebellenkollektion/erklaerung.txt",
-      "metaUrl": "/assets/projects/eigene rebellenkollektion/meta.json"
-    },
     {
       "type": "blog",
       "slug": "ef-konferenz 2026",
@@ -42,6 +22,36 @@
       ]
     },
     {
+      "type": "project",
+      "slug": "eigene rebellenkollektion",
+      "title": "Saftladen",
+      "updated": "2026-01-18",
+      "excerpt": "Kreuzritter sind jetzt erst in?\r\nPff - die Kollektion gibts seit Anfang 2025 :}\r\nSchaut gern im Webshop vorbei!",
+      "cover": "/assets/projects/eigene rebellenkollektion/engl.png",
+      "contentUrl": "/assets/projects/eigene rebellenkollektion/erklaerung.txt",
+      "metaUrl": "/assets/projects/eigene rebellenkollektion/meta.json"
+    },
+    {
+      "type": "project",
+      "slug": "janich",
+      "title": "Janich Demo",
+      "updated": "2026-01-15",
+      "excerpt": "demo anlässlich politischer gefangenen in D",
+      "cover": "/assets/projects/janich/janich.png",
+      "contentUrl": "/assets/projects/janich/erkl.txt",
+      "metaUrl": "/assets/projects/janich/meta.json"
+    },
+    {
+      "type": "project",
+      "slug": "saftladen",
+      "title": "Saftladen",
+      "updated": "2026-01-15",
+      "excerpt": "ich quetsche mir einen ab um euch frischen orangensaft zu bescheren.\r\nkommt gern vorbei - näheres dazu im kalender.",
+      "cover": "/assets/projects/saftladen/saftladen.png",
+      "contentUrl": "/assets/projects/saftladen/erkl.txt",
+      "metaUrl": "/assets/projects/saftladen/meta.json"
+    },
+    {
       "type": "blog",
       "slug": "julius-faucher-medaille",
       "title": "Schuld und Unschuld der Boomer",
@@ -52,12 +62,40 @@
       "metaUrl": "/assets/blog/julius-faucher-medaille/meta.json",
       "alsoPublished": [
         {
-          "label": "LinkedIn",
-          "url": "https://www.linkedin.com/..."
-        },
+          "label": "Eigentümlich frei",
+          "url": "https://www.kopp-verlag.de/a/eigentuemlich-frei-ausgabe-nr.-259-januar%2Ffebruar-2026"
+        }
+      ]
+    },
+    {
+      "type": "blog",
+      "slug": "400000",
+      "title": "400.000",
+      "updated": "2023-03-30",
+      "excerpt": "Endlich wieder ein Volksentscheid…\r\n… aber mit ganz anderem Ergebnis als erwartet!",
+      "cover": "/assets/blog/400000/400000.png",
+      "contentUrl": "/assets/blog/400000/text.md",
+      "metaUrl": "/assets/blog/400000/meta.json",
+      "alsoPublished": [
         {
-          "label": "Medium",
-          "url": "https://medium.com/..."
+          "label": "Dissidenken",
+          "url": "https://dissidenken.info/f/danke-f%C3%BCr-423418"
+        }
+      ]
+    },
+    {
+      "type": "blog",
+      "slug": "lebensraum",
+      "title": "Neuer Lebensraum im Osten",
+      "updated": "2023-02-18",
+      "excerpt": "anlässlich des ukrainekriegs",
+      "cover": "/assets/blog/lebensraum/hinten.png",
+      "contentUrl": "/assets/blog/lebensraum/text.md",
+      "metaUrl": "/assets/blog/lebensraum/meta.json",
+      "alsoPublished": [
+        {
+          "label": "Dissidenken",
+          "url": "https://dissidenken.info/f/neuer-lebensraum-im-osten-f%C3%BCr-die-nato"
         }
       ]
     }

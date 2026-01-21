@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mail-Test — Weichware Lohr</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <meta name="color-scheme" content="light dark" />
+</head>
+
+<body>
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Hauptnavigation">
+      <a class="brand" href="/">Weichware Lohr.</a>
+      <ul class="nav-list">
+        <li><a href="/webpages/test/" aria-current="page">Test</a></li>
+        <li><a href="/webpages/webshop/">Webshop</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main id="main" class="container">
+    <section class="section">
+      <h1>Mail-Test</h1>
+      <p class="fineprint">
+        Diese Seite testet nur: Button → /api/test-mail → E-Mail an <code>anfrage@weichware-lohr.de</code>.
+      </p>
+
+      <div class="card" style="padding:14px; display:grid; gap:12px;">
+        <div class="field" style="position:absolute; left:-9999px;" aria-hidden="true">
+          <label for="company-test">Company</label>
+          <input id="company-test" name="company" autocomplete="off" tabindex="-1" />
+        </div>
+
+        <div class="field">
+          <label for="fromEmail">Reply-To (deine E-Mail)</label>
+          <input id="fromEmail" type="email" placeholder="du@beispiel.de" autocomplete="email" />
+        </div>
+
+        <div class="field">
+          <label for="msg">Nachricht</label>
+          <textarea id="msg" rows="6">Hallo! Das ist ein Test.</textarea>
+        </div>
+
+        <button class="button" id="send">Test-Mail senden</button>
+        <p class="fineprint" id="status" style="margin:0; opacity:.9;"></p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const btn = $("#send");
+    const status = $("#status");
+
+    async function sendTestMail() {
+      // honeypot
+      const honey = $("#company-test");
+      if (honey && honey.value.trim() !== "") return;
+
+      btn.disabled = true;
+      btn.textContent = "Sende…";
+      status.textContent = "";
+
+      try {
+        const payload = {
+          replyTo: ($("#fromEmail").value || "").trim(),
+          message: ($("#msg").value || "").trim()
+        };
+
+        const res = await fetch("/api/test-mail", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const text = await res.text();
+        // Try JSON first, but accept plain text too
+        let data = null;
+        try { data = JSON.parse(text); } catch {}
+
+        if (!res.ok) {
+          const err = (data && (data.error || data.message)) ? (data.error || data.message) : text || `HTTP ${res.status}`;
+          throw new Error(err);
+        }
+
+        if (data && data.ok === true) {
+          alert("Email sent successfully");
+          status.textContent = "OK: E-Mail wurde gesendet.";
+        } else {
+          // If backend returns plain "ok"
+          alert("Email sent successfully");
+          status.textContent = "OK: E-Mail wurde gesendet.";
+        }
+      } catch (e) {
+        alert("Send failed: " + (e?.message || e));
+        status.textContent = "Fehler: " + (e?.message || e);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Test-Mail senden";
+      }
+    }
+
+    btn.addEventListener("click", sendTestMail);
+  </script>
+</body>
+</html>

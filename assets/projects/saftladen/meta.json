@@ -1,10 +1,10 @@
 {
   "title": "Saftladen",
-  "updated": "2026-01-15",
-  "startDate": "2025-11-01",
+  "updated": "2026-01-25",
+  "startDate": "2025-05-01",
   "endDate": "",
-  "tags": ["saftladen", "textiles", "pickup"],
-  "summary": "Kleine Serien, Prototypen, Abholung nach Vereinbarung.",
+  "tags": ["saftladen", "pickup"],
+  "summary": "Orangen- u.a. Saft, am Straßenrand, auf Festivals und nach Vereinbarung.",
   "refs": {
     "Instagram": "https://example.com",
     "GitHub": "https://example.com"

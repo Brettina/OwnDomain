@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "date": "2026-01-16",
+      "title": "EF-Konferenz",
+      "projects": ["article"],
+      "tags": ["politics", "activism", "libertarian"],
+      "where": "Usedom",
+      "note": "Preisverleihungsalarm!"
+    },
+         {
+      "date": "2026-05-01",
+      "title": "Am Tag der Arbeit eine Erfrischung gefällig?",
+      "projects": ["saftladen"],
+      "tags": ["saftladen", "pickup"],
+      "where": "Niederwürschnitz",
+      "note": "Ich stehe an der Fahrradstrecke und schenke euch gern Saft aus."
+    },
+     {
+      "date": "2026-05-14",
+      "title": "Himmelfahrt",
+      "projects": ["saftladen"],
+      "tags": ["saftladen", "pickup"],
+      "where": "Niederwürschnitz",
+      "note": "Ich stehe an der Fahrradstrecke und schenke euch gern Saft aus."
+    }  
+  ]
+}

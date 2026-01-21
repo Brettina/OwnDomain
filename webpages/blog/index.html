@@ -218,6 +218,13 @@
       return d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" });
     }
 
+function buildTags(meta) {
+  const tags = meta?.tags;
+  if (!tags) return [];
+  if (Array.isArray(tags)) return tags.filter(t => typeof t === "string" && t.trim());
+  return [];
+}
+
     function buildAlsoPublished(meta) {
       // meta.alsoPublished can be:
       // - array of { label, url }
@@ -310,12 +317,31 @@
       pill.className = "post-pill";
       pill.textContent = "Blog";
 
-      const time = document.createElement("span");
-      time.className = "fineprint";
-      time.textContent = formatDate(item.updated || "");
+      const published = meta?.published ? formatDate(meta.published) : "";
+const updated = item.updated ? formatDate(item.updated) : "";
 
-      metaRow.appendChild(pill);
-      if (item.updated) metaRow.appendChild(time);
+const time = document.createElement("span");
+time.className = "fineprint";
+
+// Prefer showing published; also show updated if it differs.
+if (published && updated && published !== updated) {
+  time.textContent = `${published} · aktualisiert ${updated}`;
+} else if (published) {
+  time.textContent = published;
+} else if (updated) {
+  time.textContent = updated;
+}
+
+metaRow.appendChild(pill);
+if (time.textContent) metaRow.appendChild(time);
+
+const tags = buildTags(meta);
+for (const t of tags) {
+  const tagPill = document.createElement("span");
+  tagPill.className = "post-pill";
+  tagPill.textContent = `#${t}`;
+  metaRow.appendChild(tagPill);
+}
 
       left.appendChild(title);
       left.appendChild(metaRow);
@@ -452,13 +478,13 @@
 
       emptyEl.style.display = list.length ? "none" : "block";
 
-      // initial: headings only (content loaded only when you open)
-      for (const item of list) {
-        const meta = null; // loaded lazily on open
-        const content = `<div class="prose"><p class="fineprint">Öffnen zum Lesen…</p></div>`;
-        const card = makePostCard(item, meta, content, false);
-        postsEl.appendChild(card);
-      }
+for (const item of list) {
+  const meta = await loadMetaFor(item.slug); // <-- load meta now
+  const content = `<div class="prose"><p class="fineprint">Öffnen zum Lesen…</p></div>`;
+  const card = makePostCard(item, meta, content, false);
+  postsEl.appendChild(card);
+}
+
     }
 
     qEl.addEventListener("input", render);

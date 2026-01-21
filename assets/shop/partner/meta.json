@@ -1,8 +1,8 @@
 {
-  "name": "Bademantel",
-  "description": "für schizophrene. Kleine Auflage.",
+  "name": "T-Shirt im Doppelpack",
+  "description": "Für den rebellischen Austausch. Kleine Auflage.",
   "status": "verfügbar",
   "variants": ["S", "M", "L", "XL"],
   "unit": "Stück",
-  "pickupRequired": true
+  "pickupRequired": false
 }

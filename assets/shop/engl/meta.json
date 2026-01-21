@@ -1,8 +1,8 @@
 {
-  "name": "Bademantel",
-  "description": "engl Kleine Auflage.",
+  "name": "T-Shirt Kreuzkinger",
+  "description": "Für die Englischsprachigen unter uns.",
   "status": "verfügbar",
   "variants": ["S", "M", "L", "XL"],
   "unit": "Stück",
-  "pickupRequired": true
+  "pickupRequired": false
 }

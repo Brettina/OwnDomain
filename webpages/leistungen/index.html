@@ -105,10 +105,24 @@
       <h2 id="contact">Kontakt</h2>
 
       <p class="fineprint">
-        E-Mail: <span data-email></span>
-      </p>
+  E-Mail: <a href="mailto:anfrage@weichware-lohr.de">anfrage@weichware-lohr.de</a>
+</p>
+
 
       <form class="form" data-contact-form>
+        <div class="field">
+  <label for="fachgebiet">Fachgebiet</label>
+  <select id="fachgebiet" name="fachgebiet" required>
+    <option value="">Bitte wählen…</option>
+    <option value="Engineer">Engineer</option>
+    <option value="Consulting">Consulting</option>
+    <option value="Expert">Expert</option>
+    <option value="Hipster">Hipster</option>
+    <option value="Social worker">Social worker</option>
+    <option value="Anderes">Anderes</option>
+  </select>
+</div>
+
         <div class="field" style="position:absolute; left:-9999px;" aria-hidden="true">
           <label for="company-leistungen-contact">Company</label>
           <input id="company-leistungen-contact" name="company" autocomplete="off" tabindex="-1" />
@@ -150,6 +164,8 @@
         </p>
 
         <button class="button" type="submit">E-Mail-Entwurf öffnen</button>
+      <p class="fineprint" data-contact-hint style="margin-top:10px; opacity:0.9;"></p>
+
       </form>
     </section>
   </main>
@@ -163,8 +179,130 @@
     </ul>
   </footer>
 
-  <script>
-    document.getElementById("year").textContent = new Date().getFullYear();
-  </script>
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  (function () {
+    const TO = "anfrage@weichware-lohr.de";
+
+    const form = document.querySelector("[data-contact-form]");
+    if (!form) return;
+
+    const hint = form.querySelector("[data-contact-hint]");
+
+    const topicSel = form.querySelector('select[name="topic"]');
+    if (topicSel && topicSel.options.length === 0) {
+      const topics = [
+        { value: "Allgemein", label: "Allgemein" },
+        { value: "Leistungen / Zusammenarbeit", label: "Leistungen / Zusammenarbeit" },
+        { value: "Webshop / Merch", label: "Webshop / Merch" },
+        { value: "Projekt / Anfrage", label: "Projekt / Anfrage" }
+      ];
+
+      const ph = document.createElement("option");
+      ph.value = "";
+      ph.textContent = "Bitte wählen…";
+      topicSel.appendChild(ph);
+
+      topics.forEach(t => {
+        const o = document.createElement("option");
+        o.value = t.value;
+        o.textContent = t.label;
+        topicSel.appendChild(o);
+      });
+    }
+
+    function buildMailto(fd) {
+      const name = (fd.get("name") || "").toString().trim();
+      const email = (fd.get("email") || "").toString().trim();
+      const topic = (fd.get("topic") || "").toString().trim();
+      const message = (fd.get("message") || "").toString().trim();
+
+      const CRLF = "\r\n";
+      const body = [
+        "Hallo Frau Lohr",
+        "",
+        "Kontakt:",
+        `Name: ${name || "—"}`,
+        `E-Mail: ${email || "—"}`,
+        "",
+        `Thema: ${topic || "—"}`,
+        `Fachgebiet: ${fachgebiet || "—"}`,
+
+        "",
+        "Nachricht:",
+        message || "—",
+        "",
+        "Mit freundlichen Grüßen,",
+        name || "—"
+      ].join(CRLF);
+
+const fachgebiet = (fd.get("fachgebiet") || "").toString().trim();
+const subject =
+  fachgebiet && topic
+    ? `[Leistungen/${fachgebiet}] ${topic}`
+    : fachgebiet
+      ? `[Leistungen/${fachgebiet}] Anfrage`
+      : topic
+        ? `[Leistungen] ${topic}`
+        : "[Leistungen] Anfrage";
+
+      return { to: TO, subject, body };
+    }
+
+    function openMailto({ to, subject, body }) {
+      const normalizedBody = String(body || "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .replace(/\n/g, "\r\n");
+
+      const mailto =
+        `mailto:${encodeURIComponent(to)}` +
+        `?subject=${encodeURIComponent(subject || "")}` +
+        `&body=${encodeURIComponent(normalizedBody)}`;
+
+      const a = document.createElement("a");
+      a.href = mailto;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      // honeypot
+      const honey = form.querySelector('input[name="company"]');
+      if (honey && honey.value.trim() !== "") return;
+
+      const consent = form.querySelector('input[name="consent"]');
+      if (consent && !consent.checked) {
+        if (hint) hint.textContent = "Bitte Zustimmung anhaken.";
+        return;
+      }
+
+      if (!form.reportValidity()) {
+        if (hint) hint.textContent = "Bitte alle Pflichtfelder ausfüllen.";
+        return;
+      }
+
+      const fd = new FormData(form);
+      const mail = buildMailto(fd);
+      
+      openMailto(mail);
+
+      if (hint) {
+        hint.textContent =
+          "E-Mail-Entwurf sollte geöffnet sein. Falls nicht: Mail-App/Handler (mailto:) im System/Browser einrichten.";
+      }
+
+      // optional reset after opening
+      form.reset();
+    });
+  })();
+</script>
+
+  
 </body>
 </html>

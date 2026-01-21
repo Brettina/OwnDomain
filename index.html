@@ -396,6 +396,52 @@
       </div>
     </section>
 
+    <!-- Kontakt -->
+    <section class="section" aria-labelledby="contact">
+      <h2 id="contact">Kontakt</h2>
+
+      <p class="fineprint">
+        E-Mail: <a href="mailto:anfrage@weichware-lohr.de">anfrage@weichware-lohr.de</a>
+      </p>
+
+      <form class="form" data-contact-form>
+        <div class="field" style="position:absolute; left:-9999px;" aria-hidden="true">
+          <label for="company-home-contact">Company</label>
+          <input id="company-home-contact" name="company" autocomplete="off" tabindex="-1" />
+        </div>
+
+        <div class="field">
+          <label for="contact-name">Name</label>
+          <input id="contact-name" name="name" autocomplete="name" required />
+        </div>
+
+        <div class="field">
+          <label for="contact-message">Nachricht</label>
+          <textarea
+            id="contact-message"
+            name="message"
+            rows="6"
+            required
+            placeholder="Worum geht’s?"
+          ></textarea>
+        </div>
+
+        <div class="field checkbox">
+          <input id="contact-consent" name="consent" type="checkbox" required />
+          <label for="contact-consent">Ich stimme zu, dass meine Daten zur Beantwortung meiner Anfrage verwendet werden.</label>
+        </div>
+
+        <p class="fineprint">
+          Siehe <a href="/regulation/privacy/">Datenschutz</a>, <a href="/regulation/cookies/">Cookies</a>, <a href="/regulation/imprint/">Impressum</a>.
+        </p>
+
+        <button class="button" type="submit">E-Mail-Entwurf öffnen</button>
+
+        <p class="fineprint" data-contact-hint style="margin-top:10px; opacity:0.9;"></p>
+      </form>
+    </section>
+
+
     <!-- HINWEISE -->
     <section class="note-block">
       <h2>Hinweise (Geltungsbereich)</h2>
@@ -795,6 +841,79 @@
 </script>
 
 
+<script>
+  (function () {
+    const TO = "anfrage@weichware-lohr.de";
+
+    const form = document.querySelector("[data-contact-form]");
+    if (!form) return;
+
+    const hint = form.querySelector("[data-contact-hint]");
+
+    function buildMailto(fd) {
+      const name = (fd.get("name") || "").toString().trim();
+      const message = (fd.get("message") || "").toString().trim();
+
+      const CRLF = "\r\n";
+      const body = [
+        "Hallo Frau Lohr",
+        "",
+        message || "—",
+        "",
+        "Mit freundlichen Grüßen,",
+        name || "—"
+      ].join(CRLF);
+
+      const subject = "[Website] Kontaktanfrage";
+
+      return { to: TO, subject, body };
+    }
+
+    function openMailto({ to, subject, body }) {
+      const normalizedBody = String(body || "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n")
+        .replace(/\n/g, "\r\n"); // ensure CRLF
+
+      const mailto =
+        `mailto:${encodeURIComponent(to)}` +
+        `?subject=${encodeURIComponent(subject || "")}` +
+        `&body=${encodeURIComponent(normalizedBody)}`;
+
+      const a = document.createElement("a");
+      a.href = mailto;
+      a.style.display = "none";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+
+    form.addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      // honeypot
+      const honey = form.querySelector('input[name="company"]');
+      if (honey && honey.value.trim() !== "") return;
+
+      if (!form.reportValidity()) {
+        if (hint) hint.textContent = "Bitte Name, Nachricht und Zustimmung ausfüllen.";
+        return;
+      }
+
+      const fd = new FormData(form);
+      const mail = buildMailto(fd);
+      openMailto(mail);
+
+      // user hint (mail isn't sent yet)
+      if (hint) {
+        hint.textContent = "E-Mail-Entwurf sollte geöffnet sein. Falls nicht: Mail-App/Handler (mailto:) im System/Browser einrichten.";
+      }
+
+      // optional: reset after opening
+      form.reset();
+    });
+  })();
+</script>
 
 </body>
 </html>

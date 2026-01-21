@@ -394,6 +394,16 @@
             </div>
 
            <div class="field">
+
+            <div class="field">
+  <label for="shipping">Versandweg</label>
+  <select id="shipping" name="shipping" required>
+    <option value="">Bitte wählen…</option>
+    <option value="DHL">DHL</option>
+    <option value="Hermes">Hermes</option>
+    <option value="Nur digital">Nur digital</option>
+  </select>
+</div>
   <label for="address">Straße + Hausnummer</label>
   <input id="address" name="address" autocomplete="street-address" required />
 </div>
@@ -413,15 +423,7 @@
   <input id="country" name="country" autocomplete="country-name" required />
 </div>
 
-<div class="field">
-  <label for="shipping">Versandweg</label>
-  <select id="shipping" name="shipping" required>
-    <option value="">Bitte wählen…</option>
-    <option value="DHL">DHL</option>
-    <option value="Hermes">Hermes</option>
-    <option value="Nur digital">Nur digital</option>
-  </select>
-</div>
+
 
 <div class="field">
   <label for="payment">Bezahlung</label>
@@ -1032,7 +1034,15 @@ function applyShippingRules() {
   const shipping = (shippingSel?.value || "").toLowerCase().trim();
   const isDigital = shipping === "nur digital";
   setPhysicalFieldsEnabled(!isDigital);
+
+  // Helpful hint
+  if (isDigital) {
+    sendHint.textContent = "Nur digital gewählt: Adresse & Bezahlung werden nicht benötigt.";
+  } else {
+    sendHint.textContent = "Bitte Adresse ausfüllen und Bezahlung auswählen.";
+  }
 }
+
 
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -1047,7 +1057,10 @@ function applyShippingRules() {
       if (consent && !consent.checked) return;
 
       // basic validity (so we don't fire an API call with empty fields)
-      if (!form.reportValidity()) return;
+if (!form.reportValidity()) {
+  sendHint.textContent = "Bitte alle Pflichtfelder ausfüllen (z.B. Versandweg und Bezahlung).";
+  return;
+}
 
       // lock UI while sending
       sendBtn.disabled = true;
@@ -1060,11 +1073,13 @@ function applyShippingRules() {
   const mail = buildMailtoFromForm(fd);
 
   // open user's mail app with prefilled content
-  openMailto(mail);
+openMailto(mail);
+
 setTimeout(() => {
-  // falls nichts geöffnet wurde, liegt es meist am fehlenden Mail-Handler
-  sendHint.textContent = "Falls sich kein Mailprogramm öffnet: Bitte Mail-App/Handler (mailto:) im System/Browser einrichten.";
-}, 600);
+  sendHint.textContent = "E-Mail-Entwurf sollte geöffnet sein. Falls nicht: Mail-App/Handler (mailto:) im System/Browser einrichten.";
+  alert("E-Mail-Entwurf wurde geöffnet. Bitte im Mailprogramm noch auf „Senden“ klicken.");
+}, 50);
+
   // optional: user feedback (mail isn't "sent" yet, only opened)
   alert("E-Mail-Entwurf wurde geöffnet. Bitte im Mailprogramm noch auf „Senden“ klicken.");
 

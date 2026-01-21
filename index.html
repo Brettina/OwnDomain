@@ -400,9 +400,11 @@
     <section class="section" aria-labelledby="contact">
       <h2 id="contact">Kontakt</h2>
 
-      <p class="fineprint">
-        E-Mail: <a href="mailto:anfrage@weichware-lohr.de">anfrage@weichware-lohr.de</a>
-      </p>
+  <p class="fineprint">
+  E-Mail: <a data-email-link href="#">anfrage[[at]]weichware-lohr.de</a>
+</p>
+
+
 
       <form class="form" data-contact-form>
         <div class="field" style="position:absolute; left:-9999px;" aria-hidden="true">
@@ -843,7 +845,14 @@
 
 <script>
   (function () {
-    const TO = "anfrage@weichware-lohr.de";
+const TO = ["anfrage", "weichware-lohr.de"].join("@");
+
+// also set the visible link safely
+const emailLink = document.querySelector("[data-email-link]");
+if (emailLink) {
+  emailLink.href = "mailto:" + TO;
+  emailLink.textContent = "anfrage[[at]]weichware-lohr.de";
+}
 
     const form = document.querySelector("[data-contact-form]");
     if (!form) return;

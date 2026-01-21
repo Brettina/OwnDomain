@@ -105,8 +105,9 @@
       <h2 id="contact">Kontakt</h2>
 
       <p class="fineprint">
-  E-Mail: <a href="mailto:anfrage@weichware-lohr.de">anfrage@weichware-lohr.de</a>
+  E-Mail: <a data-email-link href="#">anfrage[[at]]weichware-lohr.de</a>
 </p>
+
 
 
       <form class="form" data-contact-form>
@@ -183,7 +184,14 @@
   document.getElementById("year").textContent = new Date().getFullYear();
 
   (function () {
-    const TO = "anfrage@weichware-lohr.de";
+const TO = ["anfrage", "weichware-lohr.de"].join("@");
+
+// set visible link safely
+const emailLink = document.querySelector("[data-email-link]");
+if (emailLink) {
+  emailLink.href = "mailto:" + TO;
+  emailLink.textContent = "anfrage[[at]]weichware-lohr.de";
+}
 
     const form = document.querySelector("[data-contact-form]");
     if (!form) return;
@@ -216,6 +224,7 @@
       const name = (fd.get("name") || "").toString().trim();
       const email = (fd.get("email") || "").toString().trim();
       const topic = (fd.get("topic") || "").toString().trim();
+      const fachgebiet = (fd.get("fachgebiet") || "").toString().trim();
       const message = (fd.get("message") || "").toString().trim();
 
       const CRLF = "\r\n";
@@ -237,7 +246,7 @@
         name || "—"
       ].join(CRLF);
 
-const fachgebiet = (fd.get("fachgebiet") || "").toString().trim();
+
 const subject =
   fachgebiet && topic
     ? `[Leistungen/${fachgebiet}] ${topic}`

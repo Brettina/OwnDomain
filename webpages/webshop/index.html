@@ -866,66 +866,55 @@ cartClear?.addEventListener("click", () => {
 
     
 
-    function buildEmailPayload(fd) {
-      const name = (fd.get("name") || "").toString().trim();
-      const email = (fd.get("email") || "").toString().trim();
-      const address = (fd.get("address") || "").toString().trim();
-      const notes = (fd.get("notes") || "").toString().trim();
+    
 
-      const lines = [];
-      lines.push("Webshop Anfrage");
-      lines.push("");
-      lines.push(`Name: ${name}`);
-      lines.push(`E-Mail: ${email}`);
-      lines.push(`Adresse: ${address}`);
-      lines.push("");
-      lines.push("Auswahl:");
-      cart.forEach(it => {
-        lines.push(`- ${it.name} — ${it.qty} ${it.unit} — Variante: ${it.variant}${it.pickupRequired ? " (Abholung erforderlich)" : ""}`);
-      });
+    function buildMailtoFromForm(fd) {
+  const name = (fd.get("name") || "").toString().trim();
+  const email = (fd.get("email") || "").toString().trim();
+  const address = (fd.get("address") || "").toString().trim();
+  const notes = (fd.get("notes") || "").toString().trim();
 
-      if (notes) {
-        lines.push("");
-        lines.push("Notizen:");
-        lines.push(notes);
-      }
+  const lines = [];
+  lines.push("Webshop Anfrage");
+  lines.push("");
+  lines.push(`Name: ${name}`);
+  lines.push(`E-Mail: ${email}`);
+  lines.push(`Adresse: ${address}`);
+  lines.push("");
+  lines.push("Auswahl:");
+  cart.forEach(it => {
+    lines.push(`- ${it.name} — ${it.qty} ${it.unit} — Variante: ${it.variant}${it.pickupRequired ? " (Abholung erforderlich)" : ""}`);
+  });
 
-      const subject = `[webshop] Anfrage — ${cart.length} Position(en)`;
-      const body = lines.join("\n");
+  if (notes) {
+    lines.push("");
+    lines.push("Notizen:");
+    lines.push(notes);
+  }
 
-      // payload for backend email function
-      return {
-        to: CONTACT_EMAIL,
-        replyTo: email,
-        subject,
-        text: body,
-        meta: { name, email, address }
-      };
-    }
+  const subject = `[webshop] Anfrage — ${cart.length} Position(en)`;
+  const body = lines.join("\n");
 
-    async function sendEmailViaApi(payload) {
-      // expects your serverless function at /api/hipster-mail to accept JSON and return JSON { ok: true }
-      const res = await fetch("/api/hipster-mail", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
+  return { to: CONTACT_EMAIL, subject, body };
+}
 
-      let data = null;
-      try { data = await res.json(); } catch {}
+// trigger mail client reliably (same pattern as your working test)
+function openMailto({ to, subject, body }) {
+  const mailto =
+    `mailto:${encodeURIComponent(to)}` +
+    `?subject=${encodeURIComponent(subject)}` +
+    `&body=${encodeURIComponent(body)}`;
 
-      if (!res.ok) {
-        const msg = (data && (data.error || data.message)) ? (data.error || data.message) : `HTTP ${res.status}`;
-        throw new Error(msg);
-      }
+  const a = document.createElement("a");
+  a.href = mailto;
+  a.style.display = "none";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
 
-      if (!data || data.ok !== true) {
-        const msg = (data && (data.error || data.message)) ? (data.error || data.message) : "Unbekannter Fehler";
-        throw new Error(msg);
-      }
 
-      return true;
-    }
+    
 
     async function loadProducts() {
       const res = await fetch("/assets/products.json", { cache: "no-store" });
@@ -958,28 +947,36 @@ cartClear?.addEventListener("click", () => {
 
       try {
   const fd = new FormData(form);
-  const payload = buildEmailPayload(fd);
 
-  await sendEmailViaApi(payload);
+  // build mailto from current form + cart
+  const mail = buildMailtoFromForm(fd);
 
-  alert("Email sent successfully");
+  // open user's mail app with prefilled content
+  openMailto(mail);
+setTimeout(() => {
+  // falls nichts geöffnet wurde, liegt es meist am fehlenden Mail-Handler
+  sendHint.textContent = "Falls sich kein Mailprogramm öffnet: Bitte Mail-App/Handler (mailto:) im System/Browser einrichten.";
+}, 600);
+  // optional: user feedback (mail isn't "sent" yet, only opened)
+  alert("E-Mail-Entwurf wurde geöffnet. Bitte im Mailprogramm noch auf „Senden“ klicken.");
 
-  // clear cart & persist
+  // clear cart & persist (optional — nur wenn du nach dem Öffnen leeren willst)
   cart = [];
   saveCartToStorage();
   renderCart();
   syncCheckoutState();
 
-  // clear form AFTER successful send
+  // clear form
   form.reset();
 
 } catch (err) {
-  alert(`Senden fehlgeschlagen: ${err?.message || err}`);
+  alert(`Öffnen des Mailprogramms fehlgeschlagen: ${err?.message || err}`);
   syncCheckoutState();
 } finally {
   sendBtn.textContent = "Anfrage per E-Mail senden";
   sendBtn.disabled = cart.length === 0;
 }
+
 
     });
 

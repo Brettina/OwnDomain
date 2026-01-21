@@ -4,7 +4,7 @@
       "id": "bademantel",
       "page": "webshop",
       "name": "Bademantel",
-      "description": "Flauschiger Bademantel aus der Saftladen-Ecke. Kleine Auflage.",
+      "description": "Flauschiger Bademantel mit Kreuzmotiv",
       "image": "/assets/shop/bademantel/bademantel.png",
       "status": "verfügbar",
       "variants": [
@@ -14,14 +14,14 @@
         "XL"
       ],
       "unit": "Stück",
-      "pickupRequired": true,
+      "pickupRequired": false,
       "decorateJuice": false
     },
     {
       "id": "engl",
       "page": "webshop",
-      "name": "Bademantel",
-      "description": "engl Kleine Auflage.",
+      "name": "T-Shirt Kreuzkinger",
+      "description": "Für die Englischsprachigen unter uns.",
       "image": "/assets/shop/engl/engl.png",
       "status": "verfügbar",
       "variants": [
@@ -31,14 +31,14 @@
         "XL"
       ],
       "unit": "Stück",
-      "pickupRequired": true,
+      "pickupRequired": false,
       "decorateJuice": false
     },
     {
       "id": "mythologie",
       "page": "webshop",
-      "name": "Bademantel",
-      "description": "für realisten. Kleine Auflage.",
+      "name": "T-Shirt Bibliothek",
+      "description": "Nur etwas für Realisten. Kleine Auflage.",
       "image": "/assets/shop/mythologie/mythologie.png",
       "status": "verfügbar",
       "variants": [
@@ -48,14 +48,14 @@
         "XL"
       ],
       "unit": "Stück",
-      "pickupRequired": true,
+      "pickupRequired": false,
       "decorateJuice": false
     },
     {
       "id": "partner",
       "page": "webshop",
-      "name": "Bademantel",
-      "description": "für schizophrene. Kleine Auflage.",
+      "name": "T-Shirt im Doppelpack",
+      "description": "Für den rebellischen Austausch. Kleine Auflage.",
       "image": "/assets/shop/partner/partner.png",
       "status": "verfügbar",
       "variants": [
@@ -65,14 +65,14 @@
         "XL"
       ],
       "unit": "Stück",
-      "pickupRequired": true,
+      "pickupRequired": false,
       "decorateJuice": false
     },
     {
       "id": "socken",
       "page": "webshop",
-      "name": "Bademantel",
-      "description": "für schizos. Kleine Auflage.",
+      "name": "Sommersocken",
+      "description": "für Untentschiedene und Schizophrene.",
       "image": "/assets/shop/socken/socken.png",
       "status": "verfügbar",
       "variants": [
@@ -82,7 +82,7 @@
         "XL"
       ],
       "unit": "Stück",
-      "pickupRequired": true,
+      "pickupRequired": false,
       "decorateJuice": false
     }
   ],

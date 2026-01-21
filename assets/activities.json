@@ -1,6 +1,16 @@
 {
   "items": [
     {
+      "type": "project",
+      "slug": "saftladen",
+      "title": "Saftladen",
+      "updated": "2026-01-25",
+      "image": "/assets/projects/saftladen/saftladen.png",
+      "excerpt": "ich quetsche mir einen ab um euch frischen orangensaft zu bescheren.\r\nkommt gern vorbei - näheres dazu im kalender.",
+      "url": "/webpages/projects/saftladen/",
+      "contentUrl": ""
+    },
+    {
       "type": "blog",
       "slug": "ef-konferenz 2026",
       "title": "Samstag Vormittag der EF-Konferenz",
@@ -11,44 +21,34 @@
       "contentUrl": "/assets/content/blog/ef-konferenz 2026.html"
     },
     {
-      "type": "project",
-      "slug": "eigene rebellenkollektion",
-      "title": "Saftladen",
-      "updated": "2026-01-18",
-      "image": "/assets/projects/eigene rebellenkollektion/engl.png",
-      "excerpt": "Kreuzritter sind jetzt erst in?\r\nPff - die Kollektion gibts seit Anfang 2025 :}\r\nSchaut gern im Webshop vorbei!",
-      "url": "/webpages/projects/eigene rebellenkollektion/",
-      "contentUrl": ""
-    },
-    {
-      "type": "project",
-      "slug": "janich",
-      "title": "Janich Demo",
-      "updated": "2026-01-15",
-      "image": "/assets/projects/janich/janich.png",
-      "excerpt": "demo anlässlich politischer gefangenen in D",
-      "url": "/webpages/projects/janich/",
-      "contentUrl": ""
-    },
-    {
-      "type": "project",
-      "slug": "saftladen",
-      "title": "Saftladen",
-      "updated": "2026-01-15",
-      "image": "/assets/projects/saftladen/saftladen.png",
-      "excerpt": "ich quetsche mir einen ab um euch frischen orangensaft zu bescheren.\r\nkommt gern vorbei - näheres dazu im kalender.",
-      "url": "/webpages/projects/saftladen/",
-      "contentUrl": ""
-    },
-    {
       "type": "blog",
       "slug": "julius-faucher-medaille",
       "title": "Schuld und Unschuld der Boomer",
-      "updated": "2025-12-19",
+      "updated": "2026-01-19",
       "image": "/assets/blog/julius-faucher-medaille/ef.jpg",
-      "excerpt": "this text is about the julius fuacher excerpt",
+      "excerpt": "Anlässlich des Julius-Faucher-Preises habe ich gemeinsam mit anderen Unter-30-Jährigen einen Artikel zum Thema „Schuld und Unschuld der Boomer“ eingereicht. Der Beitrag erschien in der Januar/Februar-Ausgabe der E-Zeitschrift eigentümlich frei.",
       "url": "/webpages/blog/julius-faucher-medaille/",
       "contentUrl": "/assets/content/blog/julius-faucher-medaille.html"
+    },
+    {
+      "type": "blog",
+      "slug": "lebensraum",
+      "title": "Neuer Lebensraum im Osten",
+      "updated": "2026-01-16",
+      "image": "/assets/blog/lebensraum/hinten.png",
+      "excerpt": "anlässlich des ukrainekriegs",
+      "url": "/webpages/blog/lebensraum/",
+      "contentUrl": "/assets/content/blog/lebensraum.html"
+    },
+    {
+      "type": "project",
+      "slug": "angela",
+      "title": "Demo anlässlich politischer Gefangener",
+      "updated": "2025-08-25",
+      "image": "/assets/projects/angela/angela flyer+.png",
+      "excerpt": "demo anlässlich politischer gefangenen in D",
+      "url": "/webpages/projects/angela/",
+      "contentUrl": ""
     },
     {
       "type": "blog",
@@ -61,14 +61,14 @@
       "contentUrl": "/assets/content/blog/400000.html"
     },
     {
-      "type": "blog",
-      "slug": "lebensraum",
-      "title": "Neuer Lebensraum im Osten",
-      "updated": "2023-02-18",
-      "image": "/assets/blog/lebensraum/hinten.png",
-      "excerpt": "anlässlich des ukrainekriegs",
-      "url": "/webpages/blog/lebensraum/",
-      "contentUrl": "/assets/content/blog/lebensraum.html"
+      "type": "project",
+      "slug": "janich",
+      "title": "Demo anlässlich politischer Gefangener",
+      "updated": "2023-01-15",
+      "image": "/assets/projects/janich/janich.png",
+      "excerpt": "demo anlässlich politischer gefangenen in D",
+      "url": "/webpages/projects/janich/",
+      "contentUrl": ""
     }
   ]
 }

@@ -1,14 +1,48 @@
-
-export async function onRequestPost({ request }) {
+export async function onRequestPost({ request, env }) {
   const form = await request.formData();
+
   const name = (form.get("name") || "").toString().trim();
   const email = (form.get("email") || "").toString().trim();
   const message = (form.get("message") || "").toString().trim();
 
-  console.log("CONTACT FORM:", { name, email, messageLength: message.length });
+  if (!email || !message) {
+    return new Response("Missing required fields", { status: 400 });
+  }
 
-  return new Response(
-    JSON.stringify({ ok: true, name, email, message }),
-    { status: 200, headers: { "content-type": "application/json" } }
-  );
+  const mailPayload = {
+    personalizations: [
+      {
+        to: [{ email: env.MAIL_TO }],
+        reply_to: { email }
+      }
+    ],
+    from: {
+      email: env.MAIL_FROM,
+      name: "Website Kontakt"
+    },
+    subject: "Neue Anfrage über die Website",
+    content: [
+      {
+        type: "text/plain",
+        value:
+          `Name: ${name}\n` +
+          `Email: ${email}\n\n` +
+          message
+      }
+    ]
+  };
+
+  const resp = await fetch("https://api.mailchannels.net/tx/v1/send", {
+    method: "POST",
+    headers: {
+      "content-type": "application/json"
+    },
+    body: JSON.stringify(mailPayload)
+  });
+
+  if (!resp.ok) {
+    return new Response("Mail send failed", { status: 500 });
+  }
+
+  return new Response("OK", { status: 200 });
 }

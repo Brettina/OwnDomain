@@ -514,7 +514,7 @@
   let cursor = new Date();
 
   try {
-const res = await fetch("/assets/calendar-index.json");
+const res = await fetch("/assets/calendar/calendar-index.json");
     if (!res.ok) throw new Error("calendar-index.json missing");
     const data = await res.json();
     events = Array.isArray(data.items) ? data.items : [];

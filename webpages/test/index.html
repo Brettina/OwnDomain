@@ -8,63 +8,12 @@
   <meta name="color-scheme" content="light dark" />
 </head>
 <body>
-  <main class="container" style="padding:20px;">
-    <h1>Mail-Test</h1>
+<form method="POST" action="/api/contact">
+  <input name="name" required>
+  <input name="email" type="email" required>
+  <textarea name="message" required></textarea>
+  <button type="submit">Send</button>
+</form>
 
-    <div class="card" style="padding:14px; display:grid; gap:12px;">
-      <div class="field">
-        <label for="fromEmail">Reply-To</label>
-        <input id="fromEmail" type="email" placeholder="du@beispiel.de" />
-      </div>
-
-      <div class="field">
-        <label for="msg">Nachricht</label>
-        <textarea id="msg" rows="6">Hallo! Das ist ein Test.</textarea>
-      </div>
-
-      <button class="button" id="send">Test-Mail senden</button>
-      <p class="fineprint" id="status" style="margin:0;"></p>
-    </div>
-  </main>
-
-  <script>
-    const $ = (s) => document.querySelector(s);
-    const btn = $("#send");
-    const status = $("#status");
-
-    btn.addEventListener("click", async () => {
-      btn.disabled = true;
-      status.textContent = "Sende…";
-
-      try {
-        const payload = {
-          replyTo: ($("#fromEmail").value || "").trim(),
-          message: ($("#msg").value || "").trim()
-        };
-
-        const res = await fetch("/api/test-mail", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        const text = await res.text();
-        let data = null;
-        try { data = JSON.parse(text); } catch {}
-
-        if (!res.ok) {
-          throw new Error((data && (data.detail || data.error)) ? (data.detail || data.error) : text);
-        }
-
-        alert("Email sent successfully");
-        status.textContent = "OK: E-Mail wurde gesendet.";
-      } catch (e) {
-        alert("Send failed: " + (e?.message || e));
-        status.textContent = "Fehler: " + (e?.message || e);
-      } finally {
-        btn.disabled = false;
-      }
-    });
-  </script>
 </body>
 </html>

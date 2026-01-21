@@ -32,13 +32,15 @@ export async function onRequestPost({ request, env }) {
     ]
   };
 
-  const resp = await fetch("https://api.mailchannels.net/tx/v1/send", {
+    const resp = await fetch("https://api.mailchannels.net/tx/v1/send", {
     method: "POST",
     headers: {
-      "content-type": "application/json"
+      "content-type": "application/json",
+      "X-MC-Auth": "cloudflare"
     },
     body: JSON.stringify(mailPayload)
   });
+
 
    if (!resp.ok) {
     const errText = await resp.text();

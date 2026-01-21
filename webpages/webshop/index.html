@@ -402,6 +402,25 @@
               <label for="address">Adresse</label>
               <textarea id="address" name="address" rows="2" placeholder="Straße, PLZ Ort" required></textarea>
             </div>
+<div class="field">
+  <label for="shipping">Versandweg</label>
+  <select id="shipping" name="shipping" required>
+    <option value="">Bitte wählen…</option>
+    <option value="DHL">DHL</option>
+    <option value="Hermes">Hermes</option>
+    <option value="Nur digital">Nur digital</option>
+  </select>
+</div>
+
+<div class="field">
+  <label for="payment">Bezahlung</label>
+  <select id="payment" name="payment" required>
+    <option value="">Bitte wählen…</option>
+    <option value="BTC">BTC</option>
+    <option value="Wise">Wise</option>
+    <option value="PayPal">PayPal</option>
+  </select>
+</div>
 
             <div class="field">
               <label for="notes">Notizen</label>
@@ -868,35 +887,53 @@ cartClear?.addEventListener("click", () => {
 
     
 
-    function buildMailtoFromForm(fd) {
+function buildMailtoFromForm(fd) {
   const name = (fd.get("name") || "").toString().trim();
-  const email = (fd.get("email") || "").toString().trim();
   const address = (fd.get("address") || "").toString().trim();
   const notes = (fd.get("notes") || "").toString().trim();
 
-  const lines = [];
-  lines.push("Webshop Anfrage");
-  lines.push("");
-  lines.push(`Name: ${name}`);
-  lines.push(`E-Mail: ${email}`);
-  lines.push(`Adresse: ${address}`);
-  lines.push("");
-  lines.push("Auswahl:");
-  cart.forEach(it => {
-    lines.push(`- ${it.name} — ${it.qty} ${it.unit} — Variante: ${it.variant}${it.pickupRequired ? " (Abholung erforderlich)" : ""}`);
-  });
+  const shipping = (fd.get("shipping") || "").toString().trim(); // DHL / Hermes / Nur digital
+  const payment = (fd.get("payment") || "").toString().trim();   // BTC / Wise / PayPal
 
-  if (notes) {
-    lines.push("");
-    lines.push("Notizen:");
-    lines.push(notes);
-  }
+  // Build order list
+  const orderLines = cart.map(it =>
+    `- ${it.name} — ${it.qty} ${it.unit} — Variante: ${it.variant}${it.pickupRequired ? " (Abholung erforderlich)" : ""}`
+  );
 
-  const subject = `[webshop] Anfrage — ${cart.length} Position(en)`;
-  const body = lines.join("\n");
+  // Use CRLF to reduce "weird formatting" in some mail clients
+  const CRLF = "\r\n";
+
+const body = [
+    "Hallo Frau Lohr",
+    "",
+    "Ich möchte eine Bestellung aufgeben an die",
+    "Adresse:",
+    address || "—",
+    "",
+    "Kontakt:",
+    `Name: ${name || "—"}`,
+    `E-Mail: ${email || "—"}`,
+    "",
+    "Bestellung:",
+    orderLines.length ? orderLines.join(CRLF) : "—",
+    "",
+    "Notizen:",
+    notes || "—",
+    "",
+    `Ich möchte bezahlen via: ${payment || "—"}.`,
+    `Bitte liefern Sie mit ${shipping || "—"}.`,
+    "",
+    "Vielen Dank!",
+    "",
+    "Mit freundlichen Grüßen,",
+    name || "—"
+  ].join(CRLF);
+
+  const subject = `[webshop] Bestellung — ${cart.length} Position(en)`;
 
   return { to: CONTACT_EMAIL, subject, body };
 }
+
 
 // trigger mail client reliably (same pattern as your working test)
 function openMailto({ to, subject, body }) {

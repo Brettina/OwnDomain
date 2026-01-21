@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mail-Test — Weichware Lohr</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <meta name="color-scheme" content="light dark" />
+</head>
+<body>
+  <form id="contactForm">
+    <input name="name" required placeholder="Name">
+    <input name="email" type="email" required placeholder="E-Mail">
+    <textarea name="message" required placeholder="Nachricht"></textarea>
+    <button type="submit">Send</button>
+  </form>
+
+  <script>
+    const TO = "anfrage@weichware-lohr.de";
+    const SUBJECT = "Anfrage über die Webseite";
+
+    function clean(s) {
+      return String(s ?? "").replace(/\r/g, "").trim();
+    }
+
+    // Prevent ridiculously long mailto URLs from breaking on some clients.
+    // (Different clients have different limits; keeping it conservative avoids “wonky” behavior.)
+    function clamp(s, maxLen) {
+      s = clean(s);
+      return s.length > maxLen ? s.slice(0, maxLen) + "…" : s;
+    }
+
+    document.getElementById("contactForm").addEventListener("submit", (e) => {
+      e.preventDefault();
+
+      const fd = new FormData(e.currentTarget);
+      const name = clamp(fd.get("name"), 200);
+      const email = clamp(fd.get("email"), 200);
+      const message = clamp(fd.get("message"), 4000);
+
+      if (!message) return;
+
+      const body =
+`Name: ${name || "—"}
+E-Mail: ${email || "—"}
+
+Nachricht:
+${message}
+`;
+
+      const mailto =
+        `mailto:${encodeURIComponent(TO)}` +
+        `?subject=${encodeURIComponent(SUBJECT)}` +
+        `&body=${encodeURIComponent(body)}`;
+
+      // Trigger default mail app / mail handler
+      window.location.href = mailto;
+    });
+  </script>
+</body>
+</html>

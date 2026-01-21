@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Webshop — Weichware Lohr</title>
 
-  <meta name="description" content="Webshop — kleine Serien & Prototypen. Bestellung per E-Mail." />
+  <meta name="description" content="Webshop — kleine Serien & Prototypen. Anfrage per E-Mail." />
   <link rel="stylesheet" href="/assets/styles.css" />
   <link rel="icon" href="/img/webicon.png" type="image/png" />
   <link rel="apple-touch-icon" href="/img/webicon.png" />
@@ -19,6 +19,7 @@
       gap: 10px;
       margin-bottom: 14px;
     }
+
     .shop-controls {
       display: grid;
       gap: 10px;
@@ -31,9 +32,7 @@
       }
     }
 
-    .shop-search {
-      width: 100%;
-    }
+    .shop-search { width: 100%; }
 
     .shop-grid {
       display: grid;
@@ -51,13 +50,16 @@
     .shop-card {
       overflow: hidden;
       border-radius: 16px;
+      cursor: pointer;
     }
+
     .shop-img {
       width: 100%;
       height: 220px;
       object-fit: cover;
       display: block;
     }
+
     .shop-body {
       padding: 14px;
       display: grid;
@@ -66,10 +68,11 @@
 
     .shop-topline {
       display: flex;
-      align-items: center;
+      align-items: baseline;
       justify-content: space-between;
       gap: 10px;
     }
+
     .shop-badge {
       display: inline-flex;
       align-items: center;
@@ -78,42 +81,63 @@
       border-radius: 999px;
       font-size: 0.85em;
       border: 1px solid currentColor;
-      opacity: 0.85;
+      opacity: 0.9;
       white-space: nowrap;
     }
 
-    .shop-row {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: 1fr 1fr;
-    }
-    .shop-row .field { margin: 0; }
-    .shop-row input, .shop-row select {
-      width: 100%;
-    }
-
-    .shop-add {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .cart {
+    /* Prominent cart area */
+    .cart-hero {
       margin-top: 18px;
+      border-radius: 18px;
+      padding: 14px;
+      border: 2px solid currentColor;
+      background: rgba(255, 230, 150, 0.20);
     }
+
+    /* Put cart near the top on wide screens (prominent) */
+    .shop-layout {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: 1fr;
+    }
+    @media (min-width: 1100px) {
+      .shop-layout {
+        grid-template-columns: 1.35fr 0.65fr;
+        align-items: start;
+      }
+      .cart-hero {
+        position: sticky;
+        top: 12px;
+      }
+    }
+
     .cart-items {
       display: grid;
       gap: 10px;
       margin-top: 10px;
     }
+
     .cart-item {
       display: grid;
-      gap: 8px;
+      gap: 10px;
       padding: 12px;
       border-radius: 14px;
     }
+
+    .cart-item-grid {
+      display: grid;
+      grid-template-columns: 56px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+    .cart-thumb {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      object-fit: cover;
+      border: 1px solid rgba(127,127,127,0.35);
+    }
+
     .cart-item-top {
       display: flex;
       align-items: baseline;
@@ -121,6 +145,7 @@
       gap: 12px;
       flex-wrap: wrap;
     }
+
     .cart-item-meta {
       display: flex;
       gap: 10px;
@@ -128,12 +153,14 @@
       align-items: center;
       opacity: 0.9;
     }
+
     .cart-actions {
       display: flex;
       gap: 8px;
       align-items: center;
       flex-wrap: wrap;
     }
+
     .btn-mini {
       padding: 6px 10px;
       border-radius: 999px;
@@ -149,7 +176,7 @@
     }
     @media (min-width: 900px) {
       .checkout-grid {
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr;
       }
     }
 
@@ -158,13 +185,99 @@
       padding: 14px;
       border-radius: 14px;
     }
+
+    /* Cart icon badge in nav */
+    .cart-link {
+      position: relative;
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      white-space: nowrap;
+    }
+
+    .cart-count {
+      display: inline-flex;
+      min-width: 22px;
+      height: 22px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      font-size: 0.85em;
+      padding: 0 6px;
+      opacity: 0.95;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      z-index: 9999;
+    }
+    .modal-backdrop.is-open { display: flex; }
+
+    .modal {
+      width: min(760px, 100%);
+      border-radius: 18px;
+      overflow: hidden;
+    }
+
+    .modal-img {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .modal .modal-body {
+      padding: 14px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .modal-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .shop-row {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .shop-row .field { margin: 0; }
+
+    .shop-row input, .shop-row select {
+      width: 100%;
+    }
+
+    /* Make product cards clearly clickable */
+    .shop-card:focus {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
   </style>
 </head>
 
 <body class="page-webshop">
   <a class="skip-link" href="#main">Zum Inhalt springen</a>
 
-  <!-- same nav as index -->
   <header class="site-header">
     <nav class="nav" aria-label="Hauptnavigation">
       <a class="brand" href="/">Bettina Lohr, M Sc.</a>
@@ -175,6 +288,12 @@
         <li><a href="/webpages/webshop/" aria-current="page">Webshop</a></li>
         <li><a href="/webpages/blog/">Blog</a></li>
         <li><a href="/regulation/imprint/">Impressum</a></li>
+        <li>
+          <a href="#cart" class="cart-link" aria-label="Zum Warenkorb">
+            <span aria-hidden="true">🛒</span>
+            <span class="cart-count" id="cart-count" aria-label="Anzahl im Warenkorb">0</span>
+          </a>
+        </li>
       </ul>
     </nav>
   </header>
@@ -183,7 +302,7 @@
     <header class="page-hero shop-head">
       <h1>Webshop</h1>
       <p class="lead" style="margin:0;">
-        Kleine Serien / Prototypen. Keine Zahlung auf der Website — du stellst hier eine Auswahl zusammen und öffnest einen E-Mail-Entwurf.
+        Kleine Serien / Prototypen. Keine Zahlung auf der Website — du stellst hier eine Auswahl zusammen und sendest eine Anfrage per E-Mail.
       </p>
 
       <div class="note-block" style="margin-top:12px;">
@@ -226,25 +345,33 @@
         </div>
       </div>
 
-      <div id="shop-grid" class="shop-grid" aria-live="polite"></div>
+      <div class="shop-layout" style="margin-top:14px;">
+        <div>
+          <div id="shop-grid" class="shop-grid" aria-live="polite"></div>
 
-      <div id="shop-empty" class="card empty" style="display:none; margin-top:14px;">
-        <p class="fineprint" style="margin:0;">
-          Keine Treffer. (Falls alles leer ist: prüfe, ob <code>/assets/products.json</code> auf dem Server existiert und Produkte enthält.)
-        </p>
-      </div>
-    </section>
+          <div id="shop-empty" class="card empty" style="display:none; margin-top:14px;">
+            <p class="fineprint" style="margin:0;">
+              Keine Treffer. (Falls alles leer ist: prüfe, ob <code>/assets/products.json</code> auf dem Server existiert und Produkte enthält.)
+            </p>
+          </div>
+        </div>
 
-    <section class="section cart" aria-labelledby="cart">
-      <h2 id="cart">Deine Auswahl</h2>
-      <p class="fineprint" style="margin-top:6px;">
-        Du kannst mehrere Produkte sammeln und dann eine einzige Anfrage schicken.
-      </p>
+        <aside class="cart-hero" aria-labelledby="cart">
+          <div style="display:flex; align-items:baseline; justify-content:space-between; gap:10px; flex-wrap:wrap;">
+            <h2 id="cart" style="margin:0;">Deine Auswahl</h2>
+            <button class="btn-mini" type="button" id="cart-clear" style="display:none;">Alles leeren</button>
+          </div>
 
-      <div id="cart-items" class="cart-items"></div>
+          <p class="fineprint" style="margin-top:6px;">
+            Klick auf ein Produkt → Details → Variante/Menge → in Auswahl.
+          </p>
 
-      <div id="cart-empty" class="card empty" style="margin-top:12px;">
-        <p class="fineprint" style="margin:0;">Noch nichts ausgewählt. Klick bei einem Produkt auf „Hinzufügen“.</p>
+          <div id="cart-items" class="cart-items"></div>
+
+          <div id="cart-empty" class="card empty" style="margin-top:12px;">
+            <p class="fineprint" style="margin:0;">Noch nichts ausgewählt. Öffne ein Produkt und füge es hinzu.</p>
+          </div>
+        </aside>
       </div>
     </section>
 
@@ -272,6 +399,11 @@
             </div>
 
             <div class="field">
+              <label for="address">Adresse</label>
+              <textarea id="address" name="address" rows="2" placeholder="Straße, PLZ Ort" required></textarea>
+            </div>
+
+            <div class="field">
               <label for="notes">Notizen</label>
               <textarea id="notes" name="notes" rows="4" placeholder="Sonderwünsche, Alternativ-Zeiten, Material/Farbe, etc."></textarea>
             </div>
@@ -285,34 +417,47 @@
               Siehe <a href="/regulation/privacy/">Datenschutz</a>, <a href="/regulation/cookies/">Cookies</a>, <a href="/regulation/imprint/">Impressum</a>.
             </p>
 
-            <button class="button" type="submit" id="send-btn" disabled>E-Mail-Entwurf öffnen</button>
+            <button class="button" type="submit" id="send-btn" disabled>Anfrage per E-Mail senden</button>
             <p class="fineprint" id="send-hint" style="margin-top:10px; opacity:0.9;"></p>
           </form>
-        </div>
-
-        <div class="card" style="padding:14px;">
-          <h3 style="margin-top:0;">Abholung (falls nötig)</h3>
-          <p class="fineprint" style="margin-top:6px;">
-            Nur relevant, wenn ein ausgewählter Artikel Abholung erfordert.
-          </p>
-
-          <div class="field">
-            <label for="pickup-when">Wunschzeit</label>
-            <input id="pickup-when" type="datetime-local" />
-          </div>
-
-          <div class="field">
-            <label for="pickup-where">Ort (kurz beschreiben)</label>
-            <input id="pickup-where" placeholder="z.B. Lohr Zentrum / Würzburg Hbf / Parkplatz …" />
-          </div>
-
-          <div class="note-block" id="pickup-hint" style="display:none; margin-top:12px;">
-            <p class="fineprint" style="margin:0;" id="pickup-hint-text"></p>
-          </div>
         </div>
       </div>
     </section>
   </main>
+
+  <!-- Product modal -->
+  <div class="modal-backdrop" id="product-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <article class="card modal">
+      <img id="modal-img" class="modal-img" alt="" />
+      <div class="modal-body">
+        <div class="modal-top">
+          <h3 id="modal-title" style="margin:0;"></h3>
+          <button type="button" class="btn-mini" id="modal-close" aria-label="Schließen">✕</button>
+        </div>
+
+        <div class="fineprint" id="modal-status"></div>
+        <div class="fineprint" id="modal-pickup" style="display:none;"></div>
+
+        <p id="modal-long" style="margin:0;"></p>
+
+        <div class="shop-row">
+          <div class="field">
+            <label for="modal-variant">Variante</label>
+            <select id="modal-variant"></select>
+          </div>
+          <div class="field">
+            <label for="modal-qty">Menge</label>
+            <input id="modal-qty" type="number" min="1" max="50" value="1" />
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <span class="fineprint" id="modal-unit"></span>
+          <button type="button" class="button" id="modal-add">In Auswahl</button>
+        </div>
+      </div>
+    </article>
+  </div>
 
   <footer class="site-footer">
     <p>© <span id="year"></span> Weichware Lohr</p>
@@ -326,10 +471,11 @@
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    // If you want, later read this from pages.json – for now: keep it explicit and robust.
     const CONTACT_EMAIL = "anfrage@weichware-lohr.de";
+    const CART_KEY = "weichware_webshop_cart_v1";
 
     const $ = (s) => document.querySelector(s);
+
     const grid = $("#shop-grid");
     const empty = $("#shop-empty");
 
@@ -339,22 +485,66 @@
 
     const cartWrap = $("#cart-items");
     const cartEmpty = $("#cart-empty");
+    const cartCount = $("#cart-count");
+    const cartClear = $("#cart-clear");
 
     const form = $("#checkout-form");
     const sendBtn = $("#send-btn");
     const sendHint = $("#send-hint");
 
-    const pickupWhen = $("#pickup-when");
-    const pickupWhere = $("#pickup-where");
-    const pickupHint = $("#pickup-hint");
-    const pickupHintText = $("#pickup-hint-text");
+    // Modal elements
+    const modalBackdrop = $("#product-modal");
+    const modalClose = $("#modal-close");
+    const modalImg = $("#modal-img");
+    const modalTitle = $("#modal-title");
+    const modalStatus = $("#modal-status");
+    const modalPickup = $("#modal-pickup");
+    const modalLong = $("#modal-long");
+    const modalVariant = $("#modal-variant");
+    const modalQty = $("#modal-qty");
+    const modalUnit = $("#modal-unit");
+    const modalAdd = $("#modal-add");
 
     let products = [];
-    let cart = []; // {id, name, variant, qty, unit, pickupRequired}
+    let cart = []; // {id, name, image, variant, qty, unit, pickupRequired}
+
+    let activeProduct = null;
 
     function normalize(s) { return (s || "").toString().toLowerCase().trim(); }
-
     function compare(a, b) { return a < b ? -1 : a > b ? 1 : 0; }
+
+    function safeImage(p) { return p?.image || "/img/webicon.png"; }
+    function safeVariants(p) {
+      return (Array.isArray(p?.variants) && p.variants.length) ? p.variants : ["Standard"];
+    }
+    function safeUnit(p) { return p?.unit || "Stück"; }
+
+    function loadCartFromStorage() {
+      try {
+        const raw = localStorage.getItem(CART_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveCartToStorage() {
+      try {
+        localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      } catch {}
+    }
+
+    function cartTotalQty() {
+      return cart.reduce((sum, it) => sum + (parseInt(it.qty || 0, 10) || 0), 0);
+    }
+
+    function syncCartBadge() {
+      const n = cartTotalQty();
+      cartCount.textContent = String(n);
+      cartClear.style.display = cart.length ? "inline-flex" : "none";
+    }
 
     function getFilteredProducts() {
       const qq = normalize(q.value);
@@ -364,7 +554,7 @@
 
       if (qq) {
         list = list.filter(p => {
-          const hay = normalize(p.name) + " " + normalize(p.description) + " " + normalize(p.id);
+          const hay = normalize(p.name) + " " + normalize(p.description) + " " + normalize(p.longDescription) + " " + normalize(p.id);
           return hay.includes(qq);
         });
       }
@@ -384,18 +574,20 @@
     function renderProducts() {
       const list = getFilteredProducts();
       grid.innerHTML = "";
-
       empty.style.display = list.length ? "none" : "block";
 
       list.forEach(p => {
         const card = document.createElement("article");
         card.className = "card shop-card";
+        card.tabIndex = 0;
+        card.setAttribute("role", "button");
+        card.setAttribute("aria-label", `${p.name || p.id} öffnen`);
 
         const img = document.createElement("img");
         img.className = "shop-img";
         img.loading = "lazy";
         img.alt = p.name || p.id;
-        img.src = p.image || "/img/webicon.png";
+        img.src = safeImage(p);
 
         const body = document.createElement("div");
         body.className = "shop-body";
@@ -409,7 +601,9 @@
 
         const badge = document.createElement("span");
         badge.className = "shop-badge";
-        badge.textContent = p.status || "—";
+        // Only show "verfügbar" explicitly when it is available; otherwise show status if present.
+        const st = (p.status || "").toString().trim();
+        badge.textContent = st ? st : "—";
 
         top.appendChild(h);
         top.appendChild(badge);
@@ -417,96 +611,46 @@
         const desc = document.createElement("p");
         desc.className = "fineprint";
         desc.style.margin = "0";
-        desc.textContent = p.description || "";
-
-        const row = document.createElement("div");
-        row.className = "shop-row";
-
-        const variantField = document.createElement("div");
-        variantField.className = "field";
-        const vLabel = document.createElement("label");
-        vLabel.textContent = "Variante";
-        const vSel = document.createElement("select");
-        (Array.isArray(p.variants) && p.variants.length ? p.variants : ["Standard"]).forEach(v => {
-          const opt = document.createElement("option");
-          opt.value = v;
-          opt.textContent = v;
-          vSel.appendChild(opt);
-        });
-        variantField.appendChild(vLabel);
-        variantField.appendChild(vSel);
-
-        const qtyField = document.createElement("div");
-        qtyField.className = "field";
-        const qLabel = document.createElement("label");
-        qLabel.textContent = "Menge";
-        const qIn = document.createElement("input");
-        qIn.type = "number";
-        qIn.min = "1";
-        qIn.max = "50";
-        qIn.value = "1";
-        qtyField.appendChild(qLabel);
-        qtyField.appendChild(qIn);
-
-        row.appendChild(variantField);
-        row.appendChild(qtyField);
-
-        const addRow = document.createElement("div");
-        addRow.className = "shop-add";
-
-        const pickNote = document.createElement("span");
-        pickNote.className = "fineprint";
-        pickNote.style.margin = "0";
-        pickNote.textContent = p.pickupRequired ? "Abholung erforderlich" : (p.unit ? `Einheit: ${p.unit}` : "");
-
-        const add = document.createElement("button");
-        add.type = "button";
-        add.className = "button button-secondary";
-        add.textContent = "Hinzufügen";
-
-        add.addEventListener("click", () => {
-          const variant = vSel.value || "Standard";
-          const qty = Math.max(1, parseInt(qIn.value || "1", 10));
-
-          // merge same product+variant
-          const existing = cart.find(x => x.id === p.id && x.variant === variant);
-          if (existing) existing.qty += qty;
-          else cart.push({
-            id: p.id,
-            name: p.name || p.id,
-            variant,
-            qty,
-            unit: p.unit || "Stück",
-            pickupRequired: !!p.pickupRequired
-          });
-
-          renderCart();
-          syncCheckoutState();
-          document.getElementById("cart").scrollIntoView({ behavior: "smooth", block: "start" });
-        });
-
-        addRow.appendChild(pickNote);
-        addRow.appendChild(add);
+        // Keep short; long text goes into modal
+        desc.textContent = (p.description || "").toString().trim();
 
         body.appendChild(top);
         body.appendChild(desc);
-        body.appendChild(row);
-        body.appendChild(addRow);
 
         card.appendChild(img);
         card.appendChild(body);
+
+        function open() { openProductModal(p); }
+        card.addEventListener("click", open);
+        card.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            open();
+          }
+        });
+
         grid.appendChild(card);
       });
     }
 
     function renderCart() {
       cartWrap.innerHTML = "";
-
       cartEmpty.style.display = cart.length ? "none" : "block";
 
       cart.forEach((it, idx) => {
         const box = document.createElement("div");
         box.className = "card cart-item";
+
+        const gridRow = document.createElement("div");
+        gridRow.className = "cart-item-grid";
+
+        const thumb = document.createElement("img");
+        thumb.className = "cart-thumb";
+        thumb.alt = it.name || "Produkt";
+        thumb.loading = "lazy";
+        thumb.src = it.image || "/img/webicon.png";
+
+        const right = document.createElement("div");
 
         const top = document.createElement("div");
         top.className = "cart-item-top";
@@ -535,7 +679,8 @@
         minus.type = "button";
         minus.textContent = "−";
         minus.addEventListener("click", () => {
-          it.qty = Math.max(1, it.qty - 1);
+          it.qty = Math.max(1, (parseInt(it.qty, 10) || 1) - 1);
+          saveCartToStorage();
           renderCart();
           syncCheckoutState();
         });
@@ -545,9 +690,30 @@
         plus.type = "button";
         plus.textContent = "+";
         plus.addEventListener("click", () => {
-          it.qty = Math.min(50, it.qty + 1);
+          it.qty = Math.min(50, (parseInt(it.qty, 10) || 1) + 1);
+          saveCartToStorage();
           renderCart();
           syncCheckoutState();
+        });
+
+        const edit = document.createElement("button");
+        edit.className = "btn-mini";
+        edit.type = "button";
+        edit.textContent = "Ändern";
+        edit.addEventListener("click", () => {
+          // Re-open modal for the original product if present; otherwise allow quick edit
+          const p = products.find(x => x.id === it.id) || null;
+          if (p) {
+            openProductModal(p, { preselectVariant: it.variant, presetQty: it.qty });
+          } else {
+            // minimal quick-edit fallback
+            const newQty = prompt("Menge:", String(it.qty));
+            const parsed = Math.max(1, parseInt(newQty || String(it.qty), 10) || it.qty);
+            it.qty = Math.min(50, parsed);
+            saveCartToStorage();
+            renderCart();
+            syncCheckoutState();
+          }
         });
 
         const remove = document.createElement("button");
@@ -556,26 +722,27 @@
         remove.textContent = "Entfernen";
         remove.addEventListener("click", () => {
           cart.splice(idx, 1);
+          saveCartToStorage();
           renderCart();
           syncCheckoutState();
         });
 
         actions.appendChild(minus);
         actions.appendChild(plus);
+        actions.appendChild(edit);
         actions.appendChild(remove);
 
-        box.appendChild(top);
-        box.appendChild(actions);
+        right.appendChild(top);
+        right.appendChild(actions);
 
+        gridRow.appendChild(thumb);
+        gridRow.appendChild(right);
+
+        box.appendChild(gridRow);
         cartWrap.appendChild(box);
       });
 
-      // pickup hint visibility
-      const needsPickup = cart.some(x => x.pickupRequired);
-      pickupHint.style.display = needsPickup ? "block" : "none";
-      pickupHintText.textContent = needsPickup
-        ? "Mindestens ein ausgewählter Artikel erfordert Abholung. Bitte Wunschzeit und Ort ergänzen."
-        : "";
+      syncCartBadge();
     }
 
     function syncCheckoutState() {
@@ -583,43 +750,130 @@
       sendBtn.disabled = !ok;
 
       if (!ok) {
-        sendHint.textContent = "Füge mindestens ein Produkt hinzu, dann kannst du den E-Mail-Entwurf öffnen.";
+        sendHint.textContent = "Füge mindestens ein Produkt hinzu, dann kannst du die Anfrage senden.";
         return;
       }
 
       const needsPickup = cart.some(x => x.pickupRequired);
       sendHint.textContent = needsPickup
-        ? "Hinweis: Für Abholung bitte Wunschzeit & Ort ergänzen."
-        : "Du kannst jetzt den E-Mail-Entwurf öffnen.";
+        ? "Hinweis: Mindestens ein Artikel erfordert Abholung (steht in der Auswahl)."
+        : "Du kannst jetzt die Anfrage senden.";
     }
 
-    function buildEmail(fd) {
+    function openProductModal(p, opts = {}) {
+      activeProduct = p;
+
+      modalTitle.textContent = p.name || p.id;
+      modalImg.src = safeImage(p);
+      modalImg.alt = p.name || p.id;
+
+      const st = (p.status || "").toString().trim();
+      modalStatus.textContent = st ? `Status: ${st}` : "";
+
+      modalPickup.style.display = p.pickupRequired ? "block" : "none";
+      modalPickup.textContent = p.pickupRequired ? "Abholung erforderlich" : "";
+
+      const longText = (p.longDescription || p.description || "").toString().trim();
+      modalLong.textContent = longText;
+
+      // Variants
+      modalVariant.innerHTML = "";
+      safeVariants(p).forEach(v => {
+        const opt = document.createElement("option");
+        opt.value = v;
+        opt.textContent = v;
+        modalVariant.appendChild(opt);
+      });
+
+      const preselect = (opts.preselectVariant || "").toString().trim();
+      if (preselect) {
+        const match = Array.from(modalVariant.options).find(o => o.value === preselect);
+        if (match) modalVariant.value = preselect;
+      }
+
+      // Qty
+      const presetQty = parseInt(opts.presetQty || "1", 10);
+      modalQty.value = String(Math.min(50, Math.max(1, isNaN(presetQty) ? 1 : presetQty)));
+
+      modalUnit.textContent = `Einheit: ${safeUnit(p)}`;
+
+      modalBackdrop.classList.add("is-open");
+      document.body.style.overflow = "hidden";
+
+      // focus close for accessibility
+      setTimeout(() => modalClose?.focus(), 0);
+    }
+
+    function closeProductModal() {
+      modalBackdrop.classList.remove("is-open");
+      document.body.style.overflow = "";
+      activeProduct = null;
+    }
+
+    modalClose.addEventListener("click", closeProductModal);
+    modalBackdrop.addEventListener("click", (e) => {
+      if (e.target === modalBackdrop) closeProductModal();
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && modalBackdrop.classList.contains("is-open")) closeProductModal();
+    });
+
+    modalAdd.addEventListener("click", () => {
+      if (!activeProduct) return;
+
+      const variant = (modalVariant.value || "Standard").toString();
+      const qty = Math.max(1, Math.min(50, parseInt(modalQty.value || "1", 10) || 1));
+
+      // merge by id+variant
+      const existing = cart.find(x => x.id === activeProduct.id && x.variant === variant);
+      if (existing) existing.qty = Math.min(50, (parseInt(existing.qty, 10) || 0) + qty);
+      else cart.push({
+        id: activeProduct.id,
+        name: activeProduct.name || activeProduct.id,
+        image: safeImage(activeProduct),
+        variant,
+        qty,
+        unit: safeUnit(activeProduct),
+        pickupRequired: !!activeProduct.pickupRequired
+      });
+
+      saveCartToStorage();
+      renderCart();
+      syncCheckoutState();
+      closeProductModal();
+
+      // bring attention to cart without being jarring
+      const cartEl = document.getElementById("cart");
+      cartEl?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+
+    cartClear.addEventListener("click", () => {
+      if (!cart.length) return;
+      const ok = confirm("Wirklich die gesamte Auswahl leeren?");
+      if (!ok) return;
+      cart = [];
+      saveCartToStorage();
+      renderCart();
+      syncCheckoutState();
+    });
+
+    function buildEmailPayload(fd) {
       const name = (fd.get("name") || "").toString().trim();
       const email = (fd.get("email") || "").toString().trim();
+      const address = (fd.get("address") || "").toString().trim();
       const notes = (fd.get("notes") || "").toString().trim();
-
-      const needsPickup = cart.some(x => x.pickupRequired);
-      const when = (pickupWhen.value || "").trim();
-      const where = (pickupWhere.value || "").trim();
 
       const lines = [];
       lines.push("Webshop Anfrage");
       lines.push("");
       lines.push(`Name: ${name}`);
       lines.push(`E-Mail: ${email}`);
+      lines.push(`Adresse: ${address}`);
       lines.push("");
-
       lines.push("Auswahl:");
       cart.forEach(it => {
         lines.push(`- ${it.name} — ${it.qty} ${it.unit} — Variante: ${it.variant}${it.pickupRequired ? " (Abholung erforderlich)" : ""}`);
       });
-
-      if (needsPickup) {
-        lines.push("");
-        lines.push("Abholung (Wunsch):");
-        lines.push(`- Zeitpunkt: ${when || "—"}`);
-        lines.push(`- Ort: ${where || "—"}`);
-      }
 
       if (notes) {
         lines.push("");
@@ -630,15 +884,38 @@
       const subject = `[webshop] Anfrage — ${cart.length} Position(en)`;
       const body = lines.join("\n");
 
-      return { subject, body };
+      // payload for backend email function
+      return {
+        to: CONTACT_EMAIL,
+        replyTo: email,
+        subject,
+        text: body,
+        meta: { name, email, address }
+      };
     }
 
-    function openMailto({ subject, body }) {
-      const url =
-        `mailto:${CONTACT_EMAIL}` +
-        `?subject=${encodeURIComponent(subject)}` +
-        `&body=${encodeURIComponent(body)}`;
-      window.location.href = url;
+    async function sendEmailViaApi(payload) {
+      // expects your serverless function at /api/hipster-mail to accept JSON and return JSON { ok: true }
+      const res = await fetch("/api/hipster-mail", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      let data = null;
+      try { data = await res.json(); } catch {}
+
+      if (!res.ok) {
+        const msg = (data && (data.error || data.message)) ? (data.error || data.message) : `HTTP ${res.status}`;
+        throw new Error(msg);
+      }
+
+      if (!data || data.ok !== true) {
+        const msg = (data && (data.error || data.message)) ? (data.error || data.message) : "Unbekannter Fehler";
+        throw new Error(msg);
+      }
+
+      return true;
     }
 
     async function loadProducts() {
@@ -651,7 +928,7 @@
     // Wire controls
     [q, status, sort].forEach(el => el.addEventListener("input", renderProducts));
 
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
       e.preventDefault();
 
       // honeypot
@@ -660,24 +937,56 @@
 
       if (!cart.length) return;
 
-      const fd = new FormData(form);
       const consent = form.querySelector("#consent");
       if (consent && !consent.checked) return;
 
-      const { subject, body } = buildEmail(fd);
-      openMailto({ subject, body });
+      // basic validity (so we don't fire an API call with empty fields)
+      if (!form.reportValidity()) return;
+
+      // lock UI while sending
+      sendBtn.disabled = true;
+      sendBtn.textContent = "Sende…";
+
+      try {
+        const fd = new FormData(form);
+        const payload = buildEmailPayload(fd);
+        await sendEmailViaApi(payload);
+
+        alert("Email sent successfully");
+
+        // clear cart & persist
+        cart = [];
+        saveCartToStorage();
+        renderCart();
+        syncCheckoutState();
+
+        // optional: keep user data, but clear notes
+        const notes = $("#notes");
+        if (notes) notes.value = "";
+
+      } catch (err) {
+        // If your API isn't wired yet, this will surface cleanly
+        alert(`Senden fehlgeschlagen: ${err?.message || err}`);
+        syncCheckoutState();
+      } finally {
+        sendBtn.textContent = "Anfrage per E-Mail senden";
+        // re-enable depends on cart state:
+        sendBtn.disabled = cart.length === 0;
+      }
     });
 
     // init
     (async function init() {
+      cart = loadCartFromStorage();
       try {
         await loadProducts();
-      } catch (e) {
+      } catch {
         products = [];
       }
       renderProducts();
       renderCart();
       syncCheckoutState();
+      syncCartBadge();
     })();
   </script>
 </body>

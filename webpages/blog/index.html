@@ -253,7 +253,7 @@ function buildTags(meta) {
     }
 
     async function loadActivities() {
-      const res = await fetch("/assets/activities.json", { cache: "no-store" });
+const res = await fetch("/assets/activities.json");
       if (!res.ok) throw new Error("activities.json missing");
       const data = await res.json();
       const list = Array.isArray(data.items) ? data.items : [];
@@ -267,7 +267,7 @@ function buildTags(meta) {
     async function loadMetaFor(slug) {
       // Reads /assets/blog/<slug>/meta.json if present
       try {
-        const res = await fetch(`/assets/blog/${encodeURIComponent(slug)}/meta.json`, { cache: "no-store" });
+const res = await fetch(`/assets/blog/${encodeURIComponent(slug)}/meta.json`);
         if (!res.ok) return null;
         return await res.json();
       } catch {
@@ -278,7 +278,7 @@ function buildTags(meta) {
     async function loadContentHtml(item) {
       // Preferred: generated contentUrl from generate-activities.mjs
       if (item.contentUrl) {
-        const res = await fetch(item.contentUrl, { cache: "no-store" });
+const res = await fetch(item.contentUrl);
         if (!res.ok) throw new Error("contentUrl fetch failed");
         const html = await res.text();
 
@@ -423,8 +423,11 @@ for (const t of tags) {
         // lazy-load content on first open
         if (!wrapper.dataset.loaded) {
           wrapper.dataset.loaded = "true";
-          const metaLoaded = meta || await loadMetaFor(slug);
-          const html = await loadContentHtml(item);
+const [metaLoaded, html] = await Promise.all([
+  meta ? Promise.resolve(meta) : loadMetaFor(slug),
+  loadContentHtml(item)
+]);
+
 
           content.innerHTML = html;
 
@@ -479,11 +482,11 @@ for (const t of tags) {
       emptyEl.style.display = list.length ? "none" : "block";
 
 for (const item of list) {
-  const meta = await loadMetaFor(item.slug); // <-- load meta now
   const content = `<div class="prose"><p class="fineprint">Öffnen zum Lesen…</p></div>`;
-  const card = makePostCard(item, meta, content, false);
+  const card = makePostCard(item, null, content, false);
   postsEl.appendChild(card);
 }
+
 
     }
 

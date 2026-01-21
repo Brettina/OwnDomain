@@ -191,6 +191,7 @@ Keine Projekte gefunden. (Prüfen: <code>/assets/projects-index.json</code> exis
   const emptyEl = document.getElementById("empty");
   const qEl = document.getElementById("q");
   const filterEl = document.getElementById("filter");
+//const [meta, html] = await Promise.all([loadMetaFor(slug), loadContent(item)]);
 
   let items = [];        // from /assets/projects-index.json
   let calendarItems = []; // from /assets/calendar-index.json
@@ -259,21 +260,21 @@ Keine Projekte gefunden. (Prüfen: <code>/assets/projects-index.json</code> exis
       .sort((a, b) => String(a.date || "").localeCompare(String(b.date || "")));
   }
 
-  async function loadProjectsIndex() {
-    const res = await fetch("/assets/projects-index.json", { cache: "no-store" });
-    if (!res.ok) throw new Error("projects-index.json missing");
-    const data = await res.json();
-    const list = Array.isArray(data.items) ? data.items : [];
+async function loadProjectsIndex() {
+  const res = await fetch("/assets/projects-index.json");
+  if (!res.ok) throw new Error("projects-index.json missing");
+  const data = await res.json();
+  const list = Array.isArray(data.items) ? data.items : [];
 
-    // newest first (already should be, but enforce)
-    items = list
-      .filter(x => x && x.type === "project")
-      .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")));
-  }
+  items = list
+    .filter(x => x && x.type === "project")
+    .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")));
+}
+
 
   async function loadCalendarIndex() {
     try {
-      const res = await fetch("/assets/calendar-index.json", { cache: "no-store" });
+const res = await fetch("/assets/calendar-index.json");
       if (!res.ok) throw new Error("calendar-index.json missing");
       const data = await res.json();
       calendarItems = Array.isArray(data.items) ? data.items : [];
@@ -284,7 +285,7 @@ Keine Projekte gefunden. (Prüfen: <code>/assets/projects-index.json</code> exis
 
   async function loadMetaFor(slug) {
     try {
-      const res = await fetch(`/assets/projects/${encodeURIComponent(slug)}/meta.json`, { cache: "no-store" });
+const res = await fetch(`/assets/projects/${encodeURIComponent(slug)}/meta.json`);
       if (!res.ok) return null;
       return await res.json();
     } catch {
@@ -301,7 +302,7 @@ Keine Projekte gefunden. (Prüfen: <code>/assets/projects-index.json</code> exis
       return `<div class="prose">${excerpt}</div>`;
     }
 
-    const res = await fetch(item.contentUrl, { cache: "no-store" });
+const res = await fetch(item.contentUrl);
     if (!res.ok) {
       return `<div class="prose"><p class="fineprint">Content konnte nicht geladen werden.</p></div>`;
     }
@@ -491,8 +492,8 @@ Keine Projekte gefunden. (Prüfen: <code>/assets/projects-index.json</code> exis
       if (!wrapper.dataset.loaded) {
         wrapper.dataset.loaded = "true";
 
-        const meta = await loadMetaFor(slug);
-        const html = await loadContent(item);
+const [meta, html] = await Promise.all([loadMetaFor(slug), loadContent(item)]);
+
         const refs = buildRefs(meta);
         const projectTags = asArray(meta?.tags);
         const relEvents = relevantEventsForProject(slug, projectTags);

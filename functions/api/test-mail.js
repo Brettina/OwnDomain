@@ -4,46 +4,55 @@ function esc(s) {
   return String(s || "").replace(/\r/g, "").trim();
 }
 
+function json(body, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" }
+  });
+}
+
 export async function onRequestPost(ctx) {
-  const { request, env } = ctx;
-
-  // same-origin guard (keep it simple + safe)
-  const origin = request.headers.get("Origin") || "";
-  const host = new URL(request.url).origin;
-  if (origin && origin !== host) {
-    return new Response(JSON.stringify({ ok: false, error: "forbidden" }), {
-      status: 403,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
-
-  let payload = {};
   try {
-    payload = await request.json();
-  } catch {
-    return new Response(JSON.stringify({ ok: false, error: "bad json" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
+    const { request, env } = ctx;
 
-  const to = "anfrage@weichware-lohr.de";
-  const replyTo = esc(payload.replyTo);
-  const message = esc(payload.message);
+    // 1) Same-origin guard
+    const origin = request.headers.get("Origin") || "";
+    const host = new URL(request.url).origin;
+    if (origin && origin !== host) {
+      return json({ ok: false, error: "forbidden", origin, host }, 403);
+    }
 
-  if (!message) {
-    return new Response(JSON.stringify({ ok: false, error: "missing message" }), {
-      status: 400,
-      headers: { "Content-Type": "application/json" }
-    });
-  }
+    // 2) Parse JSON
+    let payload = {};
+    try {
+      payload = await request.json();
+    } catch (e) {
+      return json({ ok: false, error: "bad json", detail: String(e?.message || e) }, 400);
+    }
 
-  // IMPORTANT: must be an address on *your* domain with Email Routing enabled
-  // Replace with a real sender you configured in Cloudflare Email Routing.
-  const from = "web@anfrage@weichware-lohr.de"; // <-- CHANGE THIS
+    const to = "anfrage@weichware-lohr.de";
+    const replyTo = esc(payload.replyTo);
+    const message = esc(payload.message);
 
-  const subject = "[test] Mail-Test Webseite";
-  const body =
+    if (!message) {
+      return json({ ok: false, error: "missing message" }, 400);
+    }
+
+    // 3) HARD CHECK: binding exists
+    if (!env || !env.HIPSTER_SEND || typeof env.HIPSTER_SEND.send !== "function") {
+      return json({
+        ok: false,
+        error: "missing email binding env.HIPSTER_SEND",
+        hint: "Check Cloudflare Pages/Workers bindings: you need an Email Routing binding named HIPSTER_SEND."
+      }, 500);
+    }
+
+    // 4) IMPORTANT: sender must be on YOUR domain with Email Routing enabled
+    // CHANGE THIS LINE:
+    const from = "anfrage@weichware-lohr.de";
+
+    const subject = "[test] Mail-Test Webseite";
+    const body =
 `Mail-Test (webpages/test)
 
 Reply-To: ${replyTo || "—"}
@@ -52,23 +61,15 @@ Message:
 ${message}
 `;
 
-  const msg = new EmailMessage(from, to, body);
-  msg.setSubject(subject);
+    const msg = new EmailMessage(from, to, body);
+    msg.setSubject(subject);
+    if (replyTo) msg.headers.set("Reply-To", replyTo);
 
-  if (replyTo) {
-    msg.headers.set("Reply-To", replyTo);
-  }
-
-  try {
     await env.HIPSTER_SEND.send(msg);
-    return new Response(JSON.stringify({ ok: true }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" }
-    });
+
+    return json({ ok: true });
   } catch (e) {
-    return new Response(JSON.stringify({ ok: false, error: String(e?.message || e) }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" }
-    });
+    // If ANY exception happens, return it as JSON instead of CF's 1101 page
+    return json({ ok: false, error: "exception", detail: String(e?.message || e) }, 500);
   }
 }

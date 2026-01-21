@@ -40,9 +40,14 @@ export async function onRequestPost({ request, env }) {
     body: JSON.stringify(mailPayload)
   });
 
-  if (!resp.ok) {
-    return new Response("Mail send failed", { status: 500 });
+   if (!resp.ok) {
+    const errText = await resp.text();
+    return new Response(
+      `Mail send failed\nStatus: ${resp.status}\n${errText}`,
+      { status: 500 }
+    );
   }
+
 
   return new Response("OK", { status: 200 });
 }

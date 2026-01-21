@@ -9,14 +9,12 @@ function json(body, status = 200) {
   });
 }
 
-// MailChannels HTTP API endpoint
 const MAILCHANNELS_URL = "https://api.mailchannels.net/tx/v1/send";
 
 export async function onRequestPost(ctx) {
   try {
     const { request } = ctx;
 
-    // Same-origin guard (keep it)
     const origin = request.headers.get("Origin") || "";
     const host = new URL(request.url).origin;
     if (origin && origin !== host) {
@@ -38,13 +36,10 @@ export async function onRequestPost(ctx) {
       return json({ ok: false, error: "missing message" }, 400);
     }
 
-    // IMPORTANT:
-    // Use a sender address on your domain. It should be a domain you control.
-    // For best deliverability, create DNS records / SPF as MailChannels recommends later.
     const fromEmail = "web@weichware-lohr.de";
     const fromName = "Weichware Lohr (Test)";
-
     const subject = "[test] Mail-Test Webseite";
+
     const text =
 `Mail-Test (webpages/test)
 
@@ -54,11 +49,8 @@ Message:
 ${message}
 `;
 
-    // MailChannels payload
     const mcBody = {
-      personalizations: [
-        { to: [{ email: to }] }
-      ],
+      personalizations: [{ to: [{ email: to }] }],
       from: { email: fromEmail, name: fromName },
       subject,
       content: [{ type: "text/plain", value: text }],
@@ -74,7 +66,6 @@ ${message}
     const outText = await res.text();
 
     if (!res.ok) {
-      // MailChannels often returns JSON, but sometimes text—return both.
       return json({ ok: false, error: "mailchannels_failed", status: res.status, detail: outText }, 502);
     }
 

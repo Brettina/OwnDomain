@@ -505,6 +505,8 @@
     const modalUnit = $("#modal-unit");
     const modalAdd = $("#modal-add");
 
+    
+
     let products = [];
     let cart = []; // {id, name, image, variant, qty, unit, pickupRequired}
 
@@ -810,52 +812,59 @@
       activeProduct = null;
     }
 
-    modalClose.addEventListener("click", closeProductModal);
-    modalBackdrop.addEventListener("click", (e) => {
-      if (e.target === modalBackdrop) closeProductModal();
+   modalClose?.addEventListener("click", closeProductModal);
+
+modalBackdrop?.addEventListener("click", (e) => {
+  if (e.target === modalBackdrop) closeProductModal();
+});
+
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape" && modalBackdrop?.classList.contains("is-open")) closeProductModal();
+});
+
+modalAdd?.addEventListener("click", () => {
+  if (!activeProduct) return;
+
+  const variant = (modalVariant.value || "Standard").toString();
+  const qty = Math.max(1, Math.min(50, parseInt(modalQty.value || "1", 10) || 1));
+
+  // merge by id+variant
+  const existing = cart.find(x => x.id === activeProduct.id && x.variant === variant);
+  if (existing) {
+    existing.qty = Math.min(50, (parseInt(existing.qty, 10) || 0) + qty);
+  } else {
+    cart.push({
+      id: activeProduct.id,
+      name: activeProduct.name || activeProduct.id,
+      image: safeImage(activeProduct),
+      variant,
+      qty,
+      unit: safeUnit(activeProduct),
+      pickupRequired: !!activeProduct.pickupRequired
     });
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape" && modalBackdrop.classList.contains("is-open")) closeProductModal();
-    });
+  }
 
-    modalAdd.addEventListener("click", () => {
-      if (!activeProduct) return;
+  saveCartToStorage();
+  renderCart();
+  syncCheckoutState();
+  closeProductModal();
 
-      const variant = (modalVariant.value || "Standard").toString();
-      const qty = Math.max(1, Math.min(50, parseInt(modalQty.value || "1", 10) || 1));
+  document.getElementById("cart")?.scrollIntoView({ behavior: "smooth", block: "start" });
+});
 
-      // merge by id+variant
-      const existing = cart.find(x => x.id === activeProduct.id && x.variant === variant);
-      if (existing) existing.qty = Math.min(50, (parseInt(existing.qty, 10) || 0) + qty);
-      else cart.push({
-        id: activeProduct.id,
-        name: activeProduct.name || activeProduct.id,
-        image: safeImage(activeProduct),
-        variant,
-        qty,
-        unit: safeUnit(activeProduct),
-        pickupRequired: !!activeProduct.pickupRequired
-      });
 
-      saveCartToStorage();
-      renderCart();
-      syncCheckoutState();
-      closeProductModal();
+cartClear?.addEventListener("click", () => {
+  if (!cart.length) return;
+  const ok = confirm("Wirklich die gesamte Auswahl leeren?");
+  if (!ok) return;
+  cart = [];
+  saveCartToStorage();
+  renderCart();
+  syncCheckoutState();
+});
 
-      // bring attention to cart without being jarring
-      const cartEl = document.getElementById("cart");
-      cartEl?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
 
-    cartClear.addEventListener("click", () => {
-      if (!cart.length) return;
-      const ok = confirm("Wirklich die gesamte Auswahl leeren?");
-      if (!ok) return;
-      cart = [];
-      saveCartToStorage();
-      renderCart();
-      syncCheckoutState();
-    });
+    
 
     function buildEmailPayload(fd) {
       const name = (fd.get("name") || "").toString().trim();
@@ -948,31 +957,30 @@
       sendBtn.textContent = "Sende…";
 
       try {
-        const fd = new FormData(form);
-        const payload = buildEmailPayload(fd);
-        await sendEmailViaApi(payload);
+  const fd = new FormData(form);
+  const payload = buildEmailPayload(fd);
 
-        alert("Email sent successfully");
+  await sendEmailViaApi(payload);
 
-        // clear cart & persist
-        cart = [];
-        saveCartToStorage();
-        renderCart();
-        syncCheckoutState();
+  alert("Email sent successfully");
 
-        // optional: keep user data, but clear notes
-        const notes = $("#notes");
-        if (notes) notes.value = "";
+  // clear cart & persist
+  cart = [];
+  saveCartToStorage();
+  renderCart();
+  syncCheckoutState();
 
-      } catch (err) {
-        // If your API isn't wired yet, this will surface cleanly
-        alert(`Senden fehlgeschlagen: ${err?.message || err}`);
-        syncCheckoutState();
-      } finally {
-        sendBtn.textContent = "Anfrage per E-Mail senden";
-        // re-enable depends on cart state:
-        sendBtn.disabled = cart.length === 0;
-      }
+  // clear form AFTER successful send
+  form.reset();
+
+} catch (err) {
+  alert(`Senden fehlgeschlagen: ${err?.message || err}`);
+  syncCheckoutState();
+} finally {
+  sendBtn.textContent = "Anfrage per E-Mail senden";
+  sendBtn.disabled = cart.length === 0;
+}
+
     });
 
     // init

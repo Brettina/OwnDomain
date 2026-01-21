@@ -39,7 +39,7 @@ export async function onRequestPost(ctx) {
     }
 
     // 3) HARD CHECK: binding exists
-    if (!env || !env.HIPSTER_SEND || typeof env.HIPSTER_SEND.send !== "function") {
+    if (!env || !env.HIPSTER_SEND || typeof env.SEND_EMAIL.send(msg) !== "function") {
       return json({
         ok: false,
         error: "missing email binding env.HIPSTER_SEND",
@@ -65,7 +65,8 @@ ${message}
     msg.setSubject(subject);
     if (replyTo) msg.headers.set("Reply-To", replyTo);
 
-    await env.HIPSTER_SEND.send(msg);
+    await env.SEND_EMAIL.send(msg);
+
 
     return json({ ok: true });
   } catch (e) {

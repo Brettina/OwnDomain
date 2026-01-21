@@ -39,12 +39,14 @@ export async function onRequestPost(ctx) {
     }
 
     // 3) HARD CHECK: binding exists
-    if (!env || !env.HIPSTER_SEND || typeof env.SEND_EMAIL.send(msg) !== "function") {
-      return json({
-        ok: false,
-        error: "missing email binding env.HIPSTER_SEND",
-        hint: "Check Cloudflare Pages/Workers bindings: you need an Email Routing binding named HIPSTER_SEND."
-      }, 500);
+// 3) HARD CHECK: binding exists
+if (!env || !env.SEND_EMAIL || typeof env.SEND_EMAIL.send !== "function") {
+  return json({
+    ok: false,
+    error: "missing email binding env.SEND_EMAIL",
+    hint: "In Cloudflare Pages/Workers: add an Email Routing binding named SEND_EMAIL."
+  }, 500);
+
     }
 
     // 4) IMPORTANT: sender must be on YOUR domain with Email Routing enabled

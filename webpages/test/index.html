@@ -82,7 +82,9 @@
         try { data = JSON.parse(text); } catch {}
 
         if (!res.ok) {
-          const err = (data && (data.error || data.message)) ? (data.error || data.message) : text || `HTTP ${res.status}`;
+const err = (data && (data.error || data.detail || data.message))
+  ? ((data.error || data.message) + (data.detail ? (": " + data.detail) : ""))
+  : (text || `HTTP ${res.status}`);
           throw new Error(err);
         }
 

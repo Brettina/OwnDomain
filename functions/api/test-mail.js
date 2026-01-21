@@ -1,5 +1,3 @@
-import { EmailMessage } from "cloudflare:email";
-
 function esc(s) {
   return String(s || "").replace(/\r/g, "").trim();
 }
@@ -11,18 +9,20 @@ function json(body, status = 200) {
   });
 }
 
+// MailChannels HTTP API endpoint
+const MAILCHANNELS_URL = "https://api.mailchannels.net/tx/v1/send";
+
 export async function onRequestPost(ctx) {
   try {
-    const { request, env } = ctx;
+    const { request } = ctx;
 
-    // 1) Same-origin guard
+    // Same-origin guard (keep it)
     const origin = request.headers.get("Origin") || "";
     const host = new URL(request.url).origin;
     if (origin && origin !== host) {
       return json({ ok: false, error: "forbidden", origin, host }, 403);
     }
 
-    // 2) Parse JSON
     let payload = {};
     try {
       payload = await request.json();
@@ -38,23 +38,14 @@ export async function onRequestPost(ctx) {
       return json({ ok: false, error: "missing message" }, 400);
     }
 
-    // 3) HARD CHECK: binding exists
-// 3) HARD CHECK: binding exists
-if (!env || !env.SEND_EMAIL || typeof env.SEND_EMAIL.send !== "function") {
-  return json({
-    ok: false,
-    error: "missing email binding env.SEND_EMAIL",
-    hint: "In Cloudflare Pages/Workers: add an Email Routing binding named SEND_EMAIL."
-  }, 500);
-
-    }
-
-    // 4) IMPORTANT: sender must be on YOUR domain with Email Routing enabled
-    // CHANGE THIS LINE:
-    const from = "anfrage@weichware-lohr.de";
+    // IMPORTANT:
+    // Use a sender address on your domain. It should be a domain you control.
+    // For best deliverability, create DNS records / SPF as MailChannels recommends later.
+    const fromEmail = "web@weichware-lohr.de";
+    const fromName = "Weichware Lohr (Test)";
 
     const subject = "[test] Mail-Test Webseite";
-    const body =
+    const text =
 `Mail-Test (webpages/test)
 
 Reply-To: ${replyTo || "—"}
@@ -63,16 +54,32 @@ Message:
 ${message}
 `;
 
-    const msg = new EmailMessage(from, to, body);
-    msg.setSubject(subject);
-    if (replyTo) msg.headers.set("Reply-To", replyTo);
+    // MailChannels payload
+    const mcBody = {
+      personalizations: [
+        { to: [{ email: to }] }
+      ],
+      from: { email: fromEmail, name: fromName },
+      subject,
+      content: [{ type: "text/plain", value: text }],
+      ...(replyTo ? { reply_to: { email: replyTo } } : {})
+    };
 
-    await env.SEND_EMAIL.send(msg);
+    const res = await fetch(MAILCHANNELS_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(mcBody)
+    });
 
+    const outText = await res.text();
+
+    if (!res.ok) {
+      // MailChannels often returns JSON, but sometimes text—return both.
+      return json({ ok: false, error: "mailchannels_failed", status: res.status, detail: outText }, 502);
+    }
 
     return json({ ok: true });
   } catch (e) {
-    // If ANY exception happens, return it as JSON instead of CF's 1101 page
     return json({ ok: false, error: "exception", detail: String(e?.message || e) }, 500);
   }
 }

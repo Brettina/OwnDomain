@@ -6,6 +6,9 @@
   <title>Mail-Test — Weichware Lohr</title>
   <link rel="stylesheet" href="/assets/styles.css" />
   <meta name="color-scheme" content="light dark" />
+  <style>
+    #debug { margin-top: 12px; padding: 8px; border: 1px solid; font-family: system-ui, sans-serif; }
+  </style>
 </head>
 <body>
   <form id="contactForm">
@@ -15,32 +18,51 @@
     <button type="submit">Send</button>
   </form>
 
+  <div id="debug">Debug: page loaded (no JS yet)</div>
+
+  <noscript>
+    JavaScript ist deaktiviert. Bitte schreibe an:
+    <a href="mailto:anfrage@weichware-lohr.de">anfrage@weichware-lohr.de</a>
+  </noscript>
+
   <script>
     const TO = "anfrage@weichware-lohr.de";
     const SUBJECT = "Anfrage über die Webseite";
+
+    const debugEl = document.getElementById("debug");
+    function debug(msg) {
+      debugEl.textContent = "Debug: " + msg;
+      console.log("[contact]", msg);
+    }
 
     function clean(s) {
       return String(s ?? "").replace(/\r/g, "").trim();
     }
 
-    // Prevent ridiculously long mailto URLs from breaking on some clients.
-    // (Different clients have different limits; keeping it conservative avoids “wonky” behavior.)
-    function clamp(s, maxLen) {
-      s = clean(s);
-      return s.length > maxLen ? s.slice(0, maxLen) + "…" : s;
-    }
+    debug("JS loaded ✅");
 
-    document.getElementById("contactForm").addEventListener("submit", (e) => {
-      e.preventDefault();
+    const form = document.getElementById("contactForm");
+    if (!form) {
+      debug("ERROR: contactForm not found");
+      alert("ERROR: contactForm not found");
+    } else {
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        debug("submit fired ✅");
 
-      const fd = new FormData(e.currentTarget);
-      const name = clamp(fd.get("name"), 200);
-      const email = clamp(fd.get("email"), 200);
-      const message = clamp(fd.get("message"), 4000);
+        try {
+          const fd = new FormData(form);
+          const name = clean(fd.get("name"));
+          const email = clean(fd.get("email"));
+          const message = clean(fd.get("message"));
 
-      if (!message) return;
+          if (!message) {
+            debug("ERROR: message empty");
+            alert("Please enter a message.");
+            return;
+          }
 
-      const body =
+          const body =
 `Name: ${name || "—"}
 E-Mail: ${email || "—"}
 
@@ -48,14 +70,32 @@ Nachricht:
 ${message}
 `;
 
-      const mailto =
-        `mailto:${encodeURIComponent(TO)}` +
-        `?subject=${encodeURIComponent(SUBJECT)}` +
-        `&body=${encodeURIComponent(body)}`;
+          const mailto =
+            `mailto:${encodeURIComponent(TO)}` +
+            `?subject=${encodeURIComponent(SUBJECT)}` +
+            `&body=${encodeURIComponent(body)}`;
 
-      // Trigger default mail app / mail handler
-      window.location.href = mailto;
-    });
+          debug("opening mailto…");
+
+          // More compatible than just window.location in some browsers:
+          const a = document.createElement("a");
+          a.href = mailto;
+          a.style.display = "none";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+
+          // If user has no handler configured, nothing opens — so at least tell them:
+          setTimeout(() => {
+            debug("If no email app opened: your device/browser has no mail handler configured for mailto.");
+          }, 600);
+
+        } catch (err) {
+          debug("EXCEPTION: " + (err?.message || String(err)));
+          alert("JS error: " + (err?.message || String(err)));
+        }
+      });
+    }
   </script>
 </body>
 </html>

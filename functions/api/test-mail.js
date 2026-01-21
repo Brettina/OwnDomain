@@ -32,9 +32,7 @@ export async function onRequestPost(ctx) {
     const replyTo = esc(payload.replyTo);
     const message = esc(payload.message);
 
-    if (!message) {
-      return json({ ok: false, error: "missing message" }, 400);
-    }
+    if (!message) return json({ ok: false, error: "missing message" }, 400);
 
     const fromEmail = "web@weichware-lohr.de";
     const fromName = "Weichware Lohr (Test)";

@@ -275,30 +275,116 @@ const res = await fetch(`/assets/blog/${encodeURIComponent(slug)}/meta.json`);
       }
     }
 
-   function loadContentFromMeta(meta, item) {
-  if (!meta) {
-    // fallback: excerpt from activities.json if meta missing
-    const excerpt = item?.excerpt ? `<p>${escapeHtml(item.excerpt)}</p>` : `<p class="fineprint">Keine Meta-Daten gefunden.</p>`;
-    return `<div class="prose">${excerpt}</div>`;
+function mdToHtml(md) {
+  // small markdown subset (no external libs)
+  const esc = (s) => (s || "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;");
+
+  const lines = String(md || "").replace(/\r\n/g, "\n").split("\n");
+  let out = [];
+  let inList = false;
+
+  const flushList = () => { if (inList) { out.push("</ul>"); inList = false; } };
+
+  for (let raw of lines) {
+    const line = raw.trimEnd();
+    if (!line.trim()) { flushList(); continue; }
+
+    const h = line.match(/^(#{1,3})\s+(.*)$/);
+    if (h) {
+      flushList();
+      const level = h[1].length;
+      out.push(`<h${level}>${esc(h[2])}</h${level}>`);
+      continue;
+    }
+
+    const li = line.match(/^- (.*)$/);
+    if (li) {
+      if (!inList) { out.push("<ul>"); inList = true; }
+      out.push(`<li>${esc(li[1])}</li>`);
+      continue;
+    }
+
+    flushList();
+    out.push(`<p>${esc(line)}</p>`);
   }
 
-  // Prefer longDescription, fallback to excerpt/summary-like fields
-  const text =
-    (meta.longDescription || meta.summary || meta.excerpt || "").toString().trim();
-
-  if (!text) {
-    const excerpt = item?.excerpt ? `<p>${escapeHtml(item.excerpt)}</p>` : `<p class="fineprint">Kein Inhalt vorhanden.</p>`;
-    return `<div class="prose">${excerpt}</div>`;
-  }
-
-  return `<div class="prose"><p>${escapeHtml(text)}</p></div>`;
+  flushList();
+  return `<div class="prose">${out.join("\n")}</div>`;
 }
+
+// Try to get a cover image path from anywhere we reasonably might have it
+function coverFor(meta, item) {
+  return (item?.cover || item?.image || meta?.cover || meta?.image || meta?.thumbnail || "").toString().trim();
+}
+
+// Make relative image URLs inside loaded HTML work (so <img src="foo.png"> works)
+function absolutizeBlogHtml(html, slug) {
+  const base = `/assets/blog/${encodeURIComponent(slug)}/`;
+  return String(html || "").replace(
+    /(<img\b[^>]*\bsrc=["'])([^"']+)(["'][^>]*>)/gi,
+    (m, a, src, c) => {
+      const s = String(src || "").trim();
+      if (!s) return m;
+      if (s.startsWith("http://") || s.startsWith("https://") || s.startsWith("/") || s.startsWith("data:")) return m;
+      return `${a}${base}${s}${c}`;
+    }
+  );
+}
+
+async function loadPostContent(item, meta) {
+  const slug = item?.slug ? String(item.slug) : "";
+  if (!slug) return `<div class="prose"><p class="fineprint">Kein Slug vorhanden.</p></div>`;
+
+  // 1) Best: article.html in the folder
+  {
+    const res = await fetch(`/assets/blog/${encodeURIComponent(slug)}/article.html`);
+    if (res.ok) {
+      const html = await res.text();
+      return absolutizeBlogHtml(html, slug);
+    }
+  }
+
+  // 2) Next: text.html (optional)
+  {
+    const res = await fetch(`/assets/blog/${encodeURIComponent(slug)}/text.html`);
+    if (res.ok) {
+      const html = await res.text();
+      return absolutizeBlogHtml(html, slug);
+    }
+  }
+
+  // 3) Next: text.md
+  {
+    const res = await fetch(`/assets/blog/${encodeURIComponent(slug)}/text.md`);
+    if (res.ok) {
+      const md = await res.text();
+      return mdToHtml(md);
+    }
+  }
+
+  // 4) Fallback: meta/excerpt
+  const fallback = (meta?.longDescription || meta?.summary || meta?.excerpt || item?.excerpt || "").toString().trim();
+  return fallback
+    ? `<div class="prose"><p>${escapeHtml(fallback)}</p></div>`
+    : `<div class="prose"><p class="fineprint">Kein Inhalt gefunden.</p></div>`;
+}
+
 
 
 
 
     function makePostCard(item, meta, contentHtml, isOpen) {
       const wrapper = document.createElement("article");
+      const readLink = document.createElement("a");
+readLink.href = `/assets/blog/${encodeURIComponent(item.slug)}/article.html`;
+readLink.textContent = "Artikel-Datei öffnen";
+readLink.target = "_blank";
+readLink.rel = "noopener";
+links.appendChild(readLink);
+
       wrapper.className = "card post";
       wrapper.dataset.slug = item.slug;
       if (isOpen) wrapper.setAttribute("open", "true");
@@ -432,10 +518,24 @@ for (const t of tags) {
 if (!wrapper.dataset.loaded) {
   wrapper.dataset.loaded = "true";
 
-  const metaLoaded = meta ? meta : await loadMetaFor(slug);
+const metaLoaded = meta ? meta : await loadMetaFor(slug);
 
-  // content from meta (no text/html files)
-  content.innerHTML = loadContentFromMeta(metaLoaded, item);
+// optional cover image on top (jpg/png in folder or referenced in meta)
+const cover = coverFor(metaLoaded, item);
+const coverHtml = cover
+  ? `<div class="card" style="overflow:hidden; padding:0; margin-bottom:12px;">
+       <img
+         src="${cover}"
+         alt="${escapeHtml(item.title || item.slug || "Titelbild")}"
+         loading="lazy"
+         style="width:100%; max-height:360px; object-fit:contain; display:block; background:rgba(0,0,0,0.06);"
+       >
+     </div>`
+  : "";
+
+const articleHtml = await loadPostContent(item, metaLoaded);
+content.innerHTML = coverHtml + articleHtml;
+
 
   // If meta arrives now, enrich header row (date + tags)
   // Update time (published/updated) and tags pills
@@ -503,6 +603,7 @@ if (!wrapper.dataset.loaded) {
 
       let list = items.slice();
 
+
       if (filter === "blog") {
         list = list.filter(x => x.type === "blog");
       }
@@ -541,8 +642,9 @@ for (const item of list) {
   }
 }
 
-qEl.addEventListener("input", render);
-filterEl.addEventListener("input", render);
+
+
+
 
 (async function init() {
   try {

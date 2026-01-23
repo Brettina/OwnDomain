@@ -275,22 +275,27 @@ const res = await fetch(`/assets/blog/${encodeURIComponent(slug)}/meta.json`);
       }
     }
 
-    async function loadContentHtml(item) {
-      // Preferred: generated contentUrl from generate-activities.mjs
-      if (item.contentUrl) {
-const res = await fetch(item.contentUrl);
-        if (!res.ok) throw new Error("contentUrl fetch failed");
-        const html = await res.text();
+   function loadContentFromMeta(meta, item) {
+  if (!meta) {
+    // fallback: excerpt from activities.json if meta missing
+    const excerpt = item?.excerpt ? `<p>${escapeHtml(item.excerpt)}</p>` : `<p class="fineprint">Keine Meta-Daten gefunden.</p>`;
+    return `<div class="prose">${excerpt}</div>`;
+  }
 
-        // Extract only the <article> portion if present, else use body
-        const match = html.match(/<article[\s\S]*<\/article>/i);
-        return match ? match[0] : html;
-      }
+  // Prefer longDescription, fallback to excerpt/summary-like fields
+  const text =
+    (meta.longDescription || meta.summary || meta.excerpt || "").toString().trim();
 
-      // Fallback: show excerpt only (keeps it robust and avoids guessing filenames)
-      const excerpt = item.excerpt ? `<p>${escapeHtml(item.excerpt)}</p>` : `<p class="fineprint">Kein Inhalt verlinkt (contentUrl fehlt). Bitte Generator laufen lassen.</p>`;
-      return `<div class="prose">${excerpt}</div>`;
-    }
+  if (!text) {
+    const excerpt = item?.excerpt ? `<p>${escapeHtml(item.excerpt)}</p>` : `<p class="fineprint">Kein Inhalt vorhanden.</p>`;
+    return `<div class="prose">${excerpt}</div>`;
+  }
+
+  return `<div class="prose"><p>${escapeHtml(text)}</p></div>`;
+}
+
+
+
 
     function makePostCard(item, meta, contentHtml, isOpen) {
       const wrapper = document.createElement("article");
@@ -421,38 +426,68 @@ for (const t of tags) {
         openSlug = slug;
 
         // lazy-load content on first open
-        if (!wrapper.dataset.loaded) {
-          wrapper.dataset.loaded = "true";
-const [metaLoaded, html] = await Promise.all([
-  meta ? Promise.resolve(meta) : loadMetaFor(slug),
-  loadContentHtml(item)
-]);
+        
+      
+      // lazy-load content on first open (meta-only)
+if (!wrapper.dataset.loaded) {
+  wrapper.dataset.loaded = "true";
 
+  const metaLoaded = meta ? meta : await loadMetaFor(slug);
 
-          content.innerHTML = html;
+  // content from meta (no text/html files)
+  content.innerHTML = loadContentFromMeta(metaLoaded, item);
 
-          // render "also published" if meta arrived after initial
-          const also2 = buildAlsoPublished(metaLoaded);
-          if (also2.length && links.children.length === 0) {
-            const h = document.createElement("div");
-            h.innerHTML = `<strong>Auch veröffentlicht auf</strong>`;
-            links.appendChild(h);
+  // If meta arrives now, enrich header row (date + tags)
+  // Update time (published/updated) and tags pills
+  if (metaLoaded) {
+    // update time display
+    const published = metaLoaded.published ? formatDate(metaLoaded.published) : "";
+    const updated = item.updated ? formatDate(item.updated) : "";
+    if (published && updated && published !== updated) time.textContent = `${published} · aktualisiert ${updated}`;
+    else if (published) time.textContent = published;
+    else if (updated) time.textContent = updated;
 
-            const ul = document.createElement("ul");
-            for (const l of also2) {
-              const li = document.createElement("li");
-              const a = document.createElement("a");
-              a.href = l.url;
-              a.target = "_blank";
-              a.rel = "noopener";
-              a.textContent = l.label;
-              li.appendChild(a);
-              ul.appendChild(li);
-            }
-            links.appendChild(ul);
-            body.appendChild(links);
-          }
-        }
+    // add tags (only if not already added)
+    const tagsNow = buildTags(metaLoaded);
+    if (tagsNow.length) {
+      // remove old tag pills (keep first two meta nodes: "Blog" pill + time)
+      // easiest: rebuild metaRow content cleanly
+      metaRow.innerHTML = "";
+      metaRow.appendChild(pill);
+      if (time.textContent) metaRow.appendChild(time);
+
+      for (const t of tagsNow) {
+        const tagPill = document.createElement("span");
+        tagPill.className = "post-pill";
+        tagPill.textContent = `#${t}`;
+        metaRow.appendChild(tagPill);
+      }
+    }
+  }
+
+  // alsoPublished links (meta-only)
+  const also2 = buildAlsoPublished(metaLoaded);
+  if (also2.length && links.children.length === 0) {
+    const h = document.createElement("div");
+    h.innerHTML = `<strong>Auch veröffentlicht auf</strong>`;
+    links.appendChild(h);
+
+    const ul = document.createElement("ul");
+    for (const l of also2) {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = l.url;
+      a.target = "_blank";
+      a.rel = "noopener";
+      a.textContent = l.label;
+      li.appendChild(a);
+      ul.appendChild(li);
+    }
+    links.appendChild(ul);
+    body.appendChild(links);
+  }
+}
+
       });
 
       wrapper.appendChild(btn);
@@ -493,14 +528,33 @@ for (const item of list) {
     qEl.addEventListener("input", render);
     filterEl.addEventListener("input", render);
 
-    (async function init() {
-      try {
-        await loadActivities();
-      } catch (e) {
-        items = [];
-      }
-      await render();
-    })();
+   function autoOpenFromUrl() {
+  const params = new URLSearchParams(location.search);
+  const slug = params.get("open");
+  if (!slug) return;
+
+  const card = postsEl.querySelector(`.post[data-slug="${CSS.escape(slug)}"]`);
+  const btn = card?.querySelector(".post-toggle");
+  if (btn) {
+    btn.click();
+    card.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+}
+
+qEl.addEventListener("input", render);
+filterEl.addEventListener("input", render);
+
+(async function init() {
+  try {
+    await loadActivities();
+  } catch (e) {
+    items = [];
+  }
+  await render();
+  autoOpenFromUrl();
+})();
+
+
   </script>
 </body>
 </html>

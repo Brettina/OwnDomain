@@ -1,62 +1,38 @@
 {
-  "generatedAt": "2026-01-19T19:43:46.615Z",
+  "generatedAt": "2026-01-23T19:41:04.726Z",
   "items": [
-    {
-      "type": "blog",
-      "slug": "ef-konferenz 2026",
-      "title": "Samstag Vormittag der EF-Konferenz",
-      "updated": "2026-01-19",
-      "excerpt": "this text is about the ef konferenz excerpt",
-      "cover": "/assets/blog/ef-konferenz 2026/konf.jpg",
-      "contentUrl": "/assets/blog/ef-konferenz 2026/article.html",
-      "metaUrl": "/assets/blog/ef-konferenz 2026/meta.json",
-      "alsoPublished": [
-        {
-          "label": "LinkedIn",
-          "url": "https://www.linkedin.com/..."
-        },
-        {
-          "label": "Medium",
-          "url": "https://medium.com/..."
-        }
-      ]
-    },
-    {
-      "type": "project",
-      "slug": "eigene rebellenkollektion",
-      "title": "Saftladen",
-      "updated": "2026-01-18",
-      "excerpt": "Kreuzritter sind jetzt erst in?\r\nPff - die Kollektion gibts seit Anfang 2025 :}\r\nSchaut gern im Webshop vorbei!",
-      "cover": "/assets/projects/eigene rebellenkollektion/engl.png",
-      "contentUrl": "/assets/projects/eigene rebellenkollektion/erklaerung.txt",
-      "metaUrl": "/assets/projects/eigene rebellenkollektion/meta.json"
-    },
-    {
-      "type": "project",
-      "slug": "janich",
-      "title": "Janich Demo",
-      "updated": "2026-01-15",
-      "excerpt": "demo anlässlich politischer gefangenen in D",
-      "cover": "/assets/projects/janich/janich.png",
-      "contentUrl": "/assets/projects/janich/erkl.txt",
-      "metaUrl": "/assets/projects/janich/meta.json"
-    },
     {
       "type": "project",
       "slug": "saftladen",
       "title": "Saftladen",
-      "updated": "2026-01-15",
-      "excerpt": "ich quetsche mir einen ab um euch frischen orangensaft zu bescheren.\r\nkommt gern vorbei - näheres dazu im kalender.",
+      "updated": "2026-01-25",
+      "excerpt": "Frischen Obstsaft per Schubkarre direkt für euch am Radweg",
       "cover": "/assets/projects/saftladen/saftladen.png",
       "contentUrl": "/assets/projects/saftladen/erkl.txt",
       "metaUrl": "/assets/projects/saftladen/meta.json"
     },
     {
       "type": "blog",
+      "slug": "ef-konferenz 2026",
+      "title": "Samstag Vormittag der EF-Konferenz",
+      "updated": "2026-01-19",
+      "excerpt": "EF-Konferenz 2026",
+      "cover": "/assets/blog/ef-konferenz 2026/konf.jpg",
+      "contentUrl": "/assets/blog/ef-konferenz 2026/article.html",
+      "metaUrl": "/assets/blog/ef-konferenz 2026/meta.json",
+      "alsoPublished": [
+        {
+          "label": "Eigentümlich frei",
+          "url": "https://ef-magazin.de/archiv/ef/259/inhalt.html"
+        }
+      ]
+    },
+    {
+      "type": "blog",
       "slug": "julius-faucher-medaille",
       "title": "Schuld und Unschuld der Boomer",
-      "updated": "2025-12-19",
-      "excerpt": "this text is about the julius fuacher excerpt",
+      "updated": "2026-01-19",
+      "excerpt": "Jungautorenwettbewerb",
       "cover": "/assets/blog/julius-faucher-medaille/ef.jpg",
       "contentUrl": "/assets/blog/julius-faucher-medaille/text.md",
       "metaUrl": "/assets/blog/julius-faucher-medaille/meta.json",
@@ -66,6 +42,32 @@
           "url": "https://www.kopp-verlag.de/a/eigentuemlich-frei-ausgabe-nr.-259-januar%2Ffebruar-2026"
         }
       ]
+    },
+    {
+      "type": "blog",
+      "slug": "lebensraum",
+      "title": "Neuer Lebensraum im Osten",
+      "updated": "2026-01-16",
+      "excerpt": "Anlässlich des Säbelrasselns der Grünen",
+      "cover": "/assets/blog/lebensraum/hinten.png",
+      "contentUrl": "/assets/blog/lebensraum/text.md",
+      "metaUrl": "/assets/blog/lebensraum/meta.json",
+      "alsoPublished": [
+        {
+          "label": "Dissidenken",
+          "url": "https://dissidenken.info/f/neuer-lebensraum-im-osten-f%C3%BCr-die-nato"
+        }
+      ]
+    },
+    {
+      "type": "project",
+      "slug": "angela",
+      "title": "Demo anlässlich politischer Gefangener",
+      "updated": "2025-08-25",
+      "excerpt": "Buchübersetzung ins Englische",
+      "cover": "/assets/projects/angela/angela flyer+.png",
+      "contentUrl": "/assets/projects/angela/erkl.txt",
+      "metaUrl": "/assets/projects/angela/meta.json"
     },
     {
       "type": "blog",
@@ -84,20 +86,14 @@
       ]
     },
     {
-      "type": "blog",
-      "slug": "lebensraum",
-      "title": "Neuer Lebensraum im Osten",
-      "updated": "2023-02-18",
-      "excerpt": "anlässlich des ukrainekriegs",
-      "cover": "/assets/blog/lebensraum/hinten.png",
-      "contentUrl": "/assets/blog/lebensraum/text.md",
-      "metaUrl": "/assets/blog/lebensraum/meta.json",
-      "alsoPublished": [
-        {
-          "label": "Dissidenken",
-          "url": "https://dissidenken.info/f/neuer-lebensraum-im-osten-f%C3%BCr-die-nato"
-        }
-      ]
+      "type": "project",
+      "slug": "janich",
+      "title": "Demo anlässlich politischer Gefangener",
+      "updated": "2023-01-15",
+      "excerpt": "Eine Demo der PDV anlässlicher politischer Gefangener",
+      "cover": "/assets/projects/janich/janich.png",
+      "contentUrl": "/assets/projects/janich/erkl.txt",
+      "metaUrl": "/assets/projects/janich/meta.json"
     }
   ]
 }

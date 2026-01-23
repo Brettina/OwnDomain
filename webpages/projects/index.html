@@ -293,32 +293,21 @@ const res = await fetch(`/assets/projects/${encodeURIComponent(slug)}/meta.json`
     }
   }
 
-  async function loadContent(item) {
-    // item.contentUrl may be txt/md/html. We’ll show it safely.
-    if (!item.contentUrl) {
-      const excerpt = item.excerpt
-        ? `<p>${escapeHtml(item.excerpt)}</p>`
-        : `<p class="fineprint">Kein Textfile gefunden. (Optional: eine .txt/.md/.html in den Projektordner legen.)</p>`;
-      return `<div class="prose">${excerpt}</div>`;
-    }
-
-const res = await fetch(item.contentUrl);
-    if (!res.ok) {
-      return `<div class="prose"><p class="fineprint">Content konnte nicht geladen werden.</p></div>`;
-    }
-
-    const ext = (item.contentUrl.split(".").pop() || "").toLowerCase();
-    const raw = await res.text();
-
-    if (ext === "html") {
-      // If it contains <article> use that; else use whole
-      const match = raw.match(/<article[\s\S]*<\/article>/i);
-      return match ? match[0] : raw;
-    }
-
-    // txt/md: render as pre-ish (simple, robust, no markdown parser)
-    return `<div class="prose"><pre style="white-space:pre-wrap; margin:0;">${escapeHtml(raw)}</pre></div>`;
+function loadContentFromMeta(meta) {
+  if (!meta) {
+    return `<div class="prose"><p class="fineprint">Keine Meta-Daten gefunden.</p></div>`;
   }
+
+  const parts = [];
+
+  // Prefer longDescription; fallback to summary
+  const text = (meta.longDescription || meta.summary || "").toString().trim();
+  if (text) parts.push(`<p>${escapeHtml(text)}</p>`);
+
+  return `<div class="prose">${parts.join("")}</div>`;
+}
+
+
 
   function metaBlock(meta, item) {
     const start = meta?.startDate ? formatDate(meta.startDate) : "";
@@ -332,11 +321,12 @@ const res = await fetch(item.contentUrl);
 
     const summary = meta?.summary ? `<p class="fineprint" style="margin:0;">${escapeHtml(meta.summary)}</p>` : "";
 
-    const tagHtml = tags.length
-      ? `<div class="post-meta" style="margin-top:8px;">${
-          tags.map(t => `<span class="post-pill">${escapeHtml(t)}</span>`).join("")
-        }</div>`
-      : "";
+const tagHtml = tags.length
+  ? `<div class="meta" style="margin-top:8px;">${
+      tags.map(t => `<span class="pill">${escapeHtml(t)}</span>`).join("")
+    }</div>`
+  : "";
+
 
     const updated = item?.updated ? `<div class="fineprint" style="margin-top:6px;">Zuletzt bearbeitet: ${formatDate(item.updated)}</div>` : "";
 
@@ -353,16 +343,24 @@ const res = await fetch(item.contentUrl);
     `;
   }
 
-  function coverBlock(item) {
-    const cover = item?.cover || "";
-    if (!cover) return "";
-    const alt = item?.title ? `Cover: ${item.title}` : "Projektbild";
-    return `
-      <div class="card" style="overflow:hidden; padding:0;">
-        <img src="${cover}" alt="${escapeHtml(alt)}" loading="lazy" style="width:100%; height:260px; object-fit:cover; display:block;">
-      </div>
-    `;
-  }
+function coverBlock(item) {
+  const cover = (item?.cover || "").toString().trim();
+  if (!cover) return "";
+
+  const alt = item?.title ? `Cover: ${item.title}` : "Projektbild";
+
+  return `
+    <div class="card" style="overflow:hidden; padding:0;">
+      <img
+        src="${cover}"
+        alt="${escapeHtml(alt)}"
+        loading="lazy"
+        style="width:100%; height:260px; object-fit:contain; background:#000; display:block;"
+      >
+    </div>
+  `;
+}
+
 
   function eventsBlock(events) {
     if (!events.length) {
@@ -461,54 +459,55 @@ const res = await fetch(item.contentUrl);
     body.appendChild(content);
 
     btn.addEventListener("click", async () => {
-      const slug = item.slug || "";
-      const open = wrapper.hasAttribute("open");
+  const slug = item.slug || "";
+  const open = wrapper.hasAttribute("open");
 
-      if (open) {
-        wrapper.removeAttribute("open");
-        btn.setAttribute("aria-expanded", "false");
-        body.style.display = "none";
-        openSlug = "";
-        return;
-      }
+  if (open) {
+    wrapper.removeAttribute("open");
+    btn.setAttribute("aria-expanded", "false");
+    body.style.display = "none";
+    openSlug = "";
+    return;
+  }
 
-      // close others (single-open behavior)
-      if (openSlug) {
-        const other = entriesEl.querySelector(`.entry[open][data-slug="${CSS.escape(openSlug)}"]`);
-        if (other) {
-          const otherBtn = other.querySelector(".toggle");
-          const otherBody = other.querySelector(".body");
-          other.removeAttribute("open");
-          otherBtn?.setAttribute("aria-expanded", "false");
-          if (otherBody) otherBody.style.display = "none";
-        }
-      }
+  // close others (single-open behavior)
+  if (openSlug) {
+    const other = entriesEl.querySelector(`.entry[open][data-slug="${CSS.escape(openSlug)}"]`);
+    if (other) {
+      const otherBtn = other.querySelector(".toggle");
+      const otherBody = other.querySelector(".body");
+      other.removeAttribute("open");
+      otherBtn?.setAttribute("aria-expanded", "false");
+      if (otherBody) otherBody.style.display = "none";
+    }
+  }
 
-      wrapper.setAttribute("open", "true");
-      btn.setAttribute("aria-expanded", "true");
-      body.style.display = "grid";
-      openSlug = slug;
+  wrapper.setAttribute("open", "true");
+  btn.setAttribute("aria-expanded", "true");
+  body.style.display = "grid";
+  openSlug = slug;
 
-      if (!wrapper.dataset.loaded) {
-        wrapper.dataset.loaded = "true";
+  if (!wrapper.dataset.loaded) {
+    wrapper.dataset.loaded = "true";
 
-const [meta, html] = await Promise.all([loadMetaFor(slug), loadContent(item)]);
+    const meta = await loadMetaFor(slug);
+    const html = loadContentFromMeta(meta);
 
-        const refs = buildRefs(meta);
-        const projectTags = asArray(meta?.tags);
-        const relEvents = relevantEventsForProject(slug, projectTags);
+    const refs = buildRefs(meta);
+    const projectTags = asArray(meta?.tags);
+    const relEvents = relevantEventsForProject(slug, projectTags);
 
-        // compose
-        const blocks = [];
-        blocks.push(coverBlock(item));
-        blocks.push(metaBlock(meta, item));
-        blocks.push(`<div class="card content" style="padding:14px;">${html}</div>`);
-        blocks.push(eventsBlock(relEvents));
-        blocks.push(refsBlock(refs));
+    const blocks = [];
+    blocks.push(coverBlock(item));
+    blocks.push(metaBlock(meta, item));
+    blocks.push(`<div class="card content" style="padding:14px;">${html}</div>`);
+    blocks.push(eventsBlock(relEvents));
+    blocks.push(refsBlock(refs));
 
-        body.innerHTML = blocks.filter(Boolean).join("");
-      }
-    });
+    body.innerHTML = blocks.filter(Boolean).join("");
+  }
+});
+
 
     wrapper.appendChild(btn);
     wrapper.appendChild(body);

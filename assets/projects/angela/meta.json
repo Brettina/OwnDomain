@@ -1,11 +1,12 @@
 {
-  "title": "Demo anlässlich politischer Gefangener",
+  "title": "Buchübersetzung",
   "updated": "2025-08-25",
   "startDate": "2025-05-01",
   "endDate": "",
-  "tags": ["book", "publish", "translate"],
-  "summary": "Egal ob Assange, Janich oder Ballweg - unsere geliebte Demokratie findet bei jedem Selbstdenker etwas um ihn wegzusperren.",
-  "refs": {
+  "tags": ["book", "translate"],
+  "summary": "Ich übersetze Angelas Buch ins Englische.",
+      "longDescription": "Und ihr Buch ist bereits in Afrika und den USA angekommen!",
+"refs": {
     "Martonius": "https://martonius.org/produkt/ein-lichtstrahl-seiner-liebe-buch/",
     "Amazon": "https://www.amazon.de/Lichtstrahl-Seiner-Liebe-Angela-Jung/dp/3949073310"
   }

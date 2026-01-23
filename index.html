@@ -54,12 +54,33 @@
       min-height: 220px;
     }
 
-    .proj-card img {
-      width: 100%;
-      height: 220px;
-      object-fit: cover;
-      display: block;
-    }
+.proj-card img {
+  display: block;
+  max-width: 100%;
+  width: 100%;
+  height: 220px;          /* keep stable carousel height */
+  object-fit: contain;    /* NO crop */
+  background: rgba(0,0,0,0.06); /* letterbox background */
+}
+
+/* On wider screens: slightly taller, still no crop */
+@media (min-width: 900px) {
+  .proj-card img {
+    height: 240px;
+  }
+}
+
+/* Prevent “pixel explosion” on desktop: don’t upscale tiny images as aggressively */
+@media (min-width: 900px) {
+  .proj-card.is-side img,
+  .proj-card.is-center img {
+    width: auto;          /* allow natural size if smaller */
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 100%;
+  }
+}
+
 
     @media (min-width: 900px) {
       .proj-card img {
@@ -667,52 +688,63 @@ const res = await fetch("/assets/calendar/calendar-index.json");
     const centerPrimaryLink = centerCard.querySelector(".proj-actions a.button.button-secondary");
     const centerKind = centerCard.querySelector("[data-kind]");
 
-    // Helpers
     function kindLabel(x) {
       return x?.type === "blog" ? "Blog" : "Projekt";
     }
-    function defaultUrl(x) {
-      return x?.type === "blog" ? "/webpages/blog/" : "/webpages/projects/";
-    }
-    function safeImage(x) {
-      // If an item has no image (common for blog), use a stable fallback
-      return x?.cover || "/img/concept.png";
-    }
+
     function safeTitle(x) {
       return x?.title || x?.slug || (x?.type === "blog" ? "Blog" : "Projekt");
     }
+
+    function safeImage(x) {
+      return x?.cover || x?.image || "/img/concept.png";
+    }
+
     function formatDate(iso) {
       const d = new Date(iso || "");
       if (isNaN(d.getTime())) return iso || "";
       return d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" });
     }
 
-    // Fallback demo data
-    // NOTE: you can add a blog demo item too, but not required
+    function destinationUrl(x) {
+      const slug = (x?.slug || "").toString().trim();
+      if (!slug) return x?.type === "blog" ? "/webpages/blog/" : "/webpages/projects/";
+
+      if (x?.type === "blog") {
+        return `/webpages/blog/?open=${encodeURIComponent(slug)}#posts-title`;
+      }
+      return `/webpages/projects/?open=${encodeURIComponent(slug)}#entries-title`;
+    }
+
+    function openItem(x) {
+      const url = destinationUrl(x);
+      if (url) window.location.href = url;
+    }
+
     const demoItems = [
       {
         type: "project",
+        slug: "demo-projekt",
         updated: "2026-01-12",
         title: "Projekt-Titel (Demo)",
         excerpt: "Kurztext / Status / Teaser.",
-        image: "/img/concept.png",
-        url: "/webpages/projects/"
+        image: "/img/concept.png"
       },
       {
         type: "blog",
+        slug: "demo-blog",
         updated: "2026-01-11",
         title: "Blogartikel (Demo)",
         excerpt: "Demo-Text für Blogartikel.",
-        image: "/img/concept_leistungen.png",
-        url: "/webpages/blog/"
+        image: "/img/concept_leistungen.png"
       },
       {
         type: "project",
+        slug: "demo-projekt-2",
         updated: "2026-01-10",
         title: "Zweites Projekt (Demo)",
         excerpt: "Kurztext für zweites Projekt.",
-        image: "/img/mythologie.png",
-        url: "/webpages/projects/"
+        image: "/img/mythologie.png"
       }
     ];
 
@@ -749,19 +781,24 @@ const res = await fetch("/assets/calendar/calendar-index.json");
         centerTime.textContent = formatDate(current.updated);
       }
 
+      // Make the main CTA go to the exact open target too
       if (centerPrimaryLink) {
-        centerPrimaryLink.href = current.url || defaultUrl(current);
+        centerPrimaryLink.href = destinationUrl(current);
         centerPrimaryLink.textContent = (current.type === "blog") ? "Zum Artikel" : "Zum Projekt";
       }
 
       // Left / Right (image-only)
       leftImg.src = safeImage(prev);
       leftImg.alt = `${kindLabel(prev)}: ${safeTitle(prev)}`;
-      leftLabel.textContent = `${kindLabel(prev)}: ${safeTitle(prev)}`;
+      if (leftLabel) leftLabel.textContent = `${kindLabel(prev)}: ${safeTitle(prev)}`;
 
       rightImg.src = safeImage(next);
       rightImg.alt = `${kindLabel(next)}: ${safeTitle(next)}`;
-      rightLabel.textContent = `${kindLabel(next)}: ${safeTitle(next)}`;
+      if (rightLabel) rightLabel.textContent = `${kindLabel(next)}: ${safeTitle(next)}`;
+
+      // Improve accessibility labels to reflect “open”
+      leftCard.setAttribute("aria-label", `${kindLabel(prev)} öffnen: ${safeTitle(prev)}`);
+      rightCard.setAttribute("aria-label", `${kindLabel(next)} öffnen: ${safeTitle(next)}`);
 
       setDots();
     }
@@ -776,22 +813,53 @@ const res = await fetch("/assets/calendar/calendar-index.json");
       render();
     }
 
+    // Arrows keep carousel navigation
     prevBtn?.addEventListener("click", goPrev);
     nextBtn?.addEventListener("click", goNext);
 
-    leftCard.addEventListener("click", goPrev);
-    rightCard.addEventListener("click", goNext);
+    // Side cards: open the destination (prev/next item)
+    leftCard.addEventListener("click", () => {
+      if (!items.length) return;
+      const prev = items[mod(index - 1, items.length)];
+      openItem(prev);
+    });
 
-    function keyNav(e, dir) {
+    rightCard.addEventListener("click", () => {
+      if (!items.length) return;
+      const next = items[mod(index + 1, items.length)];
+      openItem(next);
+    });
+
+    // Center card/image: open current item (but ignore clicks on buttons/links)
+    centerCard.addEventListener("click", (e) => {
+      if (e.target.closest("a, button")) return;
+      if (!items.length) return;
+      openItem(items[index]);
+    });
+
+    // Keyboard: Enter/Space opens (left/right), center opens too
+    function keyOpen(e, opener) {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        dir();
+        opener();
       }
     }
-    leftCard.addEventListener("keydown", (e) => keyNav(e, goPrev));
-    rightCard.addEventListener("keydown", (e) => keyNav(e, goNext));
 
-    // Swipe
+    leftCard.addEventListener("keydown", (e) => keyOpen(e, () => {
+      const prev = items[mod(index - 1, items.length)];
+      openItem(prev);
+    }));
+
+    rightCard.addEventListener("keydown", (e) => keyOpen(e, () => {
+      const next = items[mod(index + 1, items.length)];
+      openItem(next);
+    }));
+
+    centerCard.addEventListener("keydown", (e) => keyOpen(e, () => {
+      openItem(items[index]);
+    }));
+
+    // Swipe still navigates the carousel
     let startX = 0;
     let startY = 0;
     let isPointerDown = false;
@@ -817,30 +885,30 @@ const res = await fetch("/assets/calendar/calendar-index.json");
     root.addEventListener("pointercancel", () => { isPointerDown = false; });
 
     async function loadActivitiesForCarousel() {
-  try {
-const res = await fetch("/assets/activities-index.json");
-    if (!res.ok) throw new Error("activities-index.json missing");
-    const data = await res.json();
+      try {
+        const res = await fetch("/assets/activities-index.json");
+        if (!res.ok) throw new Error("activities-index.json missing");
+        const data = await res.json();
 
-    const latest = (data.items || [])
-      .filter(x => x && (x.type === "project" || x.type === "blog"))
-      .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")))
-      .slice(0, 3);
+        const latest = (data.items || [])
+          .filter(x => x && (x.type === "project" || x.type === "blog"))
+          .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")))
+          .slice(0, 3);
 
-    items = latest.length ? latest : demoItems.slice(0, 3);
-    index = 0;
-    render();
-  } catch (e) {
-    items = demoItems.slice(0, 3);
-    index = 0;
-    render();
-  }
-}
-
+        items = latest.length ? latest : demoItems.slice(0, 3);
+        index = 0;
+        render();
+      } catch (e) {
+        items = demoItems.slice(0, 3);
+        index = 0;
+        render();
+      }
+    }
 
     loadActivitiesForCarousel();
   })();
 </script>
+
 
 
 <script>

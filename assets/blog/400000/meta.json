@@ -1,6 +1,8 @@
 {
   "title": "400.000",
   "updated": "2023-03-30",
+      "excerpt": "hier kurz beschreiben worum es geht. ersetzt das excerpt text file",
+  "tags": ["libertarian", "politics"],
   "alsoPublished": [
     { "label": "Dissidenken", "url": "https://dissidenken.info/f/danke-f%C3%BCr-423418" }
   ]

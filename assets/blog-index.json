@@ -1,23 +1,19 @@
 {
-  "generatedAt": "2026-01-19T19:43:46.613Z",
+  "generatedAt": "2026-01-23T19:41:04.723Z",
   "items": [
     {
       "type": "blog",
       "slug": "ef-konferenz 2026",
       "title": "Samstag Vormittag der EF-Konferenz",
       "updated": "2026-01-19",
-      "excerpt": "this text is about the ef konferenz excerpt",
+      "excerpt": "EF-Konferenz 2026",
       "cover": "/assets/blog/ef-konferenz 2026/konf.jpg",
       "contentUrl": "/assets/blog/ef-konferenz 2026/article.html",
       "metaUrl": "/assets/blog/ef-konferenz 2026/meta.json",
       "alsoPublished": [
         {
-          "label": "LinkedIn",
-          "url": "https://www.linkedin.com/..."
-        },
-        {
-          "label": "Medium",
-          "url": "https://medium.com/..."
+          "label": "Eigentümlich frei",
+          "url": "https://ef-magazin.de/archiv/ef/259/inhalt.html"
         }
       ]
     },
@@ -25,8 +21,8 @@
       "type": "blog",
       "slug": "julius-faucher-medaille",
       "title": "Schuld und Unschuld der Boomer",
-      "updated": "2025-12-19",
-      "excerpt": "this text is about the julius fuacher excerpt",
+      "updated": "2026-01-19",
+      "excerpt": "Jungautorenwettbewerb",
       "cover": "/assets/blog/julius-faucher-medaille/ef.jpg",
       "contentUrl": "/assets/blog/julius-faucher-medaille/text.md",
       "metaUrl": "/assets/blog/julius-faucher-medaille/meta.json",
@@ -34,6 +30,22 @@
         {
           "label": "Eigentümlich frei",
           "url": "https://www.kopp-verlag.de/a/eigentuemlich-frei-ausgabe-nr.-259-januar%2Ffebruar-2026"
+        }
+      ]
+    },
+    {
+      "type": "blog",
+      "slug": "lebensraum",
+      "title": "Neuer Lebensraum im Osten",
+      "updated": "2026-01-16",
+      "excerpt": "Anlässlich des Säbelrasselns der Grünen",
+      "cover": "/assets/blog/lebensraum/hinten.png",
+      "contentUrl": "/assets/blog/lebensraum/text.md",
+      "metaUrl": "/assets/blog/lebensraum/meta.json",
+      "alsoPublished": [
+        {
+          "label": "Dissidenken",
+          "url": "https://dissidenken.info/f/neuer-lebensraum-im-osten-f%C3%BCr-die-nato"
         }
       ]
     },
@@ -50,22 +62,6 @@
         {
           "label": "Dissidenken",
           "url": "https://dissidenken.info/f/danke-f%C3%BCr-423418"
-        }
-      ]
-    },
-    {
-      "type": "blog",
-      "slug": "lebensraum",
-      "title": "Neuer Lebensraum im Osten",
-      "updated": "2023-02-18",
-      "excerpt": "anlässlich des ukrainekriegs",
-      "cover": "/assets/blog/lebensraum/hinten.png",
-      "contentUrl": "/assets/blog/lebensraum/text.md",
-      "metaUrl": "/assets/blog/lebensraum/meta.json",
-      "alsoPublished": [
-        {
-          "label": "Dissidenken",
-          "url": "https://dissidenken.info/f/neuer-lebensraum-im-osten-f%C3%BCr-die-nato"
         }
       ]
     }

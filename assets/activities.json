@@ -2,11 +2,21 @@
   "items": [
     {
       "type": "project",
+      "slug": "Gesichtslesen",
+      "title": "Gesichtslesen",
+      "updated": "2026-01-25",
+      "image": "/assets/projects/Gesichtslesen/umschlag_ roh.png",
+      "excerpt": "",
+      "url": "/webpages/projects/Gesichtslesen/",
+      "contentUrl": ""
+    },
+    {
+      "type": "project",
       "slug": "saftladen",
       "title": "Saftladen",
       "updated": "2026-01-25",
       "image": "/assets/projects/saftladen/saftladen.png",
-      "excerpt": "Frischen Obstsaft per Schubkarre direkt für euch am Radweg",
+      "excerpt": "",
       "url": "/webpages/projects/saftladen/",
       "contentUrl": ""
     },
@@ -16,7 +26,7 @@
       "title": "Samstag Vormittag der EF-Konferenz",
       "updated": "2026-01-19",
       "image": "/assets/blog/ef-konferenz 2026/konf.jpg",
-      "excerpt": "EF-Konferenz 2026",
+      "excerpt": "",
       "url": "/webpages/blog/ef-konferenz 2026/",
       "contentUrl": "/assets/content/blog/ef-konferenz 2026.html"
     },
@@ -26,7 +36,7 @@
       "title": "Schuld und Unschuld der Boomer",
       "updated": "2026-01-19",
       "image": "/assets/blog/julius-faucher-medaille/ef.jpg",
-      "excerpt": "Jungautorenwettbewerb",
+      "excerpt": "",
       "url": "/webpages/blog/julius-faucher-medaille/",
       "contentUrl": "/assets/content/blog/julius-faucher-medaille.html"
     },
@@ -36,17 +46,17 @@
       "title": "Neuer Lebensraum im Osten",
       "updated": "2026-01-16",
       "image": "/assets/blog/lebensraum/hinten.png",
-      "excerpt": "Anlässlich des Säbelrasselns der Grünen",
+      "excerpt": "",
       "url": "/webpages/blog/lebensraum/",
       "contentUrl": "/assets/content/blog/lebensraum.html"
     },
     {
       "type": "project",
       "slug": "angela",
-      "title": "Demo anlässlich politischer Gefangener",
+      "title": "Buchübersetzung",
       "updated": "2025-08-25",
       "image": "/assets/projects/angela/angela flyer+.png",
-      "excerpt": "Buchübersetzung ins Englische",
+      "excerpt": "",
       "url": "/webpages/projects/angela/",
       "contentUrl": ""
     },
@@ -56,7 +66,7 @@
       "title": "400.000",
       "updated": "2023-03-30",
       "image": "/assets/blog/400000/400000.png",
-      "excerpt": "Endlich wieder ein Volksentscheid…\r\n… aber mit ganz anderem Ergebnis als erwartet!",
+      "excerpt": "",
       "url": "/webpages/blog/400000/",
       "contentUrl": "/assets/content/blog/400000.html"
     },
@@ -66,7 +76,7 @@
       "title": "Demo anlässlich politischer Gefangener",
       "updated": "2023-01-15",
       "image": "/assets/projects/janich/janich.png",
-      "excerpt": "Eine Demo der PDV anlässlicher politischer Gefangener",
+      "excerpt": "",
       "url": "/webpages/projects/janich/",
       "contentUrl": ""
     }

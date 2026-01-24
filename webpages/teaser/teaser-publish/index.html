@@ -391,6 +391,25 @@
     </p>
   </div>
 </section>
+<dialog class="blog-modal" id="blog-modal" aria-label="Blogartikel">
+  <div class="blog-modal-head">
+    <div>
+      <h3 class="blog-modal-title" id="blog-modal-title" style="margin:0;">Titel</h3>
+      <p class="fineprint" id="blog-modal-meta" style="margin:6px 0 0; opacity:.9;"></p>
+    </div>
+    <button class="button button-secondary" type="button" data-blog-close>Schließen</button>
+  </div>
+
+  <div class="blog-modal-chips" id="blog-modal-tags" aria-label="Tags"></div>
+
+  <p class="fineprint" id="blog-modal-excerpt" style="margin-top:10px;"></p>
+
+  <div class="blog-modal-links" id="blog-modal-links" style="margin-top:10px;"></div>
+
+  <hr style="margin:14px 0; opacity:.35;" />
+
+  <article class="blog-modal-body" id="blog-modal-body"></article>
+</dialog>
 
 
 
@@ -1005,107 +1024,86 @@ dialog?.addEventListener("click", (e) => {
     openCurrent();
   });
 
-  async function openCurrent() {
-    if (!dialog) return;
-    if (!items.length) return;
+    async function openCurrent() {
+  if (!dialog) return;
+  if (!items.length) return;
 
-    const cur = items[index];
-    if (!cur || !cur.contentUrl) return;
+  const cur = items[index];
+  if (!cur) return;
 
-    // reset UI fast
-    if (modalTitle) modalTitle.textContent = safeTitle(cur);
-    if (modalMeta) modalMeta.textContent = cur.updated ? formatDate(cur.updated) : "";
-    if (modalExcerpt) modalExcerpt.textContent = safeExcerpt(cur) || "";
-    if (modalTags) modalTags.innerHTML = "";
-    if (modalLinks) modalLinks.innerHTML = "";
-    if (modalBody) modalBody.innerHTML = `<p class="fineprint">Lade Artikel…</p>`;
+  // reset UI fast
+  if (modalTitle) modalTitle.textContent = safeTitle(cur);
+  if (modalMeta) modalMeta.textContent = cur.updated ? formatDate(cur.updated) : "";
+  if (modalExcerpt) modalExcerpt.textContent = safeExcerpt(cur) || "";
+  if (modalTags) modalTags.innerHTML = "";
+  if (modalLinks) modalLinks.innerHTML = "";
+  if (modalBody) modalBody.innerHTML = `<p class="fineprint">Lade Artikel…</p>`;
 
-    dialog.showModal();
+  // open ONCE
+  if (!dialog.open) dialog.showModal();
 
-    // load meta.json (optional but preferred)
-    try {
-      if (cur.metaUrl) {
-        const mRes = await fetch(cur.metaUrl);
-        if (mRes.ok) {
-          const meta = await mRes.json();
+  if (!cur.contentUrl) {
+    if (modalBody) modalBody.innerHTML =
+      `<p class="fineprint">Kein contentUrl für diesen Eintrag. Prüfe blog-index.json / slug.</p>`;
+    return;
+  }
 
-          if (modalTitle && meta.title) modalTitle.textContent = String(meta.title);
-          const updated = meta.updated || cur.updated || "";
-          if (modalMeta) modalMeta.textContent = updated ? formatDate(updated) : "";
+  // meta
+  try {
+    if (cur.metaUrl) {
+      const mRes = await fetch(cur.metaUrl);
+      if (mRes.ok) {
+        const meta = await mRes.json();
+        if (modalTitle && meta.title) modalTitle.textContent = String(meta.title);
+        const updated = meta.updated || cur.updated || "";
+        if (modalMeta) modalMeta.textContent = updated ? formatDate(updated) : "";
+        const ex = (meta.excerpt || cur.excerpt || "").toString();
+        if (modalExcerpt) modalExcerpt.textContent = ex;
 
-          const ex = (meta.excerpt || cur.excerpt || "").toString();
-          if (modalExcerpt) modalExcerpt.textContent = ex;
-
-          // tags
-          if (modalTags) {
-            const tags = Array.isArray(meta.tags) ? meta.tags : [];
-            modalTags.innerHTML = tags.map(t => `<span class="chip">${String(t)}</span>`).join("");
-          }
-
-          // alsoPublished links
-          if (modalLinks) {
-            const ap = Array.isArray(meta.alsoPublished) ? meta.alsoPublished : [];
-            if (ap.length) {
-              modalLinks.innerHTML =
-                `<p class="fineprint" style="margin:0 0 8px;">Auch veröffentlicht:</p>` +
-                ap.map(x => {
-                  const label = (x && x.label) ? String(x.label) : "Link";
-                  const url = (x && x.url) ? String(x.url) : "";
-                  if (!url) return "";
-                  return `<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
-                }).join(" ");
-            } else {
-              modalLinks.innerHTML = "";
-            }
-          }
+        if (modalTags) {
+          const tags = Array.isArray(meta.tags) ? meta.tags : [];
+          modalTags.innerHTML = tags.map(t => `<span class="chip">${String(t)}</span>`).join("");
         }
       }
-    } catch {
-      // meta is optional; fail silently
     }
+  } catch {}
 
-    // load article html
-    try {
-      const aRes = await fetch(cur.contentUrl);
-      if (!aRes.ok) throw new Error("article fetch failed");
-      const htmlText = await aRes.text();
+  // article
+  try {
+    const aRes = await fetch(cur.contentUrl);
+    if (!aRes.ok) throw new Error("article fetch failed");
+    const htmlText = await aRes.text();
 
-      // If it's a full HTML doc, extract body; if it's fragment, keep as is
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(htmlText, "text/html");
-      const body = doc.body;
+    const doc = new DOMParser().parseFromString(htmlText, "text/html");
+    const content = doc.body?.innerHTML?.trim() ? doc.body.innerHTML : htmlText;
 
-      // Prefer body content if it exists and has meaningful nodes
-      const content = (body && body.innerHTML && body.innerHTML.trim().length)
-        ? body.innerHTML
-        : htmlText;
+    if (modalBody) {
+      modalBody.innerHTML = content;
 
-if (modalBody) {
-  modalBody.innerHTML = content;
+      const base = new URL(cur.contentUrl, window.location.href);
+      const baseDir = new URL("./", base);
 
-  // Fix relative src/href inside the inserted article
-  const base = new URL(cur.contentUrl, window.location.href);
-  const baseDir = new URL("./", base); // folder of the article
+      modalBody.querySelectorAll("[src]").forEach(el => {
+        const v = el.getAttribute("src");
+        if (!v) return;
+        if (/^(https?:|data:|mailto:|tel:|#|\/)/i.test(v)) return;
+        el.setAttribute("src", new URL(v, baseDir).toString());
+      });
 
-  modalBody.querySelectorAll("[src]").forEach(el => {
-    const v = el.getAttribute("src");
-    if (!v) return;
-    // Skip absolute, data:, mailto:, etc.
-    if (/^(https?:|data:|mailto:|tel:|#|\/)/i.test(v)) return;
-    el.setAttribute("src", new URL(v, baseDir).toString());
-  });
-
-  modalBody.querySelectorAll("a[href]").forEach(a => {
-    const v = a.getAttribute("href");
-    if (!v) return;
-    if (/^(https?:|mailto:|tel:|#|\/)/i.test(v)) return;
-    a.setAttribute("href", new URL(v, baseDir).toString());
-  });
-}
-    } catch {
-      if (modalBody) modalBody.innerHTML = `<p class="fineprint">Artikel konnte nicht geladen werden.</p>`;
+      modalBody.querySelectorAll("a[href]").forEach(a => {
+        const v = a.getAttribute("href");
+        if (!v) return;
+        if (/^(https?:|mailto:|tel:|#|\/)/i.test(v)) return;
+        a.setAttribute("href", new URL(v, baseDir).toString());
+      });
     }
+  } catch {
+    if (modalBody) modalBody.innerHTML = `<p class="fineprint">Artikel konnte nicht geladen werden.</p>`;
   }
+
+}
+
+    
 
   async function loadBlogItems() {
     try {
@@ -1116,15 +1114,23 @@ if (modalBody) {
       const list = (data.items || [])
         .filter(x => x && x.type === "blog")
         .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")))
-        .map(x => ({
-          title: x.title || x.slug || "Blog",
-          updated: x.updated || "",
-          excerpt: x.excerpt || "",
-          cover: x.cover || "",
-          metaUrl: x.metaUrl || "",
-          contentUrl: x.contentUrl || ""
-        }))
-        .filter(x => x.cover); // need a cover image for gallery
+        .map(x => {
+  const slug = String(x.slug || "").trim();
+  // Expect: /blog/<slug>/article.html and /blog/<slug>/meta.json
+  const base = slug ? `/blog/${slug}/` : "";
+
+  return {
+    slug,
+    title: x.title || slug || "Blog",
+    updated: x.updated || "",
+    excerpt: x.excerpt || "",
+    cover: x.cover || "",
+    metaUrl: x.metaUrl || (base ? `${base}meta.json` : ""),
+    contentUrl: x.contentUrl || (base ? `${base}article.html` : "")
+  };
+})
+
+.filter(x => x.cover && x.slug); // cover for gallery + slug to build URLs
 
       items = list.length ? list : fallbackItems;
       index = 0;
@@ -1142,25 +1148,6 @@ if (modalBody) {
 
 
 
-<dialog class="blog-modal" id="blog-modal" aria-label="Blogartikel">
-  <div class="blog-modal-head">
-    <div>
-      <h3 class="blog-modal-title" id="blog-modal-title" style="margin:0;">Titel</h3>
-      <p class="fineprint" id="blog-modal-meta" style="margin:6px 0 0; opacity:.9;"></p>
-    </div>
-    <button class="button button-secondary" type="button" data-blog-close>Schließen</button>
-  </div>
-
-  <div class="blog-modal-chips" id="blog-modal-tags" aria-label="Tags"></div>
-
-  <p class="fineprint" id="blog-modal-excerpt" style="margin-top:10px;"></p>
-
-  <div class="blog-modal-links" id="blog-modal-links" style="margin-top:10px;"></div>
-
-  <hr style="margin:14px 0; opacity:.35;" />
-
-  <article class="blog-modal-body" id="blog-modal-body"></article>
-</dialog>
 
 </body>
 </html>

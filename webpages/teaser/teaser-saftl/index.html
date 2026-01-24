@@ -16,114 +16,148 @@
   <meta name="color-scheme" content="light dark" />
 
   <style>
-    /* Make the page bright / colorful (override the darker default look) */
-    body.page-home {
-      background: linear-gradient(135deg,
-        rgba(255, 236, 179, 0.55),
-        rgba(255, 205, 210, 0.45),
-        rgba(187, 222, 251, 0.45),
-        rgba(200, 230, 201, 0.45)
-      );
+    /* =========================================================
+       Saftladen: readability + consistent surfaces (light/dark)
+       ========================================================= */
+
+    /* Theme tokens (single source of truth) */
+    :root{
+      --bg-1: rgba(255, 236, 179, 0.55);
+      --bg-2: rgba(255, 205, 210, 0.45);
+      --bg-3: rgba(187, 222, 251, 0.45);
+      --bg-4: rgba(200, 230, 201, 0.45);
+
+      --text: #121212;
+      --muted: rgba(0,0,0,0.76);
+      --card: rgba(255,255,255,0.86);
+      --card-2: rgba(255,255,255,0.72);
+      --border: rgba(0,0,0,0.14);
+      --border-2: rgba(0,0,0,0.22);
+      --shadow: 0 10px 26px rgba(0,0,0,0.10);
+
+      --link: #0b3d91;
+      --link-visited: #4a2a7a;
+
+      /* calendar */
+      --cal-cell-bg: rgba(255,255,255,0.92);
+      --cal-cell-bg-muted: rgba(255,255,255,0.70);
+      --cal-cell-border: rgba(0,0,0,0.18);
+      --cal-cell-border-strong: rgba(0,0,0,0.28);
+      --cal-dot: rgba(0,0,0,0.55);
+      --focus: rgba(11,61,145,0.38);
+
+      --radius: 16px;
+      --radius-sm: 12px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root{
+        --text: rgba(255,255,255,0.92);
+        --muted: rgba(255,255,255,0.76);
+
+        /* keep background colorful but slightly darker */
+        --bg-1: rgba(255, 236, 179, 0.18);
+        --bg-2: rgba(255, 205, 210, 0.14);
+        --bg-3: rgba(187, 222, 251, 0.14);
+        --bg-4: rgba(200, 230, 201, 0.14);
+
+        --card: rgba(18,18,18,0.64);
+        --card-2: rgba(18,18,18,0.50);
+        --border: rgba(255,255,255,0.14);
+        --border-2: rgba(255,255,255,0.20);
+        --shadow: 0 12px 28px rgba(0,0,0,0.35);
+
+        --link: #9bc3ff;
+        --link-visited: #d2b5ff;
+
+        --cal-cell-bg: rgba(18,18,18,0.70);
+        --cal-cell-bg-muted: rgba(18,18,18,0.52);
+        --cal-cell-border: rgba(255,255,255,0.16);
+        --cal-cell-border-strong: rgba(255,255,255,0.26);
+        --cal-dot: rgba(255,255,255,0.62);
+        --focus: rgba(155,195,255,0.35);
+      }
+    }
+
+    /* Page background */
+    body.page-home{
+      background: linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3), var(--bg-4));
       background-attachment: fixed;
+      color: var(--text);
     }
-    /* Force readable foreground on bright background (light mode) */
-body.page-home {
-  color: #111;
-}
 
-/* Make the “fineprint” and links readable too */
-body.page-home .fineprint { color: rgba(0,0,0,0.78); }
-body.page-home a { color: #0b3d91; }
-body.page-home a:visited { color: #4a2a7a; }
+    /* Make typography consistently readable */
+    body.page-home .fineprint{ color: var(--muted); }
+    body.page-home a{ color: var(--link); }
+    body.page-home a:visited{ color: var(--link-visited); }
+    body.page-home h1, body.page-home h2, body.page-home h3{ color: var(--text); }
 
-/* Ensure headings are solid */
-body.page-home h1, body.page-home h2, body.page-home h3 { color: #111; }
-
-/* If your default buttons rely on currentColor, keep them readable */
-body.page-home .button,
-body.page-home .button-secondary {
-  color: #111;
-  border-color: rgba(0,0,0,0.35);
-}
-
-@media (prefers-color-scheme: dark) {
-  body.page-home { color: rgba(255,255,255,0.92); }
-  body.page-home .fineprint { color: rgba(255,255,255,0.78); }
-  body.page-home a { color: #9bc3ff; }
-  body.page-home a:visited { color: #d2b5ff; }
-
-  .card, .note-block, .section .card {
-    background: rgba(20,20,20,0.62);
-    border: 1px solid rgba(255,255,255,0.18);
-  }
-}
-
-
-    /* lift cards slightly from colorful background */
-    .card, .note-block, .section .card {
-      background: rgba(255,255,255,0.78);
-      backdrop-filter: blur(6px);
-      border: 1px solid rgba(120,120,120,0.25);
+    /* Consistent “surface” look (cards, sections) */
+    .card, .note-block, .section .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
     }
-/* Hero layout when hero-media is removed */
-.hero {
-  display: block;              /* stops 2-col assumptions */
-}
-/* Ensure the cards container uses full width and the single card spans */
-.section[aria-labelledby="profiles"] .cards {
-  width: 100%;
-  max-width: none;
-  grid-template-columns: 1fr;   /* if .cards is a grid */
-}
 
-.section[aria-labelledby="profiles"] .cards > .card {
-  width: 100%;
-  max-width: none;
-}
-.section[aria-labelledby="profiles"] .cards {
-  display: flex;
-  flex-direction: column;
-}
+    /* The HERO block should read like a card (fix mismatch vs background) */
+    .hero{
+      display: block; /* avoid accidental 2-col from global CSS */
+      margin-top: 10px;
+    }
+    .hero-media{ display:none !important; }
+    .hero .hero-text{
+      max-width: 70ch;
+      margin: 0 auto;
+      padding: 18px 18px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(8px);
+    }
 
-.section[aria-labelledby="profiles"] .cards > .card {
-  flex: 1 1 auto;
-}
-
-.hero .hero-text {
-  max-width: 70ch;             /* you already set inline; keep it here too */
-  margin: 0 auto;              /* center it */
-}
-
-/* If your global CSS uses grid/flex on .hero, force single-column */
-.hero-media { display: none !important; }
-
-    /* --- Top block --- */
-    .saftladen-top { margin: 18px 0 10px; }
-    .saftladen-image {
+    /* Top image + heading */
+    .saftladen-top{ margin: 18px 0 10px; }
+    .saftladen-image{
       width: 100%;
       max-height: 360px;
       height: auto;
       display: block;
-      border-radius: 16px;
+      border-radius: var(--radius);
       object-fit: cover;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.10);
-    }
-    .saftladen-title {
-      margin: 14px 0 0;
-      font-size: clamp(1.8rem, 3.2vw, 2.6rem);
-      line-height: 1.1;
-      letter-spacing: 0.2px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      background: var(--card);
     }
 
-    /* --- Accordion --- */
-    .services { display: grid; gap: 12px; margin-top: 12px; }
-    .service-item {
-      border-radius: 16px;
-      border: 1px solid rgba(127,127,127,0.28);
-      overflow: hidden;
-      background: rgba(255,255,255,0.55);
+    /* Fix heading readability: put it on a subtle pill surface */
+    .saftladen-title{
+      margin: 14px 0 0;
+      font-size: clamp(1.9rem, 3.2vw, 2.7rem);
+      line-height: 1.08;
+      letter-spacing: 0.2px;
+      display: inline-block;
+      padding: 10px 14px;
+      border-radius: 999px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
     }
-    .service-summary {
+
+    /* Offers accordion: keep same surface language */
+    .services{ display:grid; gap: 12px; margin-top: 12px; }
+
+    .service-item{
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      background: var(--card);
+      box-shadow: 0 10px 24px rgba(0,0,0,0.06);
+    }
+
+    .service-summary{
       list-style: none;
       cursor: pointer;
       padding: 14px 16px;
@@ -131,57 +165,186 @@ body.page-home .button-secondary {
       align-items: baseline;
       justify-content: space-between;
       gap: 12px;
+      background: linear-gradient(180deg, var(--card), var(--card-2));
     }
-    .service-summary::-webkit-details-marker { display: none; }
-    .service-summary::marker { content: ""; }
+    .service-summary::-webkit-details-marker{ display:none; }
+    .service-summary::marker{ content:""; }
 
-    .service-summary strong { font-size: 1.05rem; }
-    .service-summary .fineprint { margin: 0; opacity: 0.9; }
+    .service-summary strong{ font-size: 1.05rem; }
+    .service-summary .fineprint{ margin:0; opacity: 0.95; }
 
-    .service-chevron {
+    .service-chevron{
       flex: 0 0 auto;
       width: 34px;
       height: 34px;
       border-radius: 999px;
-      border: 1px solid rgba(127,127,127,0.45);
+      border: 1px solid var(--border-2);
       display: grid;
       place-items: center;
-      opacity: 0.9;
-      transition: transform 160ms ease;
+      opacity: 0.95;
+      transition: transform 160ms ease, background 160ms ease;
+      background: rgba(255,255,255,0.12);
     }
-    details[open] .service-chevron { transform: rotate(180deg); }
+    details[open] .service-chevron{ transform: rotate(180deg); }
 
-    .service-body { padding: 0 16px 14px; }
-    .service-body p { margin: 10px 0 0; }
-    .service-body ul { margin: 10px 0 0 18px; }
+    .service-body{ padding: 0 16px 14px; }
+    .service-body p{ margin: 10px 0 0; }
+    .service-body ul{ margin: 10px 0 0 18px; }
 
-    .service-body .chips {
-      display: flex;
-      flex-wrap: wrap;
+    .service-body .chips{
+      display:flex;
+      flex-wrap:wrap;
       gap: 8px;
       margin-top: 10px;
     }
-    .service-body .chip {
-      display: inline-flex;
+    .service-body .chip{
+      display:inline-flex;
       padding: 4px 10px;
       border-radius: 999px;
-      border: 1px solid rgba(127,127,127,0.35);
+      border: 1px solid var(--border);
       font-size: 0.9em;
-      opacity: 0.95;
-      background: rgba(255,255,255,0.65);
+      opacity: 0.98;
+      background: rgba(255,255,255,0.45);
+    }
+    @media (prefers-color-scheme: dark){
+      .service-body .chip{ background: rgba(255,255,255,0.08); }
     }
 
-    /* Price list nice spacing */
-    .price-list { margin: 10px 0 0; padding-left: 18px; }
-    .price-list li { margin: 4px 0; }
+    .price-list{ margin: 10px 0 0; padding-left: 18px; }
+    .price-list li{ margin: 4px 0; }
 
-    /* Small disclaimer block inside accordion */
-    .disclaimer {
+    .disclaimer{
       margin-top: 10px;
       padding: 10px 12px;
-      border-radius: 12px;
-      border: 1px dashed rgba(120,120,120,0.35);
-      background: rgba(255,255,255,0.55);
+      border-radius: var(--radius-sm);
+      border: 1px dashed var(--border-2);
+      background: var(--card-2);
+    }
+
+    /* Profile cards: full width */
+    .section[aria-labelledby="profiles"] .cards{
+      width: 100%;
+      max-width: none;
+      display: flex;
+      flex-direction: column;
+    }
+    .section[aria-labelledby="profiles"] .cards > .card{
+      width: 100%;
+      max-width: none;
+      flex: 1 1 auto;
+    }
+
+    /* Buttons: ensure contrast on bright background */
+    body.page-home .button,
+    body.page-home .button-secondary{
+      color: var(--text);
+      border-color: var(--border-2);
+      background: rgba(255,255,255,0.40);
+      backdrop-filter: blur(6px);
+    }
+    body.page-home .button:hover,
+    body.page-home .button-secondary:hover{
+      background: rgba(255,255,255,0.60);
+    }
+    @media (prefers-color-scheme: dark){
+      body.page-home .button,
+      body.page-home .button-secondary{
+        background: rgba(0,0,0,0.10);
+      }
+      body.page-home .button:hover,
+      body.page-home .button-secondary:hover{
+        background: rgba(0,0,0,0.18);
+      }
+    }
+
+    /* =========================
+       Calendar readability fix
+       ========================= */
+    #cal-grid{
+      /* give the grid area its own subtle surface so cells don't float oddly */
+      padding: 10px;
+      border-radius: var(--radius);
+      background: var(--card-2);
+      border: 1px solid var(--border);
+    }
+
+    /* The calendar creates inline-styled buttons; override key parts */
+    #cal-grid button[data-date]{
+      background: var(--cal-cell-bg) !important;
+      border: 1px solid var(--cal-cell-border) !important;
+      color: var(--text) !important;
+      opacity: 1 !important; /* do not fade text via opacity */
+      box-shadow: none;
+      transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease;
+    }
+
+    /* emulate “inactive” days without killing contrast */
+    #cal-grid button[data-date][aria-label*="(Termine vorhanden)"]{
+      border-color: var(--cal-cell-border-strong) !important;
+    }
+    /* When your JS uses opacity to signal "no events", we replace by background */
+    #cal-grid button[data-date]:not([aria-label*="Termine vorhanden"]){
+      background: var(--cal-cell-bg-muted) !important;
+    }
+
+    #cal-grid button[data-date]:hover{
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.08);
+      border-color: var(--cal-cell-border-strong) !important;
+    }
+
+    #cal-grid button[data-date]:focus{
+      outline: 2px solid var(--focus) !important;
+      outline-offset: 2px;
+    }
+
+    /* Make the tiny “dot” indicator visible (JS draws it with currentColor) */
+    #cal-grid button[data-date] div[style*="width:8px"][style*="height:8px"]{
+      border-color: var(--cal-dot) !important;
+      opacity: 1 !important;
+    }
+
+    /* Calendar header row labels */
+    #cal-grid > div > div.fineprint{
+      color: var(--muted) !important;
+      opacity: 1 !important;
+      font-weight: 600;
+    }
+
+    /* Ensure the month label + hint have contrast */
+    #cal-month-label{ color: var(--text) !important; }
+    #cal-hint{ color: var(--muted) !important; opacity: 1 !important; }
+
+    /* Calendar panel should not blend into the calendar card */
+    #cal-panel{
+      background: var(--card) !important;
+      border: 1px solid var(--border) !important;
+      box-shadow: var(--shadow) !important;
+    }
+
+    /* Contact form inputs: ensure readable on both schemes */
+    .form input, .form textarea{
+      background: rgba(255,255,255,0.88);
+      border: 1px solid var(--border-2);
+      color: var(--text);
+    }
+    @media (prefers-color-scheme: dark){
+      .form input, .form textarea{
+        background: rgba(18,18,18,0.70);
+        border: 1px solid var(--border-2);
+      }
+    }
+
+    /* Footer: keep legible over gradient */
+    .site-footer{
+      background: rgba(255,255,255,0.35);
+      border-top: 1px solid var(--border);
+      backdrop-filter: blur(10px);
+    }
+    @media (prefers-color-scheme: dark){
+      .site-footer{
+        background: rgba(0,0,0,0.18);
+      }
     }
   </style>
 </head>
@@ -202,10 +365,9 @@ body.page-home .button-secondary {
       <h1 class="saftladen-title">Saftladen</h1>
     </section>
 
-    <!-- HERO (profile picture REMOVED) -->
+    <!-- HERO (profile picture removed) -->
     <section class="hero" aria-label="Vorstellung">
-      <!-- hero-media removed on purpose -->
-      <div class="hero-text" style="max-width: 70ch;">
+      <div class="hero-text">
         <h2 style="margin-top:0;">Bettina Lohr</h2>
         <p class="lead">
           Ich quetsch’ mir für euch einen ab — frech, frisch und ein bisschen exzentrisch. 🍊✨
@@ -355,7 +517,7 @@ body.page-home .button-secondary {
       </p>
     </section>
 
-    <!-- KALENDER (kept) -->
+    <!-- KALENDER -->
     <section class="section" aria-labelledby="calendar-title">
       <div class="section-head" style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
         <h2 id="calendar-title" style="margin:0;">Kalender</h2>
@@ -387,7 +549,7 @@ body.page-home .button-secondary {
       </div>
     </section>
 
-    <!-- PROFILE & PRÄSENZ (Contra removed again) -->
+    <!-- PROFILE & PRÄSENZ -->
     <section class="section" aria-labelledby="profiles">
       <h2 id="profiles">Profile &amp; Präsenz</h2>
 
@@ -410,7 +572,7 @@ body.page-home .button-secondary {
       </div>
     </section>
 
-    <!-- Kontakt (kept) -->
+    <!-- Kontakt -->
     <section class="section" aria-labelledby="contact">
       <h2 id="contact">Kontakt</h2>
 
@@ -634,6 +796,7 @@ body.page-home .button-secondary {
       btn.addEventListener("click", () => openPanel(btn.dataset.date));
     });
   }
+
 
   btnPrev?.addEventListener("click", () => { cursor = new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1); renderMonth(); });
   btnNext?.addEventListener("click", () => { cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1); renderMonth(); });

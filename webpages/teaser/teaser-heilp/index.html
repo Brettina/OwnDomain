@@ -50,6 +50,17 @@
       overflow: hidden;
       background: rgba(0,0,0,0.02);
     }
+/* Ensure the cards container uses full width and the single card spans */
+.section[aria-labelledby="profiles"] .cards {
+  width: 100%;
+  max-width: none;
+  grid-template-columns: 1fr;   /* if .cards is a grid */
+}
+
+.section[aria-labelledby="profiles"] .cards > .card {
+  width: 100%;
+  max-width: none;
+}
 
     .service-summary {
       list-style: none;

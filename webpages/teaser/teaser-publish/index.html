@@ -43,6 +43,17 @@
       gap: 12px;
       margin-top: 12px;
     }
+/* Ensure the cards container uses full width and the single card spans */
+.section[aria-labelledby="profiles"] .cards {
+  width: 100%;
+  max-width: none;
+  grid-template-columns: 1fr;   /* if .cards is a grid */
+}
+
+.section[aria-labelledby="profiles"] .cards > .card {
+  width: 100%;
+  max-width: none;
+}
 
     .service-item {
       border-radius: 16px;
@@ -134,6 +145,94 @@
   opacity: 1;
   transform: scale(1.08);
 }
+
+/* Center image bigger + clickable */
+.blog-card.is-center {
+  cursor: pointer;
+  transform: scale(1.02);
+  opacity: 1;
+}
+
+@media (min-width: 900px) {
+  .blog-card.is-center { transform: scale(1.06); }
+}
+
+/* Caption overlay */
+.blog-caption {
+  padding: 10px 12px 12px;
+}
+
+.blog-caption strong { display:block; }
+.blog-caption [data-blog-excerpt] { display:block; margin-top:4px; opacity:.9; }
+
+/* Arrow controls */
+.blog-controls {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 12px;
+}
+
+.blog-arrow {
+  appearance: none;
+  border: 1px solid currentColor;
+  background: transparent;
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.blog-arrow:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+/* Modal */
+.blog-modal {
+  width: min(980px, calc(100vw - 24px));
+  max-height: min(82vh, 900px);
+  border: 1px solid rgba(127,127,127,0.45);
+  border-radius: 16px;
+  padding: 14px 16px 16px;
+}
+
+.blog-modal::backdrop {
+  background: rgba(0,0,0,0.55);
+}
+
+.blog-modal-head {
+  display:flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.blog-modal-body {
+  overflow: auto;
+  max-height: calc(82vh - 220px);
+  padding-right: 4px;
+}
+
+/* chips */
+.blog-modal-chips {
+  display:flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.blog-modal-chips .chip {
+  display:inline-flex;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(127,127,127,0.45);
+  font-size: 0.9em;
+  opacity: 0.9;
+}
+
+/* Links list in modal */
+.blog-modal-links a { margin-right: 10px; }
+
 
 /* swipe feel */
 [data-blog-gallery] { touch-action: pan-y; user-select: none; }
@@ -248,38 +347,51 @@
     </section>
 
     <!-- BLOG-GALERIE (nur Bilder, keine Links) -->
+<!-- BLOG-GALERIE (Bilder + Pfeile + Popup) -->
 <section class="section" aria-labelledby="blog-gallery-title">
   <div class="section-head">
     <h2 id="blog-gallery-title" style="margin:0;">Blog — Galerie</h2>
-    <p class="fineprint" style="margin:0;">Ein paar visuelle Eindrücke aus dem Blog.</p>
+    <p class="fineprint" style="margin:0;">Ein paar visuelle Eindrücke aus dem Blog. Klick auf das mittlere Bild → Artikel.</p>
   </div>
 
   <div class="blog-gallery" data-blog-gallery>
     <div class="blog-stage" aria-label="Galerie: Blogbilder">
-      <figure class="card blog-card is-side" data-slot="left" aria-hidden="true">
+      <figure class="card blog-card is-side" data-slot="left" tabindex="0" role="button" aria-label="Vorheriges Blogbild anzeigen">
         <img src="/img/concept_leistungen.png" alt="Blogbild" loading="lazy" />
       </figure>
 
-      <figure class="card blog-card is-center" data-slot="center">
+      <figure class="card blog-card is-center" data-slot="center" tabindex="0" role="button" aria-label="Blogartikel öffnen">
         <img src="/img/concept.png" alt="Blogbild" loading="lazy" />
+        <figcaption class="blog-caption">
+          <strong data-blog-title>Blog</strong>
+          <span class="fineprint" data-blog-date></span>
+          <span class="fineprint" data-blog-excerpt></span>
+        </figcaption>
       </figure>
 
-      <figure class="card blog-card is-side" data-slot="right" aria-hidden="true">
+      <figure class="card blog-card is-side" data-slot="right" tabindex="0" role="button" aria-label="Nächstes Blogbild anzeigen">
         <img src="/img/mythologie.png" alt="Blogbild" loading="lazy" />
       </figure>
     </div>
 
-    <div class="blog-dots" aria-hidden="true">
-      <span class="blog-dot is-active" data-dot="0"></span>
-      <span class="blog-dot" data-dot="1"></span>
-      <span class="blog-dot" data-dot="2"></span>
+    <div class="blog-controls" aria-label="Galerie-Steuerung">
+      <button class="blog-arrow" type="button" data-blog-prev aria-label="Vorheriges Blogbild">←</button>
+
+      <div class="blog-dots" aria-hidden="true">
+        <span class="blog-dot is-active" data-dot="0"></span>
+        <span class="blog-dot" data-dot="1"></span>
+        <span class="blog-dot" data-dot="2"></span>
+      </div>
+
+      <button class="blog-arrow" type="button" data-blog-next aria-label="Nächstes Blogbild">→</button>
     </div>
 
     <p class="fineprint" style="margin-top:10px;">
-      Tipp: Wischen auf Mobilgeräten (oder mit Maus/Touchpad ziehen).
+      Desktop: Pfeile oder Tastatur (←/→). Mobil: Wischen.
     </p>
   </div>
 </section>
+
 
 
     <!-- LEISTUNGEN (accordion) -->
@@ -427,35 +539,7 @@
           />
         </article>
 
-        <article class="card">
-          <h3>Contra</h3>
-          <p class="fineprint">Freelance-Profil (AR/VR, Mobile, Engineering).</p>
-          <p>
-            <a
-              href="https://contra.com/lohr_bettina_68155kak/work?r=lohr_bettina_68155kak"
-              target="_blank"
-              rel="noopener"
-            >
-              contra.com/lohr_bettina
-            </a>
-          </p>
-          <img
-            src="/img/qr-code contra.png"
-            alt="QR-Code zum Contra-Profil von Bettina Lohr"
-            loading="lazy"
-            style="max-width:180px; margin-top:10px;"
-          />
-          <p class="fineprint" style="margin-top:10px;">
-            ✦ Featured auf Contra:
-            <a
-              href="https://contra.com/hire/german-speaking-mobile-engineers?featuredUserProfileId=WyJVc2VyUHJvZmlsZSIsMzU0ODE0ODRd"
-              target="_blank"
-              rel="noopener"
-            >
-              „Best German-speaking freelance mobile engineers to hire (2026)“
-            </a>
-          </p>
-        </article>
+        
       </div>
     </section>
 
@@ -774,105 +858,309 @@
     })();
   </script>
 
-  <script>
-  (function () {
-    const root = document.querySelector("[data-blog-gallery]");
-    if (!root) return;
+<script>
+(function () {
+  const root = document.querySelector("[data-blog-gallery]");
+  if (!root) return;
 
-    const leftCard = root.querySelector('[data-slot="left"] img');
-    const centerCard = root.querySelector('[data-slot="center"] img');
-    const rightCard = root.querySelector('[data-slot="right"] img');
-    const dots = Array.from(root.querySelectorAll("[data-dot]"));
+  const leftFig = root.querySelector('[data-slot="left"]');
+  const centerFig = root.querySelector('[data-slot="center"]');
+  const rightFig = root.querySelector('[data-slot="right"]');
 
-    const fallback = [
-      "/img/concept_leistungen.png",
-      "/img/concept.png",
-      "/img/mythologie.png"
-    ];
+  const leftImg = leftFig?.querySelector("img");
+  const centerImg = centerFig?.querySelector("img");
+  const rightImg = rightFig?.querySelector("img");
 
-    let images = [];
-    let index = 0;
+  const prevBtn = root.querySelector("[data-blog-prev]");
+  const nextBtn = root.querySelector("[data-blog-next]");
+  const dots = Array.from(root.querySelectorAll("[data-dot]"));
 
-    function mod(n, m) { return ((n % m) + m) % m; }
+  const capTitle = root.querySelector("[data-blog-title]");
+  const capDate = root.querySelector("[data-blog-date]");
+  const capExcerpt = root.querySelector("[data-blog-excerpt]");
 
-function setDots() {
-  dots.forEach(d => d.classList.remove("is-active"));
-  const active = dots[mod(index, dots.length)];
-  if (active) active.classList.add("is-active");
-}
+  const dialog = document.getElementById("blog-modal");
+  const closeBtn = dialog?.querySelector("[data-blog-close]");
+  const modalTitle = document.getElementById("blog-modal-title");
+  const modalMeta = document.getElementById("blog-modal-meta");
+  const modalExcerpt = document.getElementById("blog-modal-excerpt");
+  const modalTags = document.getElementById("blog-modal-tags");
+  const modalLinks = document.getElementById("blog-modal-links");
+  const modalBody = document.getElementById("blog-modal-body");
 
+  const fallbackItems = [
+    { cover: "/img/concept_leistungen.png", title: "Blog", updated: "", excerpt: "", metaUrl: "", contentUrl: "" },
+    { cover: "/img/concept.png",           title: "Blog", updated: "", excerpt: "", metaUrl: "", contentUrl: "" },
+    { cover: "/img/mythologie.png",        title: "Blog", updated: "", excerpt: "", metaUrl: "", contentUrl: "" },
+  ];
 
-    function render() {
-      if (!images.length) return;
-      const prev = images[mod(index - 1, images.length)];
-      const cur  = images[index];
-      const next = images[mod(index + 1, images.length)];
+  let items = [];
+  let index = 0;
 
-      leftCard.src = prev;
-      centerCard.src = cur;
-      rightCard.src = next;
+  function mod(n, m) { return ((n % m) + m) % m; }
 
-      leftCard.alt = "Blogbild";
-      centerCard.alt = "Blogbild";
-      rightCard.alt = "Blogbild";
+  function formatDate(iso) {
+    const d = new Date(iso || "");
+    if (isNaN(d.getTime())) return iso || "";
+    return d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" });
+  }
 
-      setDots();
-    }
+  function setDots() {
+    dots.forEach(d => d.classList.remove("is-active"));
+    const active = dots[mod(index, dots.length)];
+    if (active) active.classList.add("is-active");
+  }
 
-    function goPrev() { index = mod(index - 1, images.length); render(); }
-    function goNext() { index = mod(index + 1, images.length); render(); }
+  function safeCover(x) {
+    return (x && x.cover) ? String(x.cover) : "/img/concept.png";
+  }
 
-    // Swipe navigation only (no click navigation)
-    let startX = 0, startY = 0, down = false;
+  function safeTitle(x) {
+    return (x && x.title) ? String(x.title) : "Blog";
+  }
 
-    root.addEventListener("pointerdown", (e) => {
-      down = true;
-      startX = e.clientX;
-      startY = e.clientY;
-    });
+  function safeExcerpt(x) {
+    return (x && x.excerpt) ? String(x.excerpt) : "";
+  }
 
-    root.addEventListener("pointerup", (e) => {
-      if (!down) return;
-      down = false;
+  function render() {
+    if (!items.length) return;
 
-      const dx = e.clientX - startX;
-      const dy = e.clientY - startY;
-      if (Math.abs(dy) > Math.abs(dx)) return;
+    const cur = items[index];
+    const prev = items[mod(index - 1, items.length)];
+    const next = items[mod(index + 1, items.length)];
 
-      if (dx > 35) goPrev();
-      if (dx < -35) goNext();
-    });
+    if (leftImg)  { leftImg.src  = safeCover(prev); leftImg.alt  = "Blogbild"; }
+    if (centerImg){ centerImg.src= safeCover(cur);  centerImg.alt= `Blog: ${safeTitle(cur)}`; }
+    if (rightImg) { rightImg.src = safeCover(next); rightImg.alt = "Blogbild"; }
 
-    root.addEventListener("pointercancel", () => { down = false; });
+    if (capTitle) capTitle.textContent = safeTitle(cur);
+    if (capDate) capDate.textContent = cur.updated ? formatDate(cur.updated) : "";
+    if (capExcerpt) capExcerpt.textContent = safeExcerpt(cur);
 
-    async function loadBlogImages() {
-      try {
-        // This must be generated from your blog page build step (see section D)
-        const res = await fetch("/assets/blog-index.json");
-        if (!res.ok) throw new Error("blog-index.json missing");
-        const data = await res.json();
+    // accessibility labels + keyboard focus hint
+    leftFig?.setAttribute("aria-label", `Vorheriges Bild: ${safeTitle(prev)}`);
+    rightFig?.setAttribute("aria-label", `Nächstes Bild: ${safeTitle(next)}`);
+    centerFig?.setAttribute("aria-label", `Artikel öffnen: ${safeTitle(cur)}`);
 
-        // Expect: { items: [ { image: "/img/...." }, ... ] }
-const list = (data.items || [])
-  .filter(x => x && x.type === "blog")
-  .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")))
-  .map(x => String(x.cover || "").trim())
-  .filter(Boolean);
+    setDots();
+  }
 
-images = list.length ? list : fallback;
+  function goPrev() { index = mod(index - 1, items.length); render(); }
+  function goNext() { index = mod(index + 1, items.length); render(); }
 
-        index = 0;
-        render();
-      } catch (e) {
-        images = fallback;
-        index = 0;
-        render();
+  // swipe (mobile)
+  let startX = 0, startY = 0, down = false;
+  root.addEventListener("pointerdown", (e) => { down = true; startX = e.clientX; startY = e.clientY; });
+  root.addEventListener("pointerup", (e) => {
+    if (!down) return;
+    down = false;
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (Math.abs(dy) > Math.abs(dx)) return;
+
+    if (dx > 35) goPrev();
+    if (dx < -35) goNext();
+  });
+  root.addEventListener("pointercancel", () => { down = false; });
+
+  // arrows (mouse)
+  prevBtn?.addEventListener("click", goPrev);
+  nextBtn?.addEventListener("click", goNext);
+
+  // click side = navigate carousel (NOT open)
+  leftFig?.addEventListener("click", goPrev);
+  rightFig?.addEventListener("click", goNext);
+
+  // keyboard: when focus is within gallery, arrow keys navigate
+  document.addEventListener("keydown", (e) => {
+    if (dialog?.open) return;
+
+    const active = document.activeElement;
+    const inGallery = active && root.contains(active);
+    if (!inGallery) return;
+
+    if (e.key === "ArrowLeft") { e.preventDefault(); goPrev(); }
+    if (e.key === "ArrowRight") { e.preventDefault(); goNext(); }
+    if (e.key === "Enter" || e.key === " ") {
+      // Enter/Space on center opens
+if (centerFig && centerFig.contains(active)) {
+        e.preventDefault();
+        openCurrent();
       }
     }
+  });
 
-    loadBlogImages();
-  })();
+  // modal close
+  closeBtn?.addEventListener("click", () => dialog?.close());
+dialog?.addEventListener("click", (e) => {
+  if (e.target === dialog) dialog.close();
+});
+
+
+  // open current on click center
+  centerFig?.addEventListener("click", (e) => {
+    // ignore if user clicks and drags etc.
+    openCurrent();
+  });
+
+  async function openCurrent() {
+    if (!dialog) return;
+    if (!items.length) return;
+
+    const cur = items[index];
+    if (!cur || !cur.contentUrl) return;
+
+    // reset UI fast
+    if (modalTitle) modalTitle.textContent = safeTitle(cur);
+    if (modalMeta) modalMeta.textContent = cur.updated ? formatDate(cur.updated) : "";
+    if (modalExcerpt) modalExcerpt.textContent = safeExcerpt(cur) || "";
+    if (modalTags) modalTags.innerHTML = "";
+    if (modalLinks) modalLinks.innerHTML = "";
+    if (modalBody) modalBody.innerHTML = `<p class="fineprint">Lade Artikel…</p>`;
+
+    dialog.showModal();
+
+    // load meta.json (optional but preferred)
+    try {
+      if (cur.metaUrl) {
+        const mRes = await fetch(cur.metaUrl);
+        if (mRes.ok) {
+          const meta = await mRes.json();
+
+          if (modalTitle && meta.title) modalTitle.textContent = String(meta.title);
+          const updated = meta.updated || cur.updated || "";
+          if (modalMeta) modalMeta.textContent = updated ? formatDate(updated) : "";
+
+          const ex = (meta.excerpt || cur.excerpt || "").toString();
+          if (modalExcerpt) modalExcerpt.textContent = ex;
+
+          // tags
+          if (modalTags) {
+            const tags = Array.isArray(meta.tags) ? meta.tags : [];
+            modalTags.innerHTML = tags.map(t => `<span class="chip">${String(t)}</span>`).join("");
+          }
+
+          // alsoPublished links
+          if (modalLinks) {
+            const ap = Array.isArray(meta.alsoPublished) ? meta.alsoPublished : [];
+            if (ap.length) {
+              modalLinks.innerHTML =
+                `<p class="fineprint" style="margin:0 0 8px;">Auch veröffentlicht:</p>` +
+                ap.map(x => {
+                  const label = (x && x.label) ? String(x.label) : "Link";
+                  const url = (x && x.url) ? String(x.url) : "";
+                  if (!url) return "";
+                  return `<a href="${url}" target="_blank" rel="noopener">${label}</a>`;
+                }).join(" ");
+            } else {
+              modalLinks.innerHTML = "";
+            }
+          }
+        }
+      }
+    } catch {
+      // meta is optional; fail silently
+    }
+
+    // load article html
+    try {
+      const aRes = await fetch(cur.contentUrl);
+      if (!aRes.ok) throw new Error("article fetch failed");
+      const htmlText = await aRes.text();
+
+      // If it's a full HTML doc, extract body; if it's fragment, keep as is
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(htmlText, "text/html");
+      const body = doc.body;
+
+      // Prefer body content if it exists and has meaningful nodes
+      const content = (body && body.innerHTML && body.innerHTML.trim().length)
+        ? body.innerHTML
+        : htmlText;
+
+if (modalBody) {
+  modalBody.innerHTML = content;
+
+  // Fix relative src/href inside the inserted article
+  const base = new URL(cur.contentUrl, window.location.href);
+  const baseDir = new URL("./", base); // folder of the article
+
+  modalBody.querySelectorAll("[src]").forEach(el => {
+    const v = el.getAttribute("src");
+    if (!v) return;
+    // Skip absolute, data:, mailto:, etc.
+    if (/^(https?:|data:|mailto:|tel:|#|\/)/i.test(v)) return;
+    el.setAttribute("src", new URL(v, baseDir).toString());
+  });
+
+  modalBody.querySelectorAll("a[href]").forEach(a => {
+    const v = a.getAttribute("href");
+    if (!v) return;
+    if (/^(https?:|mailto:|tel:|#|\/)/i.test(v)) return;
+    a.setAttribute("href", new URL(v, baseDir).toString());
+  });
+}
+    } catch {
+      if (modalBody) modalBody.innerHTML = `<p class="fineprint">Artikel konnte nicht geladen werden.</p>`;
+    }
+  }
+
+  async function loadBlogItems() {
+    try {
+      const res = await fetch("/assets/blog-index.json");
+      if (!res.ok) throw new Error("blog-index.json missing");
+      const data = await res.json();
+
+      const list = (data.items || [])
+        .filter(x => x && x.type === "blog")
+        .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")))
+        .map(x => ({
+          title: x.title || x.slug || "Blog",
+          updated: x.updated || "",
+          excerpt: x.excerpt || "",
+          cover: x.cover || "",
+          metaUrl: x.metaUrl || "",
+          contentUrl: x.contentUrl || ""
+        }))
+        .filter(x => x.cover); // need a cover image for gallery
+
+      items = list.length ? list : fallbackItems;
+      index = 0;
+      render();
+    } catch {
+      items = fallbackItems;
+      index = 0;
+      render();
+    }
+  }
+
+  loadBlogItems();
+})();
 </script>
+
+
+
+<dialog class="blog-modal" id="blog-modal" aria-label="Blogartikel">
+  <div class="blog-modal-head">
+    <div>
+      <h3 class="blog-modal-title" id="blog-modal-title" style="margin:0;">Titel</h3>
+      <p class="fineprint" id="blog-modal-meta" style="margin:6px 0 0; opacity:.9;"></p>
+    </div>
+    <button class="button button-secondary" type="button" data-blog-close>Schließen</button>
+  </div>
+
+  <div class="blog-modal-chips" id="blog-modal-tags" aria-label="Tags"></div>
+
+  <p class="fineprint" id="blog-modal-excerpt" style="margin-top:10px;"></p>
+
+  <div class="blog-modal-links" id="blog-modal-links" style="margin-top:10px;"></div>
+
+  <hr style="margin:14px 0; opacity:.35;" />
+
+  <article class="blog-modal-body" id="blog-modal-body"></article>
+</dialog>
 
 </body>
 </html>

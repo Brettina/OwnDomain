@@ -26,6 +26,38 @@
       );
       background-attachment: fixed;
     }
+    /* Force readable foreground on bright background (light mode) */
+body.page-home {
+  color: #111;
+}
+
+/* Make the “fineprint” and links readable too */
+body.page-home .fineprint { color: rgba(0,0,0,0.78); }
+body.page-home a { color: #0b3d91; }
+body.page-home a:visited { color: #4a2a7a; }
+
+/* Ensure headings are solid */
+body.page-home h1, body.page-home h2, body.page-home h3 { color: #111; }
+
+/* If your default buttons rely on currentColor, keep them readable */
+body.page-home .button,
+body.page-home .button-secondary {
+  color: #111;
+  border-color: rgba(0,0,0,0.35);
+}
+
+@media (prefers-color-scheme: dark) {
+  body.page-home { color: rgba(255,255,255,0.92); }
+  body.page-home .fineprint { color: rgba(255,255,255,0.78); }
+  body.page-home a { color: #9bc3ff; }
+  body.page-home a:visited { color: #d2b5ff; }
+
+  .card, .note-block, .section .card {
+    background: rgba(20,20,20,0.62);
+    border: 1px solid rgba(255,255,255,0.18);
+  }
+}
+
 
     /* lift cards slightly from colorful background */
     .card, .note-block, .section .card {
@@ -33,6 +65,37 @@
       backdrop-filter: blur(6px);
       border: 1px solid rgba(120,120,120,0.25);
     }
+/* Hero layout when hero-media is removed */
+.hero {
+  display: block;              /* stops 2-col assumptions */
+}
+/* Ensure the cards container uses full width and the single card spans */
+.section[aria-labelledby="profiles"] .cards {
+  width: 100%;
+  max-width: none;
+  grid-template-columns: 1fr;   /* if .cards is a grid */
+}
+
+.section[aria-labelledby="profiles"] .cards > .card {
+  width: 100%;
+  max-width: none;
+}
+.section[aria-labelledby="profiles"] .cards {
+  display: flex;
+  flex-direction: column;
+}
+
+.section[aria-labelledby="profiles"] .cards > .card {
+  flex: 1 1 auto;
+}
+
+.hero .hero-text {
+  max-width: 70ch;             /* you already set inline; keep it here too */
+  margin: 0 auto;              /* center it */
+}
+
+/* If your global CSS uses grid/flex on .hero, force single-column */
+.hero-media { display: none !important; }
 
     /* --- Top block --- */
     .saftladen-top { margin: 18px 0 10px; }

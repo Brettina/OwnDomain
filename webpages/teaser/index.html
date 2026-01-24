@@ -10,17 +10,17 @@
 
   <meta
     name="description"
-    content="Weichware Lohr — Software, Prototypen, Textiles, Analyse und Consulting. Neueste Projekte, Termine (Kalender) und Kontakt."
+    content="Heilpraktikerin für Psychotherapie — Gespräch, Orientierung und Begleitung. Kalender und Kontakt."
   />
   <link rel="stylesheet" href="/assets/styles.css" />
   <meta name="color-scheme" content="light dark" />
 
   <style>
-    /* --- Remove any header/nav so user can't return to main menu --- */
-    header, nav, .site-header, .topnav, [data-site-header], [data-nav] { display: none !important; }
+    /* --- Saftladen header replacement + hero image --- */
+    .saftladen-top {
+      margin: 18px 0 10px;
+    }
 
-    /* --- Saftladen top block --- */
-    .saftladen-top { margin: 18px 0 10px; }
     .saftladen-image {
       width: 100%;
       max-height: 360px;
@@ -28,8 +28,8 @@
       display: block;
       border-radius: 16px;
       object-fit: cover;
-      background: rgba(0,0,0,0.06);
     }
+
     .saftladen-title {
       margin: 14px 0 0;
       font-size: clamp(1.8rem, 3.2vw, 2.6rem);
@@ -38,13 +38,19 @@
     }
 
     /* --- Aufklappbare Leistungen (accordion) --- */
-    .services { display: grid; gap: 12px; margin-top: 12px; }
+    .services {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
     .service-item {
       border-radius: 16px;
       border: 1px solid rgba(127,127,127,0.35);
       overflow: hidden;
       background: rgba(0,0,0,0.02);
     }
+
     .service-summary {
       list-style: none;
       cursor: pointer;
@@ -54,11 +60,19 @@
       justify-content: space-between;
       gap: 12px;
     }
+
+    /* hide default marker */
     .service-summary::-webkit-details-marker { display: none; }
     .service-summary::marker { content: ""; }
 
-    .service-summary strong { font-size: 1.05rem; }
-    .service-summary .fineprint { margin: 0; opacity: 0.85; }
+    .service-summary strong {
+      font-size: 1.05rem;
+    }
+
+    .service-summary .fineprint {
+      margin: 0;
+      opacity: 0.85;
+    }
 
     .service-chevron {
       flex: 0 0 auto;
@@ -69,15 +83,31 @@
       display: grid;
       place-items: center;
       opacity: 0.85;
-      transition: transform 160ms ease;
     }
-    details[open] .service-chevron { transform: rotate(180deg); }
 
-    .service-body { padding: 0 16px 14px; }
-    .service-body p { margin: 10px 0 0; }
-    .service-body ul { margin: 10px 0 0 18px; }
+    details[open] .service-chevron {
+      transform: rotate(180deg);
+    }
 
-    .service-body .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+    .service-body {
+      padding: 0 16px 14px;
+    }
+
+    .service-body p {
+      margin: 10px 0 0;
+    }
+
+    .service-body ul {
+      margin: 10px 0 0 18px;
+    }
+
+    .service-body .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
     .service-body .chip {
       display: inline-flex;
       padding: 4px 10px;
@@ -94,20 +124,18 @@
 
   <main id="main" class="container">
     <!-- TOP IMAGE + HEADING -->
-<section class="saftladen-top" aria-label="Saftladen">
-  <img
-    class="saftladen-image"
-    id="saftladen-top-image"
-    alt="Saftladen"
-    loading="eager"
-    decoding="async"
-    style="display:none;"
-  />
-  <h1 class="saftladen-title">Saftladen</h1>
-</section>
+    <section class="saftladen-top" aria-label="Heilpraktikerin für Psychotherapie">
+      <img
+        class="saftladen-image"
+        src="./saftladen.jpg"
+        alt="Heilpraktikerin für Psychotherapie"
+        loading="eager"
+        decoding="async"
+      />
+      <h1 class="saftladen-title">Heilpraktikerin für Psychotherapie</h1>
+    </section>
 
-
-    <!-- HERO (avatar stays same size/placement) -->
+    <!-- HERO -->
     <section class="hero" aria-label="Vorstellung">
       <div class="hero-media">
         <img
@@ -122,18 +150,36 @@
 
       <div class="hero-text">
         <h2 style="margin-top:0;">Bettina Lohr</h2>
+
         <p class="lead">
-          Hallo zusammen!
-          Als Freiberuflerin im Softwarebereich führe ich eine interdisziplinäre Praxis, die von Software Engineering,
-          Prototyping &amp; Textiles, Analyse und Consulting bis hin zu reflexiver Unterstützungsarbeit geht.
+          Als Heilpraktikerin für Psychotherapie begleite ich Menschen in belastenden Phasen, bei Orientierungskrisen,
+          Erschöpfung und depressiven Verstimmungen – mit einem Gesprächs- und Arbeitsstil, der präzise hinschaut, ohne
+          vorschnell zu vereinfachen.
         </p>
+
         <p class="fineprint" style="margin-bottom:0;">
-          Unten finden Sie eine Auswahl an aufklappbaren Leistungen. Für Anfragen gerne direkt das Kontaktformular nutzen.
+          Mir ist wichtig, Erleben nicht nur “symptomatisch” zu lesen, sondern als gelebte Situation:
+          Aufmerksamkeit für Wahrnehmung, Körperlichkeit, Sinnzusammenhänge und Beziehung. In diesem Sinne sind
+          phänomenologische Perspektiven (u. a. Husserl, Heidegger, Merleau-Ponty, Scheler, Schütz) ein Hintergrund,
+          der hilft, Erfahrung differenziert zu beschreiben – und daraus nächste Schritte ableitbar zu machen.
         </p>
+        <div style="margin-top:20px; text-align:center;">
+  <iframe
+    width="560"
+    height="315"
+    src="https://www.youtube.com/embed/jmJ_JY-hO7E"
+    title="YouTube video player"
+    frameborder="0"
+    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+    allowfullscreen
+    style="max-width:100%; border-radius:16px;"
+  ></iframe>
+</div>
+
       </div>
     </section>
 
-    <!-- LEISTUNGEN (replaces activities/carousel) -->
+    <!-- LEISTUNGEN (accordion) -->
     <section class="section" aria-labelledby="services-title">
       <h2 id="services-title">Leistungen</h2>
 
@@ -141,25 +187,25 @@
         <details class="service-item">
           <summary class="service-summary">
             <div>
-              <strong>Software Engineering</strong>
-              <p class="fineprint">Konzeption, Umsetzung, Wartung — pragmatisch &amp; sauber.</p>
+              <strong>Stundensatz</strong>
+              <p class="fineprint">Rahmen, Dauer, Transparenz – ein klarer Anfang.</p>
             </div>
             <span class="service-chevron" aria-hidden="true">⌄</span>
           </summary>
           <div class="service-body">
             <p class="fineprint">
-              Unterstützung bei Planung, Implementierung und Stabilisierung von Software — von kleinen Tools bis zu
-              größeren Codebasen.
+              Sitzungen erfolgen in der Regel als Einzelgespräch. Den konkreten Stundensatz, die Taktung
+              (z. B. 50/75/90 Minuten) und organisatorische Fragen klären wir vorab im Erstkontakt.
             </p>
             <ul class="fineprint">
-              <li>Architektur &amp; technische Entscheidungen</li>
-              <li>Refactoring, Qualität, Tests, Performance</li>
-              <li>APIs, Datenflüsse, Automationen</li>
+              <li>Erstgespräch: Anliegen, Ziele, Passung</li>
+              <li>Folgesitzungen: Prozess- und alltagsnahe Begleitung</li>
+              <li>Auf Wunsch: kurze schriftliche Zusammenfassung von Vereinbarungen</li>
             </ul>
             <div class="chips" aria-label="Schwerpunkte">
-              <span class="chip">Engineering</span>
-              <span class="chip">Codequalität</span>
-              <span class="chip">Prototyping</span>
+              <span class="chip">Transparenz</span>
+              <span class="chip">Rahmenklärung</span>
+              <span class="chip">Passung</span>
             </div>
           </div>
         </details>
@@ -167,25 +213,25 @@
         <details class="service-item">
           <summary class="service-summary">
             <div>
-              <strong>Prototyping &amp; Interdisziplinär</strong>
-              <p class="fineprint">Schnell sichtbar machen, testen, iterieren.</p>
+              <strong>Mediation</strong>
+              <p class="fineprint">Klärung von Konflikten – strukturiert und respektvoll.</p>
             </div>
             <span class="service-chevron" aria-hidden="true">⌄</span>
           </summary>
           <div class="service-body">
             <p class="fineprint">
-              Von der Idee zur greifbaren Version: Prototypen, Experimente, UI-Flows, kleine Demos oder methodische
-              Vorstudien.
+              Mediation unterstützt dabei, verhärtete Situationen wieder verhandelbar zu machen:
+              Anliegen werden sichtbar, Missverständnisse geklärt, Vereinbarungen möglich.
             </p>
             <ul class="fineprint">
-              <li>Rapid Prototyping (Tech + Konzept)</li>
-              <li>Iteration mit Feedback-Schleifen</li>
-              <li>Dokumentation &amp; Übergabe</li>
+              <li>Vorgespräche und gemeinsame Sitzung(en)</li>
+              <li>Interessen statt Positionen: was steht wirklich auf dem Spiel?</li>
+              <li>Konkrete, umsetzbare Absprachen</li>
             </ul>
             <div class="chips" aria-label="Schwerpunkte">
-              <span class="chip">MVP</span>
-              <span class="chip">UX-Flows</span>
-              <span class="chip">Experiment</span>
+              <span class="chip">Konfliktklärung</span>
+              <span class="chip">Kommunikation</span>
+              <span class="chip">Vereinbarungen</span>
             </div>
           </div>
         </details>
@@ -193,24 +239,26 @@
         <details class="service-item">
           <summary class="service-summary">
             <div>
-              <strong>Analyse &amp; Struktur</strong>
-              <p class="fineprint">Einordnen, klären, entscheiden — mit nachvollziehbarer Methodik.</p>
+              <strong>Burnout-Counseling</strong>
+              <p class="fineprint">Erschöpfung verstehen – Entlastung, Grenzen, Neuordnung.</p>
             </div>
             <span class="service-chevron" aria-hidden="true">⌄</span>
           </summary>
           <div class="service-body">
             <p class="fineprint">
-              Analytische Unterstützung bei komplexen Fragen, Problemräumen und Entscheidungsfindung.
+              Wenn Überforderung chronisch wird, hilft oft nicht “mehr Disziplin”, sondern eine
+              differenzierte Analyse von Belastungen, Spielräumen und Bedürfnissen – und ein
+              Schritt-für-Schritt-Re-Design des Alltags.
             </p>
             <ul class="fineprint">
-              <li>Requirements, Zielkonflikte, Risiken</li>
-              <li>System-/Stakeholder-Analyse</li>
-              <li>Bewertung von Optionen &amp; Trade-offs</li>
+              <li>Belastungslandkarte: Arbeit, Beziehung, Körper, Sinn</li>
+              <li>Grenzen und Regeneration praktisch verankern</li>
+              <li>Routinen, Prioritäten, Unterstützungssysteme</li>
             </ul>
             <div class="chips" aria-label="Schwerpunkte">
-              <span class="chip">Methodik</span>
-              <span class="chip">Entscheidungen</span>
-              <span class="chip">Struktur</span>
+              <span class="chip">Erschöpfung</span>
+              <span class="chip">Grenzen</span>
+              <span class="chip">Alltagsstruktur</span>
             </div>
           </div>
         </details>
@@ -218,25 +266,26 @@
         <details class="service-item">
           <summary class="service-summary">
             <div>
-              <strong>Consulting &amp; Begleitung</strong>
-              <p class="fineprint">Reflexiv, lösungsorientiert, mit klarer Abgrenzung.</p>
+              <strong>Depressionshilfe</strong>
+              <p class="fineprint">Stabilisierung, Orientierung, kleine Schritte – ohne Überforderung.</p>
             </div>
             <span class="service-chevron" aria-hidden="true">⌄</span>
           </summary>
           <div class="service-body">
             <p class="fineprint">
-              Unterstützung bei Orientierung, Arbeitsprozessen und Umsetzung — je nach Kontext als Sparring, Review oder
-              punktuelle Begleitung.
+              Bei depressiven Zuständen stehen oft Antrieb, Selbstwert, Beziehung und Sinn unter Druck.
+              Wir arbeiten an Stabilisierung, sprachlicher Klärung des Erlebens und an Handlungsfähigkeit
+              im Kleinen – passend zu Ihrer aktuellen Kraft.
             </p>
             <ul class="fineprint">
-              <li>Sparring zu Vorgehen, Prioritäten, nächsten Schritten</li>
-              <li>Review von Konzepten/Entwürfen</li>
-              <li>Kommunikation &amp; Schnittstellen</li>
+              <li>Entlastung und Stabilisierung im Hier-und-Jetzt</li>
+              <li>Struktur und minimale nächste Schritte</li>
+              <li>Ressourcen, Beziehung, Selbstmitgefühl</li>
             </ul>
             <div class="chips" aria-label="Schwerpunkte">
-              <span class="chip">Sparring</span>
-              <span class="chip">Review</span>
-              <span class="chip">Begleitung</span>
+              <span class="chip">Stabilisierung</span>
+              <span class="chip">Orientierung</span>
+              <span class="chip">Ressourcen</span>
             </div>
           </div>
         </details>
@@ -247,9 +296,9 @@
       </p>
     </section>
 
-    <!-- KALENDER (unchanged) -->
+    <!-- KALENDER (kept) -->
     <section class="section" aria-labelledby="calendar-title">
-      <div class="section-head">
+      <div class="section-head" style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
         <h2 id="calendar-title" style="margin:0;">Kalender</h2>
         <p class="fineprint" style="margin:0;">Klick auf ein Datum → relevante Projekte / Termine</p>
       </div>
@@ -279,7 +328,7 @@
       </div>
     </section>
 
-    <!-- PROFILE & PRÄSENZ (unchanged) -->
+    <!-- PROFILE & PRÄSENZ (Contra removed) -->
     <section class="section" aria-labelledby="profiles">
       <h2 id="profiles">Profile &amp; Präsenz</h2>
 
@@ -299,40 +348,10 @@
             style="max-width:180px; margin-top:10px;"
           />
         </article>
-
-        <article class="card">
-          <h3>Contra</h3>
-          <p class="fineprint">Freelance-Profil (AR/VR, Mobile, Engineering).</p>
-          <p>
-            <a
-              href="https://contra.com/lohr_bettina_68155kak/work?r=lohr_bettina_68155kak"
-              target="_blank"
-              rel="noopener"
-            >
-              contra.com/lohr_bettina
-            </a>
-          </p>
-          <img
-            src="/img/qr-code contra.png"
-            alt="QR-Code zum Contra-Profil von Bettina Lohr"
-            loading="lazy"
-            style="max-width:180px; margin-top:10px;"
-          />
-          <p class="fineprint" style="margin-top:10px;">
-            ✦ Featured auf Contra:
-            <a
-              href="https://contra.com/hire/german-speaking-mobile-engineers?featuredUserProfileId=WyJVc2VyUHJvZmlsZSIsMzU0ODE0ODRd"
-              target="_blank"
-              rel="noopener"
-            >
-              „Best German-speaking freelance mobile engineers to hire (2026)“
-            </a>
-          </p>
-        </article>
       </div>
     </section>
 
-    <!-- Kontakt (unchanged) -->
+    <!-- Kontakt (kept) -->
     <section class="section" aria-labelledby="contact">
       <h2 id="contact">Kontakt</h2>
 
@@ -644,97 +663,5 @@
       });
     })();
   </script>
-
-<script>
-(function () {
-  function onReady(fn) {
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", fn, { once: true });
-    } else {
-      fn();
-    }
-  }
-
-  onReady(async () => {
-    const img = document.getElementById("saftladen-top-image");
-    if (!img) return;
-
-    const bases = ["saftladen", "header", "hero", "cover", "top", "banner", "image"];
-    const exts = ["jpg", "jpeg", "png", "webp", "JPG", "JPEG", "PNG", "WEBP"];
-
-    function canLoad(src) {
-      return new Promise((resolve) => {
-        const test = new Image();
-        test.onload = () => resolve(true);
-        test.onerror = () => resolve(false);
-        test.src = src;
-      });
-    }
-
-    for (const b of bases) {
-      for (const e of exts) {
-        const src = `${b}.${e}`; // same folder as this HTML
-        // eslint-disable-next-line no-await-in-loop
-        if (await canLoad(src)) {
-          img.src = src;
-          img.style.display = "block";
-          return;
-        }
-      }
-    }
-
-    img.style.display = "none";
-  });
-})();
-</script>
-
-
-  // Filenames (without extension) that you consider acceptable
-  const bases = [
-    "saftladen",
-    "header",
-    "hero",
-    "cover",
-    "top",
-    "banner",
-    "image"
-  ];
-
-  // Extensions to try
-  const exts = ["jpg", "jpeg", "png", "webp"];
-
-  // Optional: also try uppercase extensions (some people upload .JPG etc.)
-  const extsExtra = ["JPG", "JPEG", "PNG", "WEBP"];
-
-  const candidates = [];
-  for (const b of bases) for (const e of exts) candidates.push(`${b}.${e}`);
-  for (const b of bases) for (const e of extsExtra) candidates.push(`${b}.${e}`);
-
-  // Try to load candidate by candidate
-  function canLoad(src) {
-    return new Promise((resolve) => {
-      const test = new Image();
-      test.onload = () => resolve(true);
-      test.onerror = () => resolve(false);
-      test.src = src;
-    });
-  }
-
-  // IMPORTANT: no "./" — use relative path from current document reliably
-  for (const file of candidates) {
-    const src = file; // same folder as this HTML
-    // eslint-disable-next-line no-await-in-loop
-    if (await canLoad(src)) {
-      img.src = src;
-      img.style.display = "block";
-      return;
-    }
-  }
-
-  // If nothing found, keep it hidden (no broken image / no "Original anzeigen")
-  img.style.display = "none";
-})();
-</script>
-
 </body>
 </html>

@@ -124,13 +124,13 @@
 
   <main id="main" class="container">
     <!-- NEW TOP IMAGE + HEADING -->
-    <section class="saftladen-top" aria-label="Saftladen">
+    <section class="saftladen-top" aria-label="IT-pic">
       <!-- Put your image file next to this HTML and rename below to match (jpg/png). -->
       <!-- Example filenames: saftladen.jpg or saftladen.png -->
       <img
         class="saftladen-image"
         src="./saftladen.jpg"
-        alt="Saftladen"
+        alt="IT-pic"
         loading="eager"
         decoding="async"
       />
@@ -173,20 +173,20 @@
         <details class="service-item">
           <summary class="service-summary">
             <div>
-              <strong>Software Engineering</strong>
+              <strong>Softwareentwicklung</strong>
               <p class="fineprint">Konzeption, Umsetzung, Wartung — pragmatisch &amp; sauber.</p>
             </div>
             <span class="service-chevron" aria-hidden="true">⌄</span>
           </summary>
           <div class="service-body">
             <p class="fineprint">
-              Unterstützung bei Planung, Implementierung und Stabilisierung von Software — von kleinen Tools bis zu
+              Unterstützung bei der Planung, Implementierung und Stabilisierung von Software — von kleinen Tools bis zu
               größeren Codebasen.
             </p>
             <ul class="fineprint">
               <li>Architektur &amp; technische Entscheidungen</li>
-              <li>Refactoring, Qualität, Tests, Performance</li>
-              <li>APIs, Datenflüsse, Automationen</li>
+              <li>Unity und C#, Python, Flutter</li>
+              <li>Mic365 (Sharepoint Apps), Formulare </li>
             </ul>
             <div class="chips" aria-label="Schwerpunkte">
               <span class="chip">Engineering</span>
@@ -210,8 +210,9 @@
               Vorstudien.
             </p>
             <ul class="fineprint">
-              <li>Rapid Prototyping (Tech + Konzept)</li>
-              <li>Iteration mit Feedback-Schleifen</li>
+              <li>Rapid Prototyping (Tech + Konzept via eg. Design Thinking) via beispielsweise Unity</li>
+              <li>Iteration über Scrum und Kanban</li>
+               <li>Atlassian u.a. Doku- und Managementtools</li>
               <li>Dokumentation &amp; Übergabe</li>
             </ul>
             <div class="chips" aria-label="Schwerpunkte">
@@ -235,9 +236,10 @@
       frühen Experimenten bis zu lauffähigen Demonstratoren.
     </p>
     <ul class="fineprint">
-      <li>Unity-basierte Prototypen</li>
+      <li>Unity-basierte Prototypen für Pico, Hololens und Web</li>
       <li>Interaktion, Navigation &amp; User Flow</li>
-      <li>Technische Machbarkeit &amp; Performance</li>
+            <li>3D-Modellierung &amp; -design</li>
+      <li>Einweisung &amp; Präsentationen</li>
     </ul>
     <div class="chips">
       <span class="chip">AR</span>
@@ -288,10 +290,11 @@
     </p>
 
     <ul class="fineprint">
+            <li>Geschäftsforführugnsplanung als Business Continuity Prakikter (BSI zertifziert)</li>
+       <li>Unterstützung bereits bestehender Strukturen als Informationssicherheitsbeauftragter (BSI zertifziert)</li>
       <li>ISO 27001 Lead Implementer (Projekt- und Umsetzungsbegleitung)</li>
       <li>Unterstützung bei internen Audits &amp; Audit-Vorbereitung</li>
       <li>Risikobewertung, Maßnahmenplanung &amp; Dokumentation</li>
-      <li>Begleitung bestehender ISMS-Strukturen</li>
     </ul>
 
     <p class="fineprint">
@@ -449,11 +452,9 @@
     <section class="note-block">
       <h2>Hinweise (Geltungsbereich)</h2>
       <p class="fineprint">
-        Diese Website enthält professionelle Dienstleistungen und Informationsangebote.
-        Nichts hiervon stellt Rechtsberatung, medizinische Behandlung oder Psychotherapie dar.
-        Coaching / Seelsorge / Unterstützungsarbeit erfolgt außerhalb regulierter medizinischer
-        Rahmen, sofern nicht ausdrücklich anders angegeben.
-        Politische Analysen beruhen auf methodischer Bewertung und können Unsicherheiten enthalten.
+Die bereitgestellten Inhalte stellen keine Rechts- oder Sicherheitsgarantie dar und ersetzen keine individuelle rechtliche, organisatorische oder technische Prüfung im konkreten Anwendungsfall. Trotz sorgfältiger Erstellung können Inhalte unvollständig, veraltet oder kontextabhängig sein.
+
+Bei der Nutzung von Kontaktformularen oder der Kontaktaufnahme werden personenbezogene Daten ausschließlich im Rahmen der geltenden Datenschutzbestimmungen (insb. DSGVO) verarbeitet. Inhalte und Darstellungen dieser Website wahren die Persönlichkeits- und Urheberrechte Dritter; eine weitergehende Nutzung bedarf der jeweiligen Rechtsgrundlage oder Zustimmung.
       </p>
       <p class="fineprint">
         Teile von Workflows oder Entwürfen können KI-unterstützt sein; Ergebnisse werden geprüft,
@@ -714,5 +715,41 @@
       });
     })();
   </script>
+  <script>
+/* Header image: try to find any local file with common names + png/jpg/jpeg */
+(function () {
+  const img = document.getElementById("saftladen-image");
+  if (!img) return;
+
+  // If the currently set src loads, keep it.
+  // Otherwise try a list of likely filenames.
+  const candidates = [
+        "./webicon.png", "./webicon.jpg", "./webicon.jpeg",
+    "./pic.png", "./pic.jpg", "./pic.jpeg",
+    "./saftladen.png", "./saftladen.jpg", "./saftladen.jpeg",
+    "./header.png", "./header.jpg", "./header.jpeg",
+    "./hero.png", "./hero.jpg", "./hero.jpeg",
+    "./cover.png", "./cover.jpg", "./cover.jpeg",
+    "./banner.png", "./banner.jpg", "./banner.jpeg"
+  ];
+
+  let i = 0;
+
+  function tryNext() {
+    if (i >= candidates.length) return; // no change if nothing works
+    const next = candidates[i++];
+    if (img.getAttribute("src") === next) return tryNext();
+    img.src = next;
+  }
+
+  // If the current file errors, try the next candidate.
+  img.addEventListener("error", tryNext, { once: false });
+
+  // Kick off: if current src is missing, error will fire and advance.
+  // Also proactively try if src is empty.
+  if (!img.getAttribute("src")) tryNext();
+})();
+</script>
+
 </body>
 </html>

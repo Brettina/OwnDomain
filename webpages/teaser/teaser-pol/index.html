@@ -1,0 +1,1173 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bettina Lohr, M. Sc. — Politischer Analyst</title>
+
+  <link rel="icon" href="/img/webicon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/img/webicon.png" />
+
+  <meta
+    name="description"
+    content="Politischer Analyst — Analysen, Briefings und Übersetzungen politischer Papiere. Geopolitik, Ideologie, religiös-kulturelle Kontexte. Kontakt & Termine."
+  />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <meta name="color-scheme" content="light dark" />
+
+  <style>
+    /* --- Saftladen header replacement + hero image --- */
+    .saftladen-top {
+      margin: 18px 0 10px;
+    }
+
+    .saftladen-image {
+      width: 100%;
+      max-height: 360px;
+      height: auto;
+      display: block;
+      border-radius: 16px;
+      object-fit: cover;
+    }
+
+    /* Ensure loaded article content stays readable in dark modal */
+    .blog-modal { color: inherit; }
+    .blog-modal-body,
+    .blog-modal-body * {
+      color: inherit !important;
+      background: transparent !important;
+    }
+    .blog-modal-body a { text-decoration: underline; }
+
+    .saftladen-title {
+      margin: 14px 0 0;
+      font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+      line-height: 1.1;
+      letter-spacing: 0.2px;
+    }
+
+    /* --- Aufklappbare Leistungen (accordion) --- */
+    .services {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    /* Ensure the cards container uses full width and the single card spans */
+    .section[aria-labelledby="profiles"] .cards {
+      width: 100%;
+      max-width: none;
+      grid-template-columns: 1fr;   /* if .cards is a grid */
+    }
+
+    .section[aria-labelledby="profiles"] .cards > .card {
+      width: 100%;
+      max-width: none;
+    }
+
+    .service-item {
+      border-radius: 16px;
+      border: 1px solid rgba(127,127,127,0.35);
+      overflow: hidden;
+      background: rgba(0,0,0,0.02);
+    }
+
+    .service-summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    /* --- Blog gallery --- */
+    .section-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .blog-gallery { margin-top: 14px; }
+    .blog-stage {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+      align-items: stretch;
+      justify-items: stretch;
+    }
+
+    /* Wide screens: left - center - right */
+    @media (min-width: 900px) {
+      .blog-stage {
+        grid-template-columns: 0.9fr 1.25fr 0.9fr;
+        align-items: center;
+      }
+    }
+
+    .blog-card {
+      border-radius: 16px;
+      overflow: hidden;
+      position: relative;
+      min-height: 220px;
+    }
+
+    .blog-card img {
+      display: block;
+      max-width: 100%;
+      width: 100%;
+      height: 220px;
+      object-fit: contain;     /* no crop */
+      background: rgba(0,0,0,0.06);
+    }
+
+    @media (min-width: 900px) {
+      .blog-card img { height: 240px; }
+    }
+
+    /* side cards: subtle */
+    .blog-card.is-side {
+      opacity: 0.62;
+      transform: scale(0.96);
+      filter: saturate(0.92);
+    }
+
+    .blog-dots {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin-top: 12px;
+    }
+
+    .blog-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 999px;
+      border: 1px solid currentColor;
+      opacity: 0.45;
+    }
+
+    .blog-dot.is-active {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+
+    /* Center image bigger + clickable */
+    .blog-card.is-center {
+      cursor: pointer;
+      transform: scale(1.02);
+      opacity: 1;
+    }
+
+    @media (min-width: 900px) {
+      .blog-card.is-center { transform: scale(1.06); }
+    }
+
+    /* Caption overlay */
+    .blog-caption {
+      padding: 10px 12px 12px;
+    }
+
+    .blog-caption strong { display:block; }
+    .blog-caption [data-blog-excerpt] { display:block; margin-top:4px; opacity:.9; }
+
+    /* Arrow controls */
+    .blog-controls {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      margin-top: 12px;
+    }
+
+    .blog-arrow {
+      appearance: none;
+      border: 1px solid currentColor;
+      background: transparent;
+      border-radius: 999px;
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+
+    .blog-arrow:focus {
+      outline: 2px solid currentColor;
+      outline-offset: 2px;
+    }
+
+    /* Modal */
+    .blog-modal {
+      width: min(980px, calc(100vw - 24px));
+      max-height: min(82vh, 900px);
+      border: 1px solid rgba(127,127,127,0.45);
+      border-radius: 16px;
+      padding: 14px 16px 16px;
+    }
+
+    .blog-modal::backdrop {
+      background: rgba(0,0,0,0.55);
+    }
+
+    .blog-modal-head {
+      display:flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .blog-modal-body {
+      overflow: auto;
+      max-height: calc(82vh - 220px);
+      padding-right: 4px;
+    }
+
+    /* chips */
+    .blog-modal-chips {
+      display:flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .blog-modal-chips .chip {
+      display:inline-flex;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(127,127,127,0.45);
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+
+    /* Links list in modal */
+    .blog-modal-links a { margin-right: 10px; }
+
+    /* swipe feel */
+    [data-blog-gallery] { touch-action: pan-y; user-select: none; }
+
+    /* hide default marker */
+    .service-summary::-webkit-details-marker { display: none; }
+    .service-summary::marker { content: ""; }
+
+    .service-summary strong { font-size: 1.05rem; }
+
+    .service-summary .fineprint {
+      margin: 0;
+      opacity: 0.85;
+    }
+
+    .service-chevron {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(127,127,127,0.5);
+      display: grid;
+      place-items: center;
+      opacity: 0.85;
+    }
+
+    details[open] .service-chevron {
+      transform: rotate(180deg);
+    }
+
+    .service-body {
+      padding: 0 16px 14px;
+    }
+
+    .service-body p { margin: 10px 0 0; }
+
+    .service-body ul { margin: 10px 0 0 18px; }
+
+    .service-body .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .service-body .chip {
+      display: inline-flex;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(127,127,127,0.45);
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+
+<body class="page-home">
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <main id="main" class="container">
+    <!-- NEW TOP IMAGE + HEADING -->
+    <section class="saftladen-top" aria-label="Politischer Analyst">
+      <img
+        class="saftladen-image"
+        src="./saftladen.jpg"
+        alt="Politischer Analyst"
+        loading="eager"
+        decoding="async"
+      />
+      <h1 class="saftladen-title">Politischer Analyst</h1>
+    </section>
+
+    <!-- HERO -->
+    <section class="hero" aria-label="Vorstellung">
+      <div class="hero-media">
+        <img
+          class="avatar"
+          src="/img/profile.png"
+          alt="Profilfoto von Bettina Lohr"
+          loading="eager"
+          decoding="async"
+          style="object-fit: cover;"
+        />
+      </div>
+
+      <div class="hero-text">
+        <h2 style="margin-top:0;">Bettina Lohr, M. Sc.</h2>
+
+        <p class="lead">
+          Ich habe Politikwissenschaft studiert und arbeite an der Schnittstelle von politischer Analyse,
+          empirischer Auswertung und normativer Einordnung. Berufliche Stationen umfassen u. a.
+          Tätigkeiten als wissenschaftliche Mitarbeiterin im Deutschen Bundestag sowie Forschung und
+          Analyse in akademischen und praxisnahen Kontexten.
+        </p>
+
+        <p class="fineprint" style="margin-bottom:0;">
+          Ich verfasse Analysen, Briefings und Entscheidungsvorlagen — mit Augenmerk auf Argumentationslogik,
+          Interessenlagen, institutionelle Dynamiken und kulturelle Deutungsrahmen. Veröffentlichungen umfassen
+          u. a. philosophisch-politische Texte; ausgezeichnet wurde diese Arbeit im Rahmen des
+          Jungautorenwettbewerbs (Julius-Faucher-Medaille), siehe
+          <a href="https://faucherpreis.info/" target="_blank" rel="noopener">faucherpreis.info</a>.
+        </p>
+
+        <!-- Small "useful to hiring" block (non-invasive) -->
+        <div class="card" style="margin-top:14px; padding:14px;">
+          <strong>Wofür ich typischerweise beauftragt werde</strong>
+          <ul class="fineprint" style="margin:10px 0 0 18px;">
+            <li>Recherche &amp; Strukturierung komplexer Lagen (Akteure, Motive, Narrative, Interessen)</li>
+            <li>Präzise, zitierfähige Zusammenfassungen (1–3 Seiten) und längere Dossiers</li>
+            <li>Abwägung normativer Konflikte (Freiheit/Ordnung, Moral/Realpolitik, Institution/Bewegung)</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- BLOG-GALERIE (Bilder + Pfeile + Popup) -->
+    <section class="section" aria-labelledby="blog-gallery-title">
+      <div class="section-head">
+        <h2 id="blog-gallery-title" style="margin:0;">Blog — Galerie</h2>
+        <p class="fineprint" style="margin:0;">Ein paar visuelle Eindrücke aus dem Blog. Klick auf das mittlere Bild → Artikel.</p>
+      </div>
+
+      <div class="blog-gallery" data-blog-gallery>
+        <div class="blog-stage" aria-label="Galerie: Blogbilder">
+          <figure class="card blog-card is-side" data-slot="left" tabindex="0" role="button" aria-label="Vorheriges Blogbild anzeigen">
+            <img src="/img/concept_leistungen.png" alt="Blogbild" loading="lazy" />
+          </figure>
+
+          <figure class="card blog-card is-center" data-slot="center" tabindex="0" role="button" aria-label="Blogartikel öffnen">
+            <img src="/img/concept.png" alt="Blogbild" loading="lazy" />
+            <figcaption class="blog-caption">
+              <strong data-blog-title>Blog</strong>
+              <span class="fineprint" data-blog-date></span>
+              <span class="fineprint" data-blog-excerpt></span>
+            </figcaption>
+          </figure>
+
+          <figure class="card blog-card is-side" data-slot="right" tabindex="0" role="button" aria-label="Nächstes Blogbild anzeigen">
+            <img src="/img/mythologie.png" alt="Blogbild" loading="lazy" />
+          </figure>
+        </div>
+
+        <div class="blog-controls" aria-label="Galerie-Steuerung">
+          <button class="blog-arrow" type="button" data-blog-prev aria-label="Vorheriges Blogbild">←</button>
+
+          <div class="blog-dots" aria-hidden="true">
+            <span class="blog-dot is-active" data-dot="0"></span>
+            <span class="blog-dot" data-dot="1"></span>
+            <span class="blog-dot" data-dot="2"></span>
+          </div>
+
+          <button class="blog-arrow" type="button" data-blog-next aria-label="Nächstes Blogbild">→</button>
+        </div>
+
+        <p class="fineprint" style="margin-top:10px;">
+          Desktop: Pfeile oder Tastatur (←/→). Mobil: Wischen.
+        </p>
+      </div>
+    </section>
+
+    <dialog class="blog-modal" id="blog-modal" aria-label="Blogartikel">
+      <div class="blog-modal-head">
+        <div>
+          <h3 class="blog-modal-title" id="blog-modal-title" style="margin:0;">Titel</h3>
+          <p class="fineprint" id="blog-modal-meta" style="margin:6px 0 0; opacity:.9;"></p>
+        </div>
+        <button class="button button-secondary" type="button" data-blog-close>Schließen</button>
+      </div>
+
+      <div class="blog-modal-chips" id="blog-modal-tags" aria-label="Tags"></div>
+
+      <p class="fineprint" id="blog-modal-excerpt" style="margin-top:10px;"></p>
+
+      <div class="blog-modal-links" id="blog-modal-links" style="margin-top:10px;"></div>
+
+      <hr style="margin:14px 0; opacity:.35;" />
+
+      <article class="blog-modal-body" id="blog-modal-body"></article>
+    </dialog>
+
+    <!-- LEISTUNGEN (accordion) -->
+    <section class="section" aria-labelledby="services-title">
+      <h2 id="services-title">Leistungen</h2>
+
+      <div class="services">
+        <details class="service-item">
+          <summary class="service-summary">
+            <div>
+              <strong>Übersetzen (politische Papiere)</strong>
+              <p class="fineprint">Deutsch ↔ Englisch — präzise, terminologisch sauber, zitierfähig.</p>
+            </div>
+            <span class="service-chevron" aria-hidden="true">⌄</span>
+          </summary>
+          <div class="service-body">
+            <p class="fineprint">
+              Übersetzungen und sprachliche Glättung für politische Texte — z. B. Positionspapiere,
+              Policy-Briefs, Reden, Abstracts, Einreichungen, Presse- oder Hintergrundtexte.
+              Fokus: Bedeutungsgenauigkeit, argumentativer Fluss, konsistente Begriffe.
+            </p>
+            <ul class="fineprint">
+              <li>Terminologiepflege / Glossar nach Bedarf</li>
+              <li>Stil: neutral-analytisch oder publikationsfähig (je nach Zielgruppe)</li>
+              <li>Optional: Kurzanmerkungen zu impliziten Prämissen / Mehrdeutigkeiten</li>
+            </ul>
+            <div class="chips" aria-label="Schwerpunkte">
+              <span class="chip">DE/EN</span>
+              <span class="chip">Policy</span>
+              <span class="chip">Präzision</span>
+            </div>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary class="service-summary">
+            <div>
+              <strong>Empfehlungen für Entscheider</strong>
+              <p class="fineprint">Briefings, Optionen, Risiken — ohne rhetorische Nebelkerzen.</p>
+            </div>
+            <span class="service-chevron" aria-hidden="true">⌄</span>
+          </summary>
+          <div class="service-body">
+            <p class="fineprint">
+              Ausarbeitung von Entscheidungsvorlagen mit klaren Handlungsoptionen:
+              Zieldefinition, Interessen-/Akteurslage, Trade-offs, Umsetzbarkeit und erwartbare Reaktionen.
+              Ergebnisformate reichen von 1-Seiter bis Dossier.
+            </p>
+            <ul class="fineprint">
+              <li>Executive Summary (Kernaussagen &amp; Konsequenzen)</li>
+              <li>Optionenvergleich (Nutzen / Risiko / Nebenfolgen)</li>
+              <li>Argumentations- und Framing-Check (intern/external)</li>
+            </ul>
+            <div class="chips" aria-label="Schwerpunkte">
+              <span class="chip">Briefing</span>
+              <span class="chip">Optionen</span>
+              <span class="chip">Risikoanalyse</span>
+            </div>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary class="service-summary">
+            <div>
+              <strong>Analysen</strong>
+              <p class="fineprint">Geopolitisch, ideologisch, religiös-kulturell — mit Kontext und Struktur.</p>
+            </div>
+            <span class="service-chevron" aria-hidden="true">⌄</span>
+          </summary>
+          <div class="service-body">
+            <p class="fineprint">
+              Analysen politischer Lagen, Narrative und Konfliktfelder — mit Fokus auf
+              Deutungsrahmen, institutionelle Mechanik, ideologische Grammatik und kulturelle
+              Konfliktlinien. Je nach Bedarf: empirisch gestützt, theoriegeleitet oder als
+              kompakte Lageeinschätzung.
+            </p>
+            <ul class="fineprint">
+              <li>Geopolitische Akteurs- und Interessenanalyse</li>
+              <li>Ideologie-/Diskursanalyse (Begriffe, Narrative, Legitimation)</li>
+              <li>Religiös-kulturelle Kontexte (Sinnsysteme, Symbolik, soziale Dynamiken)</li>
+            </ul>
+            <div class="chips" aria-label="Schwerpunkte">
+              <span class="chip">Geopolitik</span>
+              <span class="chip">Ideologie</span>
+              <span class="chip">Kultur</span>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <p class="fineprint" style="margin-top:12px;">
+        Hinweis: Inhalte sind bewusst kompakt. Details, Umfang und Format klären wir am besten im Erstkontakt.
+      </p>
+    </section>
+
+    <!-- KALENDER (kept) -->
+    <section class="section" aria-labelledby="calendar-title">
+      <div class="section-head" style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <h2 id="calendar-title" style="margin:0;">Kalender</h2>
+        <p class="fineprint" style="margin:0;">Klick auf ein Datum → relevante Projekte / Termine</p>
+      </div>
+
+      <div class="card" style="padding: 16px;">
+        <div style="display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+          <div>
+            <strong id="cal-month-label">Monat</strong>
+            <div class="fineprint" id="cal-hint" style="margin-top:4px;">Termine werden geladen…</div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="button button-secondary" type="button" id="cal-prev">←</button>
+            <button class="button button-secondary" type="button" id="cal-today">Heute</button>
+            <button class="button button-secondary" type="button" id="cal-next">→</button>
+          </div>
+        </div>
+
+        <div id="cal-grid" style="margin-top:12px;"></div>
+
+        <div id="cal-panel" class="card" style="margin-top:12px; padding:12px; display:none;">
+          <div style="display:flex; justify-content:space-between; gap:12px; align-items:baseline;">
+            <strong id="cal-panel-title">Datum</strong>
+            <button class="button button-secondary" type="button" id="cal-panel-close">Schließen</button>
+          </div>
+          <div id="cal-panel-body" style="margin-top:10px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE & PRÄSENZ (kept) -->
+    <section class="section" aria-labelledby="profiles">
+      <h2 id="profiles">Profile &amp; Präsenz</h2>
+
+      <div class="cards">
+        <article class="card">
+          <h3>LinkedIn</h3>
+          <p class="fineprint">Berufliches Profil, Laufbahn, öffentliche Einordnung.</p>
+          <p>
+            <a href="https://www.linkedin.com/in/bettina-lohr-215756337" target="_blank" rel="noopener">
+              linkedin.com/in/bettina-lohr
+            </a>
+          </p>
+          <img
+            src="/img/qr-code linkedin.png"
+            alt="QR-Code zum LinkedIn-Profil von Bettina Lohr"
+            loading="lazy"
+            style="max-width:180px; margin-top:10px;"
+          />
+        </article>
+      </div>
+    </section>
+
+    <!-- Kontakt (kept) -->
+    <section class="section" aria-labelledby="contact">
+      <h2 id="contact">Kontakt</h2>
+
+      <p class="fineprint">
+        E-Mail: <a data-email-link href="#">anfrage[[at]]weichware-lohr.de</a>
+      </p>
+
+      <form class="form" data-contact-form>
+        <div class="field" style="position:absolute; left:-9999px;" aria-hidden="true">
+          <label for="company-home-contact">Company</label>
+          <input id="company-home-contact" name="company" autocomplete="off" tabindex="-1" />
+        </div>
+
+        <div class="field">
+          <label for="contact-name">Name</label>
+          <input id="contact-name" name="name" autocomplete="name" required />
+        </div>
+
+        <div class="field">
+          <label for="contact-message">Nachricht</label>
+          <textarea
+            id="contact-message"
+            name="message"
+            rows="6"
+            required
+            placeholder="Worum geht’s? (z. B. Thema, gewünschtes Format, Zeitrahmen)"
+          ></textarea>
+        </div>
+
+        <div class="field checkbox">
+          <input id="contact-consent" name="consent" type="checkbox" required />
+          <label for="contact-consent">Ich stimme zu, dass meine Daten zur Beantwortung meiner Anfrage verwendet werden.</label>
+        </div>
+
+        <p class="fineprint">
+          Siehe <a href="/regulation/privacy/">Datenschutz</a>, <a href="/regulation/cookies/">Cookies</a>, <a href="/regulation/imprint/">Impressum</a>.
+        </p>
+
+        <button class="button" type="submit">E-Mail-Entwurf öffnen</button>
+
+        <p class="fineprint" data-contact-hint style="margin-top:10px; opacity:0.9;"></p>
+      </form>
+    </section>
+
+    <!-- HINWEISE -->
+    <section class="note-block">
+      <h2>Hinweise (Geltungsbereich)</h2>
+      <p class="fineprint">
+        Diese Website enthält professionelle Dienstleistungen und Informationsangebote im Bereich politischer Analyse,
+        Recherche und Publikation. Inhalte stellen keine Rechtsberatung dar und ersetzen keine individuelle Prüfung
+        der jeweiligen Rechtslage oder institutionellen Rahmenbedingungen im Einzelfall.
+      </p>
+      <p class="fineprint">
+        Analysen und Einschätzungen beruhen auf methodischer Bewertung und können Unsicherheiten enthalten.
+        Für Entscheidungen, die auf bereitgestellten Informationen beruhen, wird keine Gewähr übernommen.
+      </p>
+      <p class="fineprint">
+        Personenbezogene Daten werden ausschließlich im Rahmen der geltenden Datenschutzbestimmungen (insb. DSGVO)
+        verarbeitet. Inhalte und Darstellungen achten Persönlichkeits-, Urheber- und Markenrechte Dritter; eine weitergehende
+        Nutzung bedarf der jeweiligen Rechtsgrundlage oder Zustimmung.
+      </p>
+      <p class="fineprint">
+        Teile von Workflows oder Entwürfen können KI-unterstützt sein; Ergebnisse werden geprüft, dennoch sind Fehler möglich.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Weichware Lohr</p>
+    <ul class="footer-links">
+      <li><a href="/regulation/privacy/">Datenschutz</a></li>
+      <li><a href="/regulation/cookies/">Cookies</a></li>
+      <li><a href="/regulation/imprint/">Impressum</a></li>
+    </ul>
+  </footer>
+
+  <script src="/assets/site.js" defer></script>
+
+  <!-- Calendar script (unchanged) -->
+  <script>
+(async function () {
+  const grid = document.getElementById("cal-grid");
+  if (!grid) return;
+
+  const monthLabel = document.getElementById("cal-month-label");
+  const hint = document.getElementById("cal-hint");
+  const panel = document.getElementById("cal-panel");
+  const panelTitle = document.getElementById("cal-panel-title");
+  const panelBody = document.getElementById("cal-panel-body");
+
+  const btnPrev = document.getElementById("cal-prev");
+  const btnNext = document.getElementById("cal-next");
+  const btnToday = document.getElementById("cal-today");
+  const btnClose = document.getElementById("cal-panel-close");
+
+  function ymd(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function startOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+  function endOfMonth(d) { return new Date(d.getFullYear(), d.getMonth() + 1, 0); }
+
+  function monthName(d) {
+    return d.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+  }
+
+  function escapeHtml(s) {
+    return (s || "").toString()
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+  }
+
+  let events = [];
+  let cursor = new Date();
+
+  try {
+    const res = await fetch("/assets/calendar/calendar-index.json");
+    if (!res.ok) throw new Error("calendar-index.json missing");
+    const data = await res.json();
+    events = Array.isArray(data.items) ? data.items : [];
+    hint.textContent = events.length ? "Markierte Tage haben Termine." : "Noch keine Termine.";
+  } catch {
+    events = [];
+    hint.textContent = "Kalender konnte nicht geladen werden (calendar-index.json fehlt).";
+  }
+
+  const byDate = new Map();
+  for (const e of events) {
+    const k = String(e.date || "");
+    if (!k) continue;
+    if (!byDate.has(k)) byDate.set(k, []);
+    byDate.get(k).push(e);
+  }
+
+  function openPanel(dateStr) {
+    const list = byDate.get(dateStr) || [];
+    panelTitle.textContent = dateStr;
+
+    if (!list.length) {
+      panelBody.innerHTML = `<p class="fineprint" style="margin:0;">Keine Termine.</p>`;
+      panel.style.display = "block";
+      return;
+    }
+
+    const html = list.map(ev => {
+      const projects = Array.isArray(ev.projects) ? ev.projects : [];
+      const projectLinks = projects.map(slug => {
+        return `<a href="/webpages/projects/?open=${encodeURIComponent(slug)}#entries-title">${escapeHtml(slug)}</a>`;
+      }).join(", ");
+
+      const where = ev.where ? `<div class="fineprint">Ort: ${escapeHtml(ev.where)}</div>` : "";
+      const note = ev.note ? `<div class="fineprint">${escapeHtml(ev.note)}</div>` : "";
+
+      return `
+        <div class="card" style="padding:12px; margin-bottom:10px;">
+          <strong>${escapeHtml(ev.title || "Termin")}</strong>
+          ${where}
+          ${note}
+          ${projectLinks ? `<div class="fineprint" style="margin-top:6px;">Projekt: ${projectLinks}</div>` : ""}
+        </div>
+      `;
+    }).join("");
+
+    panelBody.innerHTML = html;
+    panel.style.display = "block";
+  }
+
+  function renderMonth() {
+    const first = startOfMonth(cursor);
+    const last = endOfMonth(cursor);
+
+    monthLabel.textContent = monthName(cursor);
+
+    const header = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+    let html = `
+      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px;">
+        ${header.map(h => `<div class="fineprint" style="text-align:center; opacity:.8;">${h}</div>`).join("")}
+    `;
+
+    const startDay = (first.getDay() + 6) % 7;
+    const totalDays = last.getDate();
+
+    for (let i = 0; i < startDay; i++) html += `<div></div>`;
+
+    const todayStr = ymd(new Date());
+
+    for (let day = 1; day <= totalDays; day++) {
+      const d = new Date(cursor.getFullYear(), cursor.getMonth(), day);
+      const key = ymd(d);
+      const has = byDate.has(key);
+      const isToday = key === todayStr;
+
+      html += `
+        <button type="button"
+          data-date="${key}"
+          style="
+            padding:10px 8px;
+            border-radius:12px;
+            border:1px solid currentColor;
+            background:transparent;
+            cursor:pointer;
+            opacity:${has ? 1 : 0.65};
+            position:relative;
+            text-align:left;
+            min-height:44px;
+          "
+          aria-label="${key}${has ? " (Termine vorhanden)" : ""}"
+        >
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <strong>${day}</strong>
+            ${isToday ? `<span class="fineprint">heute</span>` : ``}
+          </div>
+          ${has ? `<div style="position:absolute; right:10px; bottom:10px; width:8px; height:8px; border-radius:999px; border:1px solid currentColor;"></div>` : ``}
+        </button>
+      `;
+    }
+
+    html += `</div>`;
+    grid.innerHTML = html;
+
+    grid.querySelectorAll("button[data-date]").forEach(btn => {
+      btn.addEventListener("click", () => openPanel(btn.dataset.date));
+    });
+  }
+
+  btnPrev?.addEventListener("click", () => { cursor = new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1); renderMonth(); });
+  btnNext?.addEventListener("click", () => { cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1); renderMonth(); });
+  btnToday?.addEventListener("click", () => { cursor = new Date(); renderMonth(); });
+  btnClose?.addEventListener("click", () => { panel.style.display = "none"; });
+
+  renderMonth();
+})();
+  </script>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    (function () {
+      const TO = ["anfrage", "weichware-lohr.de"].join("@");
+
+      const emailLink = document.querySelector("[data-email-link]");
+      if (emailLink) {
+        emailLink.href = "mailto:" + TO;
+        emailLink.textContent = "anfrage[[at]]weichware-lohr.de";
+      }
+
+      const form = document.querySelector("[data-contact-form]");
+      if (!form) return;
+
+      const hint = form.querySelector("[data-contact-hint]");
+
+      function buildMailto(fd) {
+        const name = (fd.get("name") || "").toString().trim();
+        const message = (fd.get("message") || "").toString().trim();
+
+        const CRLF = "\r\n";
+        const body = [
+          "Hallo Frau Lohr",
+          "",
+          message || "—",
+          "",
+          "Mit freundlichen Grüßen,",
+          name || "—"
+        ].join(CRLF);
+
+        const subject = "[Website] Kontaktanfrage";
+
+        return { to: TO, subject, body };
+      }
+
+      function openMailto({ to, subject, body }) {
+        const normalizedBody = String(body || "")
+          .replace(/\r\n/g, "\n")
+          .replace(/\r/g, "\n")
+          .replace(/\n/g, "\r\n");
+
+        const mailto =
+          `mailto:${encodeURIComponent(to)}` +
+          `?subject=${encodeURIComponent(subject || "")}` +
+          `&body=${encodeURIComponent(normalizedBody)}`;
+
+        const a = document.createElement("a");
+        a.href = mailto;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const honey = form.querySelector('input[name="company"]');
+        if (honey && honey.value.trim() !== "") return;
+
+        if (!form.reportValidity()) {
+          if (hint) hint.textContent = "Bitte Name, Nachricht und Zustimmung ausfüllen.";
+          return;
+        }
+
+        const fd = new FormData(form);
+        const mail = buildMailto(fd);
+        openMailto(mail);
+
+        if (hint) {
+          hint.textContent = "E-Mail-Entwurf sollte geöffnet sein. Falls nicht: Mail-App/Handler (mailto:) im System/Browser einrichten.";
+        }
+
+        form.reset();
+      });
+    })();
+  </script>
+
+  <script>
+(function () {
+  const root = document.querySelector("[data-blog-gallery]");
+  if (!root) return;
+
+  const leftFig = root.querySelector('[data-slot="left"]');
+  const centerFig = root.querySelector('[data-slot="center"]');
+  const rightFig = root.querySelector('[data-slot="right"]');
+
+  const leftImg = leftFig?.querySelector("img");
+  const centerImg = centerFig?.querySelector("img");
+  const rightImg = rightFig?.querySelector("img");
+
+  const prevBtn = root.querySelector("[data-blog-prev]");
+  const nextBtn = root.querySelector("[data-blog-next]");
+  const dots = Array.from(root.querySelectorAll("[data-dot]"));
+
+  const capTitle = root.querySelector("[data-blog-title]");
+  const capDate = root.querySelector("[data-blog-date]");
+  const capExcerpt = root.querySelector("[data-blog-excerpt]");
+
+  const dialog = document.getElementById("blog-modal");
+  const closeBtn = dialog?.querySelector("[data-blog-close]");
+  const modalTitle = document.getElementById("blog-modal-title");
+  const modalMeta = document.getElementById("blog-modal-meta");
+  const modalExcerpt = document.getElementById("blog-modal-excerpt");
+  const modalTags = document.getElementById("blog-modal-tags");
+  const modalLinks = document.getElementById("blog-modal-links");
+  const modalBody = document.getElementById("blog-modal-body");
+
+  const fallbackItems = [
+    { cover: "/img/concept_leistungen.png", title: "Blog", updated: "", excerpt: "", metaUrl: "", contentUrl: "" },
+    { cover: "/img/concept.png",           title: "Blog", updated: "", excerpt: "", metaUrl: "", contentUrl: "" },
+    { cover: "/img/mythologie.png",        title: "Blog", updated: "", excerpt: "", metaUrl: "", contentUrl: "" },
+  ];
+
+  let items = [];
+  let index = 0;
+
+  function mod(n, m) { return ((n % m) + m) % m; }
+
+  function formatDate(iso) {
+    const d = new Date(iso || "");
+    if (isNaN(d.getTime())) return iso || "";
+    return d.toLocaleDateString("de-DE", { day: "2-digit", month: "short", year: "numeric" });
+  }
+
+  function setDots() {
+    dots.forEach(d => d.classList.remove("is-active"));
+    const active = dots[mod(index, dots.length)];
+    if (active) active.classList.add("is-active");
+  }
+
+  function safeCover(x) {
+    return (x && x.cover) ? String(x.cover) : "/img/concept.png";
+  }
+
+  function safeTitle(x) {
+    return (x && x.title) ? String(x.title) : "Blog";
+  }
+
+  function safeExcerpt(x) {
+    return (x && x.excerpt) ? String(x.excerpt) : "";
+  }
+
+  function render() {
+    if (!items.length) return;
+
+    const cur = items[index];
+    const prev = items[mod(index - 1, items.length)];
+    const next = items[mod(index + 1, items.length)];
+
+    if (leftImg)  { leftImg.src  = safeCover(prev); leftImg.alt  = "Blogbild"; }
+    if (centerImg){ centerImg.src= safeCover(cur);  centerImg.alt= `Blog: ${safeTitle(cur)}`; }
+    if (rightImg) { rightImg.src = safeCover(next); rightImg.alt = "Blogbild"; }
+
+    if (capTitle) capTitle.textContent = safeTitle(cur);
+    if (capDate) capDate.textContent = cur.updated ? formatDate(cur.updated) : "";
+    if (capExcerpt) capExcerpt.textContent = safeExcerpt(cur);
+
+    leftFig?.setAttribute("aria-label", `Vorheriges Bild: ${safeTitle(prev)}`);
+    rightFig?.setAttribute("aria-label", `Nächstes Bild: ${safeTitle(next)}`);
+    centerFig?.setAttribute("aria-label", `Artikel öffnen: ${safeTitle(cur)}`);
+
+    setDots();
+  }
+
+  function goPrev() { index = mod(index - 1, items.length); render(); }
+  function goNext() { index = mod(index + 1, items.length); render(); }
+
+  // swipe (mobile)
+  let startX = 0, startY = 0, down = false;
+  root.addEventListener("pointerdown", (e) => { down = true; startX = e.clientX; startY = e.clientY; });
+  root.addEventListener("pointerup", (e) => {
+    if (!down) return;
+    down = false;
+
+    const dx = e.clientX - startX;
+    const dy = e.clientY - startY;
+    if (Math.abs(dy) > Math.abs(dx)) return;
+
+    if (dx > 35) goPrev();
+    if (dx < -35) goNext();
+  });
+  root.addEventListener("pointercancel", () => { down = false; });
+
+  prevBtn?.addEventListener("click", goPrev);
+  nextBtn?.addEventListener("click", goNext);
+
+  leftFig?.addEventListener("click", goPrev);
+  rightFig?.addEventListener("click", goNext);
+
+  document.addEventListener("keydown", (e) => {
+    if (dialog?.open) return;
+
+    const active = document.activeElement;
+    const inGallery = active && root.contains(active);
+    if (!inGallery) return;
+
+    if (e.key === "ArrowLeft") { e.preventDefault(); goPrev(); }
+    if (e.key === "ArrowRight") { e.preventDefault(); goNext(); }
+    if (e.key === "Enter" || e.key === " ") {
+      if (centerFig && centerFig.contains(active)) {
+        e.preventDefault();
+        openCurrent();
+      }
+    }
+  });
+
+  closeBtn?.addEventListener("click", () => dialog?.close());
+  dialog?.addEventListener("click", (e) => { if (e.target === dialog) dialog.close(); });
+
+  centerFig?.addEventListener("click", () => { openCurrent(); });
+
+  async function openCurrent() {
+    if (!dialog) return;
+    if (!items.length) return;
+
+    const cur = items[index];
+    if (!cur) return;
+
+    // fast UI reset (but do NOT open modal yet)
+    if (modalTitle) modalTitle.textContent = safeTitle(cur);
+    if (modalMeta) modalMeta.textContent = cur.updated ? formatDate(cur.updated) : "";
+    if (modalExcerpt) modalExcerpt.textContent = safeExcerpt(cur) || "";
+    if (modalTags) modalTags.innerHTML = "";
+    if (modalLinks) modalLinks.innerHTML = "";
+    if (modalBody) modalBody.innerHTML = `<p class="fineprint">Lade Artikel…</p>`;
+
+    if (!cur.contentUrl) return;
+
+    // meta (optional)
+    try {
+      if (cur.metaUrl) {
+        const mRes = await fetch(cur.metaUrl);
+        if (mRes.ok) {
+          const meta = await mRes.json();
+          if (modalTitle && meta.title) modalTitle.textContent = String(meta.title);
+          const updated = meta.updated || cur.updated || "";
+          if (modalMeta) modalMeta.textContent = updated ? formatDate(updated) : "";
+          const ex = (meta.excerpt || cur.excerpt || "").toString();
+          if (modalExcerpt) modalExcerpt.textContent = ex;
+
+          if (modalTags) {
+            const tags = Array.isArray(meta.tags) ? meta.tags : [];
+            modalTags.innerHTML = tags.map(t => `<span class="chip">${String(t)}</span>`).join("");
+          }
+
+          // optional external links
+          if (modalLinks) {
+            const also = Array.isArray(meta.alsoPublished) ? meta.alsoPublished : cur.alsoPublished;
+            const list = Array.isArray(also) ? also : [];
+            modalLinks.innerHTML = list.map(x => {
+              const label = (x && x.label) ? String(x.label) : "Quelle";
+              const url = (x && x.url) ? String(x.url) : "";
+              return url ? `<a href="${url}" target="_blank" rel="noopener">${label}</a>` : "";
+            }).filter(Boolean).join(" ");
+          }
+        }
+      }
+    } catch {}
+
+    // article (fetch first; open modal only if it looks valid)
+    try {
+      const aRes = await fetch(cur.contentUrl, { cache: "no-store" });
+      if (!aRes.ok) throw new Error("article fetch failed");
+
+      const finalUrl = new URL(aRes.url, window.location.href);
+      if (aRes.redirected && (finalUrl.pathname === "/" || finalUrl.pathname === "/index.html")) {
+        throw new Error("redirected to homepage");
+      }
+
+      const htmlText = await aRes.text();
+
+      if (htmlText.includes("Weichware Lohr.") && htmlText.includes("Neueste Aktivitäten")) {
+        throw new Error("looks like homepage content");
+      }
+
+      if (!dialog.open) dialog.showModal();
+
+      const ct = (aRes.headers.get("content-type") || "").toLowerCase();
+
+      if (ct.includes("text/markdown") || cur.contentUrl.endsWith(".md") || ct.includes("text/plain")) {
+        if (modalBody) {
+          const esc = (s) => String(s)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;");
+          modalBody.innerHTML = `<pre class="fineprint" style="white-space:pre-wrap; margin:0;">${esc(htmlText)}</pre>`;
+        }
+        return;
+      }
+
+      const doc = new DOMParser().parseFromString(htmlText, "text/html");
+      const content = doc.body?.innerHTML?.trim() ? doc.body.innerHTML : htmlText;
+
+      if (modalBody) {
+        modalBody.innerHTML = content;
+
+        const base = new URL(cur.contentUrl, window.location.href);
+        const baseDir = new URL("./", base);
+
+        modalBody.querySelectorAll("[src]").forEach(el => {
+          const v = el.getAttribute("src");
+          if (!v) return;
+          if (/^(https?:|data:|mailto:|tel:|#|\/)/i.test(v)) return;
+          el.setAttribute("src", new URL(v, baseDir).toString());
+        });
+
+        modalBody.querySelectorAll("a[href]").forEach(a => {
+          const v = a.getAttribute("href");
+          if (!v) return;
+          if (/^(https?:|mailto:|tel:|#|\/)/i.test(v)) return;
+          a.setAttribute("href", new URL(v, baseDir).toString());
+        });
+      }
+    } catch {
+      if (dialog?.open) dialog.close();
+      return;
+    }
+  }
+
+  async function loadBlogItems() {
+    try {
+      const res = await fetch("/assets/blog-index.json");
+      if (!res.ok) throw new Error("blog-index.json missing");
+      const data = await res.json();
+
+      const list = (data.items || [])
+        .filter(x => x && x.type === "blog")
+        .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")))
+        .map(x => {
+          const slug = String(x.slug || "").trim();
+          return {
+            slug,
+            title: x.title || slug || "Blog",
+            updated: x.updated || "",
+            excerpt: x.excerpt || "",
+            cover: x.cover || "",
+            metaUrl: x.metaUrl || "",
+            contentUrl: x.contentUrl || "",
+            alsoPublished: x.alsoPublished || []
+          };
+        })
+        .filter(x => x.cover && x.contentUrl);
+
+      items = list.length ? list : fallbackItems;
+      index = 0;
+      render();
+    } catch {
+      items = fallbackItems;
+      index = 0;
+      render();
+    }
+  }
+
+  loadBlogItems();
+})();
+  </script>
+</body>
+</html>

@@ -41,16 +41,6 @@
       "contentUrl": "/assets/content/blog/julius-faucher-medaille.html"
     },
     {
-      "type": "blog",
-      "slug": "lebensraum",
-      "title": "Neuer Lebensraum im Osten",
-      "updated": "2026-01-16",
-      "image": "/assets/blog/lebensraum/hinten.png",
-      "excerpt": "",
-      "url": "/webpages/blog/lebensraum/",
-      "contentUrl": ""
-    },
-    {
       "type": "project",
       "slug": "angela",
       "title": "Buchübersetzung",
@@ -69,6 +59,16 @@
       "excerpt": "",
       "url": "/webpages/blog/400000/",
       "contentUrl": "/assets/content/blog/400000.html"
+    },
+    {
+      "type": "blog",
+      "slug": "lebensraum",
+      "title": "Neuer Lebensraum im Osten",
+      "updated": "2023-02-18",
+      "image": "/assets/blog/lebensraum/hinten.png",
+      "excerpt": "",
+      "url": "/webpages/blog/lebensraum/",
+      "contentUrl": ""
     },
     {
       "type": "project",

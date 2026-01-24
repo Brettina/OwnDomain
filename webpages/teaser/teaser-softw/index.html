@@ -715,5 +715,41 @@ Bei der Nutzung von Kontaktformularen oder der Kontaktaufnahme werden personenbe
       });
     })();
   </script>
+  <script>
+/* Header image: try to find any local file with common names + png/jpg/jpeg */
+(function () {
+  const img = document.getElementById("saftladen-image");
+  if (!img) return;
+
+  // If the currently set src loads, keep it.
+  // Otherwise try a list of likely filenames.
+  const candidates = [
+        "./webicon.png", "./webicon.jpg", "./webicon.jpeg",
+    "./pic.png", "./pic.jpg", "./pic.jpeg",
+    "./saftladen.png", "./saftladen.jpg", "./saftladen.jpeg",
+    "./header.png", "./header.jpg", "./header.jpeg",
+    "./hero.png", "./hero.jpg", "./hero.jpeg",
+    "./cover.png", "./cover.jpg", "./cover.jpeg",
+    "./banner.png", "./banner.jpg", "./banner.jpeg"
+  ];
+
+  let i = 0;
+
+  function tryNext() {
+    if (i >= candidates.length) return; // no change if nothing works
+    const next = candidates[i++];
+    if (img.getAttribute("src") === next) return tryNext();
+    img.src = next;
+  }
+
+  // If the current file errors, try the next candidate.
+  img.addEventListener("error", tryNext, { once: false });
+
+  // Kick off: if current src is missing, error will fire and advance.
+  // Also proactively try if src is empty.
+  if (!img.getAttribute("src")) tryNext();
+})();
+</script>
+
 </body>
 </html>

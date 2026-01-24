@@ -16,11 +16,11 @@
   <meta name="color-scheme" content="light dark" />
 
   <style>
-    /* --- Saftladen header replacement + hero image --- */
-    .saftladen-top {
-      margin: 18px 0 10px;
-    }
+    /* --- Remove any header/nav so user can't return to main menu --- */
+    header, nav, .site-header, .topnav, [data-site-header], [data-nav] { display: none !important; }
 
+    /* --- Saftladen top block --- */
+    .saftladen-top { margin: 18px 0 10px; }
     .saftladen-image {
       width: 100%;
       max-height: 360px;
@@ -28,8 +28,8 @@
       display: block;
       border-radius: 16px;
       object-fit: cover;
+      background: rgba(0,0,0,0.06);
     }
-
     .saftladen-title {
       margin: 14px 0 0;
       font-size: clamp(1.8rem, 3.2vw, 2.6rem);
@@ -38,19 +38,13 @@
     }
 
     /* --- Aufklappbare Leistungen (accordion) --- */
-    .services {
-      display: grid;
-      gap: 12px;
-      margin-top: 12px;
-    }
-
+    .services { display: grid; gap: 12px; margin-top: 12px; }
     .service-item {
       border-radius: 16px;
       border: 1px solid rgba(127,127,127,0.35);
       overflow: hidden;
       background: rgba(0,0,0,0.02);
     }
-
     .service-summary {
       list-style: none;
       cursor: pointer;
@@ -60,19 +54,11 @@
       justify-content: space-between;
       gap: 12px;
     }
-
-    /* hide default marker */
     .service-summary::-webkit-details-marker { display: none; }
     .service-summary::marker { content: ""; }
 
-    .service-summary strong {
-      font-size: 1.05rem;
-    }
-
-    .service-summary .fineprint {
-      margin: 0;
-      opacity: 0.85;
-    }
+    .service-summary strong { font-size: 1.05rem; }
+    .service-summary .fineprint { margin: 0; opacity: 0.85; }
 
     .service-chevron {
       flex: 0 0 auto;
@@ -83,31 +69,15 @@
       display: grid;
       place-items: center;
       opacity: 0.85;
+      transition: transform 160ms ease;
     }
+    details[open] .service-chevron { transform: rotate(180deg); }
 
-    details[open] .service-chevron {
-      transform: rotate(180deg);
-    }
+    .service-body { padding: 0 16px 14px; }
+    .service-body p { margin: 10px 0 0; }
+    .service-body ul { margin: 10px 0 0 18px; }
 
-    .service-body {
-      padding: 0 16px 14px;
-    }
-
-    .service-body p {
-      margin: 10px 0 0;
-    }
-
-    .service-body ul {
-      margin: 10px 0 0 18px;
-    }
-
-    .service-body .chips {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 10px;
-    }
-
+    .service-body .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
     .service-body .chip {
       display: inline-flex;
       padding: 4px 10px;
@@ -123,21 +93,21 @@
   <a class="skip-link" href="#main">Zum Inhalt springen</a>
 
   <main id="main" class="container">
-    <!-- NEW TOP IMAGE + HEADING -->
-    <section class="saftladen-top" aria-label="Saftladen">
-      <!-- Put your image file next to this HTML and rename below to match (jpg/png). -->
-      <!-- Example filenames: saftladen.jpg or saftladen.png -->
-      <img
-        class="saftladen-image"
-        src="./saftladen.jpg"
-        alt="Saftladen"
-        loading="eager"
-        decoding="async"
-      />
-      <h1 class="saftladen-title">Saftladen</h1>
-    </section>
+    <!-- TOP IMAGE + HEADING -->
+<section class="saftladen-top" aria-label="Saftladen">
+  <img
+    class="saftladen-image"
+    id="saftladen-top-image"
+    alt="Saftladen"
+    loading="eager"
+    decoding="async"
+    style="display:none;"
+  />
+  <h1 class="saftladen-title">Saftladen</h1>
+</section>
 
-    <!-- HERO (kept, but removed main-menu links/buttons) -->
+
+    <!-- HERO (avatar stays same size/placement) -->
     <section class="hero" aria-label="Vorstellung">
       <div class="hero-media">
         <img
@@ -163,7 +133,7 @@
       </div>
     </section>
 
-    <!-- LEISTUNGEN (accordion) -->
+    <!-- LEISTUNGEN (replaces activities/carousel) -->
     <section class="section" aria-labelledby="services-title">
       <h2 id="services-title">Leistungen</h2>
 
@@ -277,9 +247,9 @@
       </p>
     </section>
 
-    <!-- KALENDER (kept) -->
+    <!-- KALENDER (unchanged) -->
     <section class="section" aria-labelledby="calendar-title">
-      <div class="section-head" style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+      <div class="section-head">
         <h2 id="calendar-title" style="margin:0;">Kalender</h2>
         <p class="fineprint" style="margin:0;">Klick auf ein Datum → relevante Projekte / Termine</p>
       </div>
@@ -309,7 +279,7 @@
       </div>
     </section>
 
-    <!-- PROFILE & PRÄSENZ (kept) -->
+    <!-- PROFILE & PRÄSENZ (unchanged) -->
     <section class="section" aria-labelledby="profiles">
       <h2 id="profiles">Profile &amp; Präsenz</h2>
 
@@ -362,7 +332,7 @@
       </div>
     </section>
 
-    <!-- Kontakt (kept) -->
+    <!-- Kontakt (unchanged) -->
     <section class="section" aria-labelledby="contact">
       <h2 id="contact">Kontakt</h2>
 
@@ -596,8 +566,6 @@
 })();
   </script>
 
-  <!-- Removed the entire project carousel script block -->
-
   <script>
     document.getElementById("year").textContent = new Date().getFullYear();
 
@@ -676,5 +644,97 @@
       });
     })();
   </script>
+
+<script>
+(function () {
+  function onReady(fn) {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", fn, { once: true });
+    } else {
+      fn();
+    }
+  }
+
+  onReady(async () => {
+    const img = document.getElementById("saftladen-top-image");
+    if (!img) return;
+
+    const bases = ["saftladen", "header", "hero", "cover", "top", "banner", "image"];
+    const exts = ["jpg", "jpeg", "png", "webp", "JPG", "JPEG", "PNG", "WEBP"];
+
+    function canLoad(src) {
+      return new Promise((resolve) => {
+        const test = new Image();
+        test.onload = () => resolve(true);
+        test.onerror = () => resolve(false);
+        test.src = src;
+      });
+    }
+
+    for (const b of bases) {
+      for (const e of exts) {
+        const src = `${b}.${e}`; // same folder as this HTML
+        // eslint-disable-next-line no-await-in-loop
+        if (await canLoad(src)) {
+          img.src = src;
+          img.style.display = "block";
+          return;
+        }
+      }
+    }
+
+    img.style.display = "none";
+  });
+})();
+</script>
+
+
+  // Filenames (without extension) that you consider acceptable
+  const bases = [
+    "saftladen",
+    "header",
+    "hero",
+    "cover",
+    "top",
+    "banner",
+    "image"
+  ];
+
+  // Extensions to try
+  const exts = ["jpg", "jpeg", "png", "webp"];
+
+  // Optional: also try uppercase extensions (some people upload .JPG etc.)
+  const extsExtra = ["JPG", "JPEG", "PNG", "WEBP"];
+
+  const candidates = [];
+  for (const b of bases) for (const e of exts) candidates.push(`${b}.${e}`);
+  for (const b of bases) for (const e of extsExtra) candidates.push(`${b}.${e}`);
+
+  // Try to load candidate by candidate
+  function canLoad(src) {
+    return new Promise((resolve) => {
+      const test = new Image();
+      test.onload = () => resolve(true);
+      test.onerror = () => resolve(false);
+      test.src = src;
+    });
+  }
+
+  // IMPORTANT: no "./" — use relative path from current document reliably
+  for (const file of candidates) {
+    const src = file; // same folder as this HTML
+    // eslint-disable-next-line no-await-in-loop
+    if (await canLoad(src)) {
+      img.src = src;
+      img.style.display = "block";
+      return;
+    }
+  }
+
+  // If nothing found, keep it hidden (no broken image / no "Original anzeigen")
+  img.style.display = "none";
+})();
+</script>
+
 </body>
 </html>

@@ -29,6 +29,22 @@
       border-radius: 16px;
       object-fit: cover;
     }
+    /* Ensure loaded article content stays readable in dark modal */
+.blog-modal {
+  color: inherit;
+}
+
+.blog-modal-body,
+.blog-modal-body * {
+  color: inherit !important;
+  background: transparent !important;
+}
+
+/* Optional: keep links visibly link-like */
+.blog-modal-body a {
+  text-decoration: underline;
+}
+
 
     .saftladen-title {
       margin: 14px 0 0;
@@ -301,11 +317,11 @@
 
   <main id="main" class="container">
     <!-- NEW TOP IMAGE + HEADING -->
-    <section class="saftladen-top" aria-label="Agentin / Verlegerin / Marketing">
+<section class="saftladen-top" aria-label="Bettina Lohr, M. Sc.">
   <img
     class="saftladen-image"
     src="./saftladen.jpg"
-    alt="Agentin / Verlegerin / Marketing"
+    alt="Agent und Marketer"
     loading="eager"
     decoding="async"
   />
@@ -1040,7 +1056,7 @@ dialog?.addEventListener("click", (e) => {
   if (modalBody) modalBody.innerHTML = `<p class="fineprint">Lade Artikel…</p>`;
 
   // open ONCE
-  if (!dialog.open) dialog.showModal();
+  //if (!dialog.open) dialog.showModal();
 
   if (!cur.contentUrl) {
     if (modalBody) modalBody.innerHTML =
@@ -1069,17 +1085,50 @@ dialog?.addEventListener("click", (e) => {
   } catch {}
 
   // article
+    // article (fetch first; open modal only if it looks valid)
   try {
-    const aRes = await fetch(cur.contentUrl);
+    const aRes = await fetch(cur.contentUrl, { cache: "no-store" });
     if (!aRes.ok) throw new Error("article fetch failed");
+
+    // If the server/router redirects to homepage, don't open
+    const finalUrl = new URL(aRes.url, window.location.href);
+    if (aRes.redirected && (finalUrl.pathname === "/" || finalUrl.pathname === "/index.html")) {
+      throw new Error("redirected to homepage");
+    }
+
     const htmlText = await aRes.text();
 
+    // Heuristic: if it looks like your homepage/layout, treat as wrong content
+    // (adjust the string if your homepage has a stable marker)
+    if (htmlText.includes("Weichware Lohr.") && htmlText.includes("Neueste Aktivitäten")) {
+      throw new Error("looks like homepage content");
+    }
+
+    // NOW open
+    if (!dialog.open) dialog.showModal();
+
+    const ct = (aRes.headers.get("content-type") || "").toLowerCase();
+
+    // If it's markdown/plain text, render as preformatted (robust, no extra libs)
+    if (ct.includes("text/markdown") || cur.contentUrl.endsWith(".md") || ct.includes("text/plain")) {
+      if (modalBody) {
+        const esc = (s) => String(s)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;");
+        modalBody.innerHTML = `<pre class="fineprint" style="white-space:pre-wrap; margin:0;">${esc(htmlText)}</pre>`;
+      }
+      return;
+    }
+
+    // HTML: parse and inject body content
     const doc = new DOMParser().parseFromString(htmlText, "text/html");
     const content = doc.body?.innerHTML?.trim() ? doc.body.innerHTML : htmlText;
 
     if (modalBody) {
       modalBody.innerHTML = content;
 
+      // fix relative URLs
       const base = new URL(cur.contentUrl, window.location.href);
       const baseDir = new URL("./", base);
 
@@ -1098,8 +1147,11 @@ dialog?.addEventListener("click", (e) => {
       });
     }
   } catch {
-    if (modalBody) modalBody.innerHTML = `<p class="fineprint">Artikel konnte nicht geladen werden.</p>`;
+    // Don't open modal at all if we can't load a proper article
+    if (dialog?.open) dialog.close();
+    return;
   }
+
 
 }
 
@@ -1114,10 +1166,8 @@ dialog?.addEventListener("click", (e) => {
       const list = (data.items || [])
         .filter(x => x && x.type === "blog")
         .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")))
-        .map(x => {
+.map(x => {
   const slug = String(x.slug || "").trim();
-  // Expect: /blog/<slug>/article.html and /blog/<slug>/meta.json
-  const base = slug ? `/blog/${slug}/` : "";
 
   return {
     slug,
@@ -1125,12 +1175,11 @@ dialog?.addEventListener("click", (e) => {
     updated: x.updated || "",
     excerpt: x.excerpt || "",
     cover: x.cover || "",
-    metaUrl: x.metaUrl || (base ? `${base}meta.json` : ""),
-    contentUrl: x.contentUrl || (base ? `${base}article.html` : "")
+    metaUrl: x.metaUrl || "",
+    contentUrl: x.contentUrl || ""
   };
 })
-
-.filter(x => x.cover && x.slug); // cover for gallery + slug to build URLs
+.filter(x => x.cover && x.contentUrl); // MUST have actual file to open
 
       items = list.length ? list : fallbackItems;
       index = 0;

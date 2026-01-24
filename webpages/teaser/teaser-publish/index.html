@@ -60,6 +60,84 @@
       justify-content: space-between;
       gap: 12px;
     }
+    /* --- Blog gallery: like homepage carousel, but NON-clickable --- */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.blog-gallery { margin-top: 14px; }
+.blog-stage {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items: stretch;
+  justify-items: stretch;
+}
+
+/* Wide screens: left - center - right */
+@media (min-width: 900px) {
+  .blog-stage {
+    grid-template-columns: 0.9fr 1.25fr 0.9fr;
+    align-items: center;
+  }
+}
+
+.blog-card {
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  min-height: 220px;
+}
+
+.blog-card img {
+  display: block;
+  max-width: 100%;
+  width: 100%;
+  height: 220px;
+  object-fit: contain;     /* no crop */
+  background: rgba(0,0,0,0.06);
+}
+
+@media (min-width: 900px) {
+  .blog-card img { height: 240px; }
+}
+
+/* side cards: subtle */
+.blog-card.is-side {
+  opacity: 0.62;
+  transform: scale(0.96);
+  filter: saturate(0.92);
+}
+
+.blog-dots {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin-top: 12px;
+}
+
+.blog-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: 1px solid currentColor;
+  opacity: 0.45;
+}
+
+.blog-dot.is-active {
+  opacity: 1;
+  transform: scale(1.08);
+}
+
+/* swipe feel */
+[data-blog-gallery] { touch-action: pan-y; user-select: none; }
+
 
     /* hide default marker */
     .service-summary::-webkit-details-marker { display: none; }
@@ -132,7 +210,7 @@
     loading="eager"
     decoding="async"
   />
-  <h1 class="saftladen-title">Agentin/ Verlegering/ Marketing</h1>
+  <h1 class="saftladen-title">Agentin/ Verlegerin/ Marketing</h1>
 </section>
 
 
@@ -152,22 +230,57 @@
       <div class="hero-text">
         <h2 style="margin-top:0;">Bettina Lohr</h2>
         <p class="lead">
-  Ich arbeite als Agentin, Verlegerin und im Marketing — mit Schwerpunkt auf Sprache, Kultur und Veröffentlichung.
-  Ich übersetze zwischen Deutsch und Englisch, bringe Chinesisch-Kenntnisse mit und habe interkulturelle Erfahrung,
-  u. a. in Projekten mit Bezug zu China.
-</p>
+        Ich arbeite als Agentin, Verlegerin und im Marketing — mit Schwerpunkt auf Sprache, Kultur und Veröffentlichung.
+        Ich übersetze zwischen Deutsch und Englisch, bringe Chinesisch-Kenntnisse mit und habe interkulturelle Erfahrung,
+        u. a. in Projekten mit Bezug zu China.
+      </p>
 
-<p class="fineprint" style="margin-bottom:0;">
-  Veröffentlichung &amp; Projektbezug:
-  <a href="https://www.amazon.de/Lichtstrahl-Seiner-Liebe-Angela-Jung/dp/3949073310" target="_blank" rel="noopener">
-    „Ein Lichtstrahl Seiner Liebe“ (Amazon)
-  </a>.
-  Außerdem: Jungautorenwettbewerb / Julius-Faucher-Medaille (eigentümlich frei),
-  <a href="https://faucherpreis.info/" target="_blank" rel="noopener">faucherpreis.info</a>.
+      <p class="fineprint" style="margin-bottom:0;">
+        Veröffentlichung &amp; Projektbezug:
+        <a href="https://www.amazon.de/Lichtstrahl-Seiner-Liebe-Angela-Jung/dp/3949073310" target="_blank" rel="noopener">
+          „Ein Lichtstrahl Seiner Liebe“ (Amazon)
+        </a>.
+        Außerdem: Jungautorenwettbewerb / Julius-Faucher-Medaille (eigentümlich frei),
+        <a href="https://faucherpreis.info/" target="_blank" rel="noopener">faucherpreis.info</a>.
 
-     </p>
+          </p>
       </div>
     </section>
+
+    <!-- BLOG-GALERIE (nur Bilder, keine Links) -->
+<section class="section" aria-labelledby="blog-gallery-title">
+  <div class="section-head">
+    <h2 id="blog-gallery-title" style="margin:0;">Blog — Galerie</h2>
+    <p class="fineprint" style="margin:0;">Ein paar visuelle Eindrücke aus dem Blog.</p>
+  </div>
+
+  <div class="blog-gallery" data-blog-gallery>
+    <div class="blog-stage" aria-label="Galerie: Blogbilder">
+      <figure class="card blog-card is-side" data-slot="left" aria-hidden="true">
+        <img src="/img/concept_leistungen.png" alt="Blogbild" loading="lazy" />
+      </figure>
+
+      <figure class="card blog-card is-center" data-slot="center">
+        <img src="/img/concept.png" alt="Blogbild" loading="lazy" />
+      </figure>
+
+      <figure class="card blog-card is-side" data-slot="right" aria-hidden="true">
+        <img src="/img/mythologie.png" alt="Blogbild" loading="lazy" />
+      </figure>
+    </div>
+
+    <div class="blog-dots" aria-hidden="true">
+      <span class="blog-dot is-active" data-dot="0"></span>
+      <span class="blog-dot" data-dot="1"></span>
+      <span class="blog-dot" data-dot="2"></span>
+    </div>
+
+    <p class="fineprint" style="margin-top:10px;">
+      Tipp: Wischen auf Mobilgeräten (oder mit Maus/Touchpad ziehen).
+    </p>
+  </div>
+</section>
+
 
     <!-- LEISTUNGEN (accordion) -->
     <section class="section" aria-labelledby="services-title">
@@ -660,5 +773,106 @@
       });
     })();
   </script>
+
+  <script>
+  (function () {
+    const root = document.querySelector("[data-blog-gallery]");
+    if (!root) return;
+
+    const leftCard = root.querySelector('[data-slot="left"] img');
+    const centerCard = root.querySelector('[data-slot="center"] img');
+    const rightCard = root.querySelector('[data-slot="right"] img');
+    const dots = Array.from(root.querySelectorAll("[data-dot]"));
+
+    const fallback = [
+      "/img/concept_leistungen.png",
+      "/img/concept.png",
+      "/img/mythologie.png"
+    ];
+
+    let images = [];
+    let index = 0;
+
+    function mod(n, m) { return ((n % m) + m) % m; }
+
+function setDots() {
+  dots.forEach(d => d.classList.remove("is-active"));
+  const active = dots[mod(index, dots.length)];
+  if (active) active.classList.add("is-active");
+}
+
+
+    function render() {
+      if (!images.length) return;
+      const prev = images[mod(index - 1, images.length)];
+      const cur  = images[index];
+      const next = images[mod(index + 1, images.length)];
+
+      leftCard.src = prev;
+      centerCard.src = cur;
+      rightCard.src = next;
+
+      leftCard.alt = "Blogbild";
+      centerCard.alt = "Blogbild";
+      rightCard.alt = "Blogbild";
+
+      setDots();
+    }
+
+    function goPrev() { index = mod(index - 1, images.length); render(); }
+    function goNext() { index = mod(index + 1, images.length); render(); }
+
+    // Swipe navigation only (no click navigation)
+    let startX = 0, startY = 0, down = false;
+
+    root.addEventListener("pointerdown", (e) => {
+      down = true;
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+
+    root.addEventListener("pointerup", (e) => {
+      if (!down) return;
+      down = false;
+
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      if (Math.abs(dy) > Math.abs(dx)) return;
+
+      if (dx > 35) goPrev();
+      if (dx < -35) goNext();
+    });
+
+    root.addEventListener("pointercancel", () => { down = false; });
+
+    async function loadBlogImages() {
+      try {
+        // This must be generated from your blog page build step (see section D)
+        const res = await fetch("/assets/blog-index.json");
+        if (!res.ok) throw new Error("blog-index.json missing");
+        const data = await res.json();
+
+        // Expect: { items: [ { image: "/img/...." }, ... ] }
+const list = (data.items || [])
+  .filter(x => x && x.type === "blog")
+  .sort((a, b) => String(b.updated || "").localeCompare(String(a.updated || "")))
+  .map(x => String(x.cover || "").trim())
+  .filter(Boolean);
+
+images = list.length ? list : fallback;
+
+        index = 0;
+        render();
+      } catch (e) {
+        images = fallback;
+        index = 0;
+        render();
+      }
+    }
+
+    loadBlogImages();
+  })();
+</script>
+
 </body>
 </html>

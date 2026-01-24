@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Bettina Lohr, M. Sc</title>
+
+  <link rel="icon" href="/img/webicon.png" type="image/png" />
+  <link rel="apple-touch-icon" href="/img/webicon.png" />
+
+  <meta
+    name="description"
+    content="Weichware Lohr — Software, Prototypen, Textiles, Analyse und Consulting. Neueste Projekte, Termine (Kalender) und Kontakt."
+  />
+  <link rel="stylesheet" href="/assets/styles.css" />
+  <meta name="color-scheme" content="light dark" />
+
+  <style>
+    /* --- Saftladen header replacement + hero image --- */
+    .saftladen-top {
+      margin: 18px 0 10px;
+    }
+
+    .saftladen-image {
+      width: 100%;
+      max-height: 360px;
+      height: auto;
+      display: block;
+      border-radius: 16px;
+      object-fit: cover;
+    }
+
+    .saftladen-title {
+      margin: 14px 0 0;
+      font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+      line-height: 1.1;
+      letter-spacing: 0.2px;
+    }
+
+    /* --- Aufklappbare Leistungen (accordion) --- */
+    .services {
+      display: grid;
+      gap: 12px;
+      margin-top: 12px;
+    }
+
+    .service-item {
+      border-radius: 16px;
+      border: 1px solid rgba(127,127,127,0.35);
+      overflow: hidden;
+      background: rgba(0,0,0,0.02);
+    }
+
+    .service-summary {
+      list-style: none;
+      cursor: pointer;
+      padding: 14px 16px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    /* hide default marker */
+    .service-summary::-webkit-details-marker { display: none; }
+    .service-summary::marker { content: ""; }
+
+    .service-summary strong {
+      font-size: 1.05rem;
+    }
+
+    .service-summary .fineprint {
+      margin: 0;
+      opacity: 0.85;
+    }
+
+    .service-chevron {
+      flex: 0 0 auto;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(127,127,127,0.5);
+      display: grid;
+      place-items: center;
+      opacity: 0.85;
+    }
+
+    details[open] .service-chevron {
+      transform: rotate(180deg);
+    }
+
+    .service-body {
+      padding: 0 16px 14px;
+    }
+
+    .service-body p {
+      margin: 10px 0 0;
+    }
+
+    .service-body ul {
+      margin: 10px 0 0 18px;
+    }
+
+    .service-body .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    .service-body .chip {
+      display: inline-flex;
+      padding: 4px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(127,127,127,0.45);
+      font-size: 0.9em;
+      opacity: 0.9;
+    }
+  </style>
+</head>
+
+<body class="page-home">
+  <a class="skip-link" href="#main">Zum Inhalt springen</a>
+
+  <main id="main" class="container">
+    <!-- NEW TOP IMAGE + HEADING -->
+    <section class="saftladen-top" aria-label="Saftladen">
+      <!-- Put your image file next to this HTML and rename below to match (jpg/png). -->
+      <!-- Example filenames: saftladen.jpg or saftladen.png -->
+      <img
+        class="saftladen-image"
+        src="./saftladen.jpg"
+        alt="Saftladen"
+        loading="eager"
+        decoding="async"
+      />
+      <h1 class="saftladen-title">Saftladen</h1>
+    </section>
+
+    <!-- HERO (kept, but removed main-menu links/buttons) -->
+    <section class="hero" aria-label="Vorstellung">
+      <div class="hero-media">
+        <img
+          class="avatar"
+          src="/img/profile.png"
+          alt="Profilfoto von Bettina Lohr"
+          loading="eager"
+          decoding="async"
+          style="object-fit: cover;"
+        />
+      </div>
+
+      <div class="hero-text">
+        <h2 style="margin-top:0;">Bettina Lohr</h2>
+        <p class="lead">
+          Hallo zusammen!
+          Als Freiberuflerin im Softwarebereich führe ich eine interdisziplinäre Praxis, die von Software Engineering,
+          Prototyping &amp; Textiles, Analyse und Consulting bis hin zu reflexiver Unterstützungsarbeit geht.
+        </p>
+        <p class="fineprint" style="margin-bottom:0;">
+          Unten finden Sie eine Auswahl an aufklappbaren Leistungen. Für Anfragen gerne direkt das Kontaktformular nutzen.
+        </p>
+      </div>
+    </section>
+
+    <!-- LEISTUNGEN (accordion) -->
+    <section class="section" aria-labelledby="services-title">
+      <h2 id="services-title">Leistungen</h2>
+
+      <div class="services">
+        <details class="service-item">
+          <summary class="service-summary">
+            <div>
+              <strong>Software Engineering</strong>
+              <p class="fineprint">Konzeption, Umsetzung, Wartung — pragmatisch &amp; sauber.</p>
+            </div>
+            <span class="service-chevron" aria-hidden="true">⌄</span>
+          </summary>
+          <div class="service-body">
+            <p class="fineprint">
+              Unterstützung bei Planung, Implementierung und Stabilisierung von Software — von kleinen Tools bis zu
+              größeren Codebasen.
+            </p>
+            <ul class="fineprint">
+              <li>Architektur &amp; technische Entscheidungen</li>
+              <li>Refactoring, Qualität, Tests, Performance</li>
+              <li>APIs, Datenflüsse, Automationen</li>
+            </ul>
+            <div class="chips" aria-label="Schwerpunkte">
+              <span class="chip">Engineering</span>
+              <span class="chip">Codequalität</span>
+              <span class="chip">Prototyping</span>
+            </div>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary class="service-summary">
+            <div>
+              <strong>Prototyping &amp; Interdisziplinär</strong>
+              <p class="fineprint">Schnell sichtbar machen, testen, iterieren.</p>
+            </div>
+            <span class="service-chevron" aria-hidden="true">⌄</span>
+          </summary>
+          <div class="service-body">
+            <p class="fineprint">
+              Von der Idee zur greifbaren Version: Prototypen, Experimente, UI-Flows, kleine Demos oder methodische
+              Vorstudien.
+            </p>
+            <ul class="fineprint">
+              <li>Rapid Prototyping (Tech + Konzept)</li>
+              <li>Iteration mit Feedback-Schleifen</li>
+              <li>Dokumentation &amp; Übergabe</li>
+            </ul>
+            <div class="chips" aria-label="Schwerpunkte">
+              <span class="chip">MVP</span>
+              <span class="chip">UX-Flows</span>
+              <span class="chip">Experiment</span>
+            </div>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary class="service-summary">
+            <div>
+              <strong>Analyse &amp; Struktur</strong>
+              <p class="fineprint">Einordnen, klären, entscheiden — mit nachvollziehbarer Methodik.</p>
+            </div>
+            <span class="service-chevron" aria-hidden="true">⌄</span>
+          </summary>
+          <div class="service-body">
+            <p class="fineprint">
+              Analytische Unterstützung bei komplexen Fragen, Problemräumen und Entscheidungsfindung.
+            </p>
+            <ul class="fineprint">
+              <li>Requirements, Zielkonflikte, Risiken</li>
+              <li>System-/Stakeholder-Analyse</li>
+              <li>Bewertung von Optionen &amp; Trade-offs</li>
+            </ul>
+            <div class="chips" aria-label="Schwerpunkte">
+              <span class="chip">Methodik</span>
+              <span class="chip">Entscheidungen</span>
+              <span class="chip">Struktur</span>
+            </div>
+          </div>
+        </details>
+
+        <details class="service-item">
+          <summary class="service-summary">
+            <div>
+              <strong>Consulting &amp; Begleitung</strong>
+              <p class="fineprint">Reflexiv, lösungsorientiert, mit klarer Abgrenzung.</p>
+            </div>
+            <span class="service-chevron" aria-hidden="true">⌄</span>
+          </summary>
+          <div class="service-body">
+            <p class="fineprint">
+              Unterstützung bei Orientierung, Arbeitsprozessen und Umsetzung — je nach Kontext als Sparring, Review oder
+              punktuelle Begleitung.
+            </p>
+            <ul class="fineprint">
+              <li>Sparring zu Vorgehen, Prioritäten, nächsten Schritten</li>
+              <li>Review von Konzepten/Entwürfen</li>
+              <li>Kommunikation &amp; Schnittstellen</li>
+            </ul>
+            <div class="chips" aria-label="Schwerpunkte">
+              <span class="chip">Sparring</span>
+              <span class="chip">Review</span>
+              <span class="chip">Begleitung</span>
+            </div>
+          </div>
+        </details>
+      </div>
+
+      <p class="fineprint" style="margin-top:12px;">
+        Hinweis: Inhalte sind bewusst kompakt. Details klären wir am besten im Erstkontakt.
+      </p>
+    </section>
+
+    <!-- KALENDER (kept) -->
+    <section class="section" aria-labelledby="calendar-title">
+      <div class="section-head" style="display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap;">
+        <h2 id="calendar-title" style="margin:0;">Kalender</h2>
+        <p class="fineprint" style="margin:0;">Klick auf ein Datum → relevante Projekte / Termine</p>
+      </div>
+
+      <div class="card" style="padding: 16px;">
+        <div style="display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+          <div>
+            <strong id="cal-month-label">Monat</strong>
+            <div class="fineprint" id="cal-hint" style="margin-top:4px;">Termine werden geladen…</div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <button class="button button-secondary" type="button" id="cal-prev">←</button>
+            <button class="button button-secondary" type="button" id="cal-today">Heute</button>
+            <button class="button button-secondary" type="button" id="cal-next">→</button>
+          </div>
+        </div>
+
+        <div id="cal-grid" style="margin-top:12px;"></div>
+
+        <div id="cal-panel" class="card" style="margin-top:12px; padding:12px; display:none;">
+          <div style="display:flex; justify-content:space-between; gap:12px; align-items:baseline;">
+            <strong id="cal-panel-title">Datum</strong>
+            <button class="button button-secondary" type="button" id="cal-panel-close">Schließen</button>
+          </div>
+          <div id="cal-panel-body" style="margin-top:10px;"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE & PRÄSENZ (kept) -->
+    <section class="section" aria-labelledby="profiles">
+      <h2 id="profiles">Profile &amp; Präsenz</h2>
+
+      <div class="cards">
+        <article class="card">
+          <h3>LinkedIn</h3>
+          <p class="fineprint">Berufliches Profil, Laufbahn, öffentliche Einordnung.</p>
+          <p>
+            <a href="https://www.linkedin.com/in/bettina-lohr-215756337" target="_blank" rel="noopener">
+              linkedin.com/in/bettina-lohr
+            </a>
+          </p>
+          <img
+            src="/img/qr-code linkedin.png"
+            alt="QR-Code zum LinkedIn-Profil von Bettina Lohr"
+            loading="lazy"
+            style="max-width:180px; margin-top:10px;"
+          />
+        </article>
+
+        <article class="card">
+          <h3>Contra</h3>
+          <p class="fineprint">Freelance-Profil (AR/VR, Mobile, Engineering).</p>
+          <p>
+            <a
+              href="https://contra.com/lohr_bettina_68155kak/work?r=lohr_bettina_68155kak"
+              target="_blank"
+              rel="noopener"
+            >
+              contra.com/lohr_bettina
+            </a>
+          </p>
+          <img
+            src="/img/qr-code contra.png"
+            alt="QR-Code zum Contra-Profil von Bettina Lohr"
+            loading="lazy"
+            style="max-width:180px; margin-top:10px;"
+          />
+          <p class="fineprint" style="margin-top:10px;">
+            ✦ Featured auf Contra:
+            <a
+              href="https://contra.com/hire/german-speaking-mobile-engineers?featuredUserProfileId=WyJVc2VyUHJvZmlsZSIsMzU0ODE0ODRd"
+              target="_blank"
+              rel="noopener"
+            >
+              „Best German-speaking freelance mobile engineers to hire (2026)“
+            </a>
+          </p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Kontakt (kept) -->
+    <section class="section" aria-labelledby="contact">
+      <h2 id="contact">Kontakt</h2>
+
+      <p class="fineprint">
+        E-Mail: <a data-email-link href="#">anfrage[[at]]weichware-lohr.de</a>
+      </p>
+
+      <form class="form" data-contact-form>
+        <div class="field" style="position:absolute; left:-9999px;" aria-hidden="true">
+          <label for="company-home-contact">Company</label>
+          <input id="company-home-contact" name="company" autocomplete="off" tabindex="-1" />
+        </div>
+
+        <div class="field">
+          <label for="contact-name">Name</label>
+          <input id="contact-name" name="name" autocomplete="name" required />
+        </div>
+
+        <div class="field">
+          <label for="contact-message">Nachricht</label>
+          <textarea
+            id="contact-message"
+            name="message"
+            rows="6"
+            required
+            placeholder="Worum geht’s?"
+          ></textarea>
+        </div>
+
+        <div class="field checkbox">
+          <input id="contact-consent" name="consent" type="checkbox" required />
+          <label for="contact-consent">Ich stimme zu, dass meine Daten zur Beantwortung meiner Anfrage verwendet werden.</label>
+        </div>
+
+        <p class="fineprint">
+          Siehe <a href="/regulation/privacy/">Datenschutz</a>, <a href="/regulation/cookies/">Cookies</a>, <a href="/regulation/imprint/">Impressum</a>.
+        </p>
+
+        <button class="button" type="submit">E-Mail-Entwurf öffnen</button>
+
+        <p class="fineprint" data-contact-hint style="margin-top:10px; opacity:0.9;"></p>
+      </form>
+    </section>
+
+    <!-- HINWEISE -->
+    <section class="note-block">
+      <h2>Hinweise (Geltungsbereich)</h2>
+      <p class="fineprint">
+        Diese Website enthält professionelle Dienstleistungen und Informationsangebote.
+        Nichts hiervon stellt Rechtsberatung, medizinische Behandlung oder Psychotherapie dar.
+        Coaching / Seelsorge / Unterstützungsarbeit erfolgt außerhalb regulierter medizinischer
+        Rahmen, sofern nicht ausdrücklich anders angegeben.
+        Politische Analysen beruhen auf methodischer Bewertung und können Unsicherheiten enthalten.
+      </p>
+      <p class="fineprint">
+        Teile von Workflows oder Entwürfen können KI-unterstützt sein; Ergebnisse werden geprüft,
+        dennoch sind Fehler möglich.
+      </p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Weichware Lohr</p>
+    <ul class="footer-links">
+      <li><a href="/regulation/privacy/">Datenschutz</a></li>
+      <li><a href="/regulation/cookies/">Cookies</a></li>
+      <li><a href="/regulation/imprint/">Impressum</a></li>
+    </ul>
+  </footer>
+
+  <script src="/assets/site.js" defer></script>
+
+  <!-- Calendar script (unchanged) -->
+  <script>
+(async function () {
+  const grid = document.getElementById("cal-grid");
+  if (!grid) return;
+
+  const monthLabel = document.getElementById("cal-month-label");
+  const hint = document.getElementById("cal-hint");
+  const panel = document.getElementById("cal-panel");
+  const panelTitle = document.getElementById("cal-panel-title");
+  const panelBody = document.getElementById("cal-panel-body");
+
+  const btnPrev = document.getElementById("cal-prev");
+  const btnNext = document.getElementById("cal-next");
+  const btnToday = document.getElementById("cal-today");
+  const btnClose = document.getElementById("cal-panel-close");
+
+  function ymd(d) {
+    const y = d.getFullYear();
+    const m = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${y}-${m}-${day}`;
+  }
+
+  function startOfMonth(d) { return new Date(d.getFullYear(), d.getMonth(), 1); }
+  function endOfMonth(d) { return new Date(d.getFullYear(), d.getMonth() + 1, 0); }
+
+  function monthName(d) {
+    return d.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+  }
+
+  function escapeHtml(s) {
+    return (s || "").toString()
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;");
+  }
+
+  let events = [];
+  let cursor = new Date();
+
+  try {
+    const res = await fetch("/assets/calendar/calendar-index.json");
+    if (!res.ok) throw new Error("calendar-index.json missing");
+    const data = await res.json();
+    events = Array.isArray(data.items) ? data.items : [];
+    hint.textContent = events.length ? "Markierte Tage haben Termine." : "Noch keine Termine.";
+  } catch {
+    events = [];
+    hint.textContent = "Kalender konnte nicht geladen werden (calendar-index.json fehlt).";
+  }
+
+  const byDate = new Map();
+  for (const e of events) {
+    const k = String(e.date || "");
+    if (!k) continue;
+    if (!byDate.has(k)) byDate.set(k, []);
+    byDate.get(k).push(e);
+  }
+
+  function openPanel(dateStr) {
+    const list = byDate.get(dateStr) || [];
+    panelTitle.textContent = dateStr;
+
+    if (!list.length) {
+      panelBody.innerHTML = `<p class="fineprint" style="margin:0;">Keine Termine.</p>`;
+      panel.style.display = "block";
+      return;
+    }
+
+    const html = list.map(ev => {
+      const projects = Array.isArray(ev.projects) ? ev.projects : [];
+      const projectLinks = projects.map(slug => {
+        return `<a href="/webpages/projects/?open=${encodeURIComponent(slug)}#entries-title">${escapeHtml(slug)}</a>`;
+      }).join(", ");
+
+      const where = ev.where ? `<div class="fineprint">Ort: ${escapeHtml(ev.where)}</div>` : "";
+      const note = ev.note ? `<div class="fineprint">${escapeHtml(ev.note)}</div>` : "";
+
+      return `
+        <div class="card" style="padding:12px; margin-bottom:10px;">
+          <strong>${escapeHtml(ev.title || "Termin")}</strong>
+          ${where}
+          ${note}
+          ${projectLinks ? `<div class="fineprint" style="margin-top:6px;">Projekt: ${projectLinks}</div>` : ""}
+        </div>
+      `;
+    }).join("");
+
+    panelBody.innerHTML = html;
+    panel.style.display = "block";
+  }
+
+  function renderMonth() {
+    const first = startOfMonth(cursor);
+    const last = endOfMonth(cursor);
+
+    monthLabel.textContent = monthName(cursor);
+
+    const header = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+    let html = `
+      <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:6px;">
+        ${header.map(h => `<div class="fineprint" style="text-align:center; opacity:.8;">${h}</div>`).join("")}
+    `;
+
+    const startDay = (first.getDay() + 6) % 7;
+    const totalDays = last.getDate();
+
+    for (let i = 0; i < startDay; i++) html += `<div></div>`;
+
+    const todayStr = ymd(new Date());
+
+    for (let day = 1; day <= totalDays; day++) {
+      const d = new Date(cursor.getFullYear(), cursor.getMonth(), day);
+      const key = ymd(d);
+      const has = byDate.has(key);
+      const isToday = key === todayStr;
+
+      html += `
+        <button type="button"
+          data-date="${key}"
+          style="
+            padding:10px 8px;
+            border-radius:12px;
+            border:1px solid currentColor;
+            background:transparent;
+            cursor:pointer;
+            opacity:${has ? 1 : 0.65};
+            position:relative;
+            text-align:left;
+            min-height:44px;
+          "
+          aria-label="${key}${has ? " (Termine vorhanden)" : ""}"
+        >
+          <div style="display:flex; justify-content:space-between; align-items:baseline;">
+            <strong>${day}</strong>
+            ${isToday ? `<span class="fineprint">heute</span>` : ``}
+          </div>
+          ${has ? `<div style="position:absolute; right:10px; bottom:10px; width:8px; height:8px; border-radius:999px; border:1px solid currentColor;"></div>` : ``}
+        </button>
+      `;
+    }
+
+    html += `</div>`;
+    grid.innerHTML = html;
+
+    grid.querySelectorAll("button[data-date]").forEach(btn => {
+      btn.addEventListener("click", () => openPanel(btn.dataset.date));
+    });
+  }
+
+  btnPrev?.addEventListener("click", () => { cursor = new Date(cursor.getFullYear(), cursor.getMonth() - 1, 1); renderMonth(); });
+  btnNext?.addEventListener("click", () => { cursor = new Date(cursor.getFullYear(), cursor.getMonth() + 1, 1); renderMonth(); });
+  btnToday?.addEventListener("click", () => { cursor = new Date(); renderMonth(); });
+  btnClose?.addEventListener("click", () => { panel.style.display = "none"; });
+
+  renderMonth();
+})();
+  </script>
+
+  <!-- Removed the entire project carousel script block -->
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    (function () {
+      const TO = ["anfrage", "weichware-lohr.de"].join("@");
+
+      const emailLink = document.querySelector("[data-email-link]");
+      if (emailLink) {
+        emailLink.href = "mailto:" + TO;
+        emailLink.textContent = "anfrage[[at]]weichware-lohr.de";
+      }
+
+      const form = document.querySelector("[data-contact-form]");
+      if (!form) return;
+
+      const hint = form.querySelector("[data-contact-hint]");
+
+      function buildMailto(fd) {
+        const name = (fd.get("name") || "").toString().trim();
+        const message = (fd.get("message") || "").toString().trim();
+
+        const CRLF = "\r\n";
+        const body = [
+          "Hallo Frau Lohr",
+          "",
+          message || "—",
+          "",
+          "Mit freundlichen Grüßen,",
+          name || "—"
+        ].join(CRLF);
+
+        const subject = "[Website] Kontaktanfrage";
+
+        return { to: TO, subject, body };
+      }
+
+      function openMailto({ to, subject, body }) {
+        const normalizedBody = String(body || "")
+          .replace(/\r\n/g, "\n")
+          .replace(/\r/g, "\n")
+          .replace(/\n/g, "\r\n");
+
+        const mailto =
+          `mailto:${encodeURIComponent(to)}` +
+          `?subject=${encodeURIComponent(subject || "")}` +
+          `&body=${encodeURIComponent(normalizedBody)}`;
+
+        const a = document.createElement("a");
+        a.href = mailto;
+        a.style.display = "none";
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const honey = form.querySelector('input[name="company"]');
+        if (honey && honey.value.trim() !== "") return;
+
+        if (!form.reportValidity()) {
+          if (hint) hint.textContent = "Bitte Name, Nachricht und Zustimmung ausfüllen.";
+          return;
+        }
+
+        const fd = new FormData(form);
+        const mail = buildMailto(fd);
+        openMailto(mail);
+
+        if (hint) {
+          hint.textContent = "E-Mail-Entwurf sollte geöffnet sein. Falls nicht: Mail-App/Handler (mailto:) im System/Browser einrichten.";
+        }
+
+        form.reset();
+      });
+    })();
+  </script>
+</body>
+</html>

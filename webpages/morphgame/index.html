@@ -6,10 +6,37 @@
     <title>Unity WebGL Player | morph</title>
     <link rel="shortcut icon" href="TemplateData/favicon.ico">
     <link rel="stylesheet" href="TemplateData/style.css">
+
+    
+<style>
+  html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+  }
+
+  #unity-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+  }
+
+  #unity-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* Optional: hide Unity footer inside embeds (removes extra height / scroll) */
+  #unity-footer { display: none; }
+</style>
+
   </head>
   <body>
     <div id="unity-container" class="unity-desktop">
-      <canvas id="unity-canvas" width=960 height=600></canvas>
+<canvas id="unity-canvas"></canvas>
       <div id="unity-loading-bar">
         <div id="unity-logo"></div>
         <div id="unity-progress-bar-empty">
@@ -75,29 +102,32 @@
       // the canvas DOM size and WebGL render target sizes yourself.
       // config.matchWebGLToCanvasSize = false;
 
-      if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        // Mobile device style: fill the whole browser client area with the game canvas:
+      // Make the canvas always fill the container (works in iframes + responsive layouts)
+function resizeCanvasToContainer() {
+  // Use the container's content box size
+  const rect = container.getBoundingClientRect();
+  canvas.style.width = rect.width + "px";
+  canvas.style.height = rect.height + "px";
+}
 
-        var meta = document.createElement('meta');
-        meta.name = 'viewport';
-        meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
-        document.getElementsByTagName('head')[0].appendChild(meta);
-        container.className = "unity-mobile";
+if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+  // Keep Unity's mobile viewport meta (helps on mobile browsers)
+  var meta = document.createElement('meta');
+  meta.name = 'viewport';
+  meta.content = 'width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, shrink-to-fit=yes';
+  document.getElementsByTagName('head')[0].appendChild(meta);
 
-        // To lower canvas resolution on mobile devices to gain some
-        // performance, uncomment the following line:
-        // config.devicePixelRatio = 1;
+  container.className = "unity-mobile";
 
-        canvas.style.width = window.innerWidth + 'px';
-        canvas.style.height = window.innerHeight + 'px';
+  // OPTIONAL: remove this warning; your build works on many mobile browsers
+  // unityShowBanner('WebGL builds are not supported on mobile devices.');
+} else {
+  container.className = "unity-desktop";
+}
 
-        unityShowBanner('WebGL builds are not supported on mobile devices.');
-      } else {
-        // Desktop style: Render the game canvas in a window that can be maximized to fullscreen:
+resizeCanvasToContainer();
+window.addEventListener("resize", resizeCanvasToContainer);
 
-        canvas.style.width = "960px";
-        canvas.style.height = "600px";
-      }
 
       loadingBar.style.display = "block";
 

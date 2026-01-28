@@ -127,6 +127,23 @@
       font-size: 0.9em;
       opacity: 0.9;
     }
+    .unity-embed{
+  width:100%;
+  max-width:960px;
+  margin:0 auto;           /* centers the card */
+  border-radius:16px;
+  overflow:hidden;         /* kills inner scrollbars visually */
+  background:#000;
+}
+
+/* Make the iframe fill the card exactly */
+.unity-frame{
+  display:block;
+  width:100%;
+  aspect-ratio:16 / 9;
+  border:0;
+}
+
   </style>
 </head>
 
@@ -189,21 +206,16 @@ und Paare begleiten. Dabei fließen – je nach Anliegen – sowohl weibliche al
     style="max-width:100%; border-radius:16px;"
   ></iframe>
 
-  <div style="margin-top:24px; text-align:center;">
+<div class="unity-embed" style="margin-top:24px;">
   <iframe
+    class="unity-frame"
     src="/webpages/morphgame/"
     title="Morphology Handytool"
-    style="
-      width:100%;
-      max-width:960px;
-      aspect-ratio:16 / 9;
-      border:0;
-      border-radius:16px;
-      background:#000;
-    "
     loading="lazy"
+    allow="fullscreen"
   ></iframe>
 </div>
+
 
 </div>
 

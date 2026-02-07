@@ -3,9 +3,16 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   const host = url.hostname;
 
-  // TEMP DEBUG (put first)
-  if (host === "publish-lohr.com" || host === "www.publish-lohr.com") {
-    return new Response("middleware-hit", { status: 200 });
+  if (host === "publish-lohr.com") {
+    const targetBase = "/webpages/teaser/teaser-publish";
+
+    if (url.pathname === "/" || url.pathname === "") {
+      url.pathname = `${targetBase}/`;
+    } else {
+      url.pathname = `${targetBase}${url.pathname}`;
+    }
+
+    return fetch(new Request(url.toString(), request));
   }
 
   return next();

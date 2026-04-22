@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISO 27001 – Zertifizierung | Helm & Walter</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+ 
+  <script>
+// Add at the very TOP of the existing <script> block:
+const API_BASE = '';
+
+const DOC_MAP = {
+  'row-risikoanalyse':  'risikoanalyse',
+  'row-soa':            'soa',
+  'row-rtp':            'risikobehandlungsplan',
+  'row-richtlinie':     'sicherheitsrichtlinie',
+  'row-assets':         'asset-verzeichnis',
+  'row-rollen':         'rollen-verantwortlichkeiten',
+  'row-intaudit':       'internes-audit-bericht',
+  'row-s1bericht':      'stage1-auditbericht',
+  'row-s2bericht':      'stage2-auditbericht',
+  'row-korrektur':      'korrekturmassnahmen',
+  'row-zertifikat':     'zertifikat-iso27001',
+  'row-aenderungen':    'isms-aenderungsprotokoll',
+  'row-soa-re':         'soa-aktuell',
+  'row-risk-re':        'risikoanalyse-aktuell',
+  'row-re-bericht':     'rezertifizierung-bericht',
+  'row-re-zertifikat':  'zertifikat-iso27001-neu',
+};
+
+async function loadDocs() {
+  const res = await fetch(`${API_BASE}/api/docs`);
+  const groups = await res.json();
+  Object.entries(DOC_MAP).forEach(([rowId, docBase]) => {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+    const group = groups[docBase];
+    if (!group) return;
+    const metaDiv = row.querySelector('.task-meta');
+    metaDiv.innerHTML = '';
+    if (group.odt) {
+      metaDiv.innerHTML += `<a class="task-doc" href="/docs/${group.odt}" target="_blank"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg> ${group.odt}</a>`;
+    }
+    if (group.pdfs && group.pdfs.length > 0) {
+      metaDiv.innerHTML += `<a class="task-doc" href="/docs/${group.pdfs[0]}" target="_blank" style="color:var(--green);border-color:var(--green-dim);"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg> ${group.pdfs[0]}</a>`;
+    }
+    if (group.approval) {
+      const chk = row.querySelector('input[type="checkbox"]');
+      if (chk) { chk.checked = true; chk.disabled = true; }
+      row.classList.add('done');
+      const d = new Date(group.approval.timestamp);
+      const label = row.querySelector('.task-check label');
+      if (label) label.textContent = `✓ ${group.approval.role}`;
+      if (!metaDiv.querySelector('.approval-stamp')) {
+        metaDiv.insertAdjacentHTML('afterend', `<div class="approval-stamp" style="font-size:.72rem;color:var(--green);margin-top:4px;">Freigegeben von ${group.approval.approvedBy} (${group.approval.role}) · ${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE', {hour:'2-digit',minute:'2-digit'})}</div>`);
+      }
+    }
+  });
+}</script>
+  <style>
+    /* ── HW BRAND TOKENS ──────────────────────────────────────── */
+    :root {
+      --bg:          #0e1117;
+      --bg2:         #161b24;
+      --bg3:         #1d2330;
+      --border:      #2a3245;
+      --green:       #78c832;
+      --green-dim:   #4a7d1f;
+      --green-bg:    rgba(120,200,50,0.10);
+      --green-bg2:   rgba(120,200,50,0.18);
+      --text:        #e8edf5;
+      --text-muted:  #8a95a8;
+      --text-dim:    #5a6577;
+      --white:       #ffffff;
+      --red:         #e05252;
+      --radius:      10px;
+      --shadow:      0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ───────────────────────────────────────────────── */
+    header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 64px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--white);
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.15rem;
+    }
+    .logo-mark {
+      width: 32px; height: 32px; background: var(--green);
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-mark svg { width: 18px; height: 18px; }
+    .header-nav {
+      display: flex; align-items: center; gap: 6px;
+    }
+    .header-nav a {
+      color: var(--text-muted); text-decoration: none; font-size: 0.875rem;
+      padding: 6px 14px; border-radius: 6px; transition: all .18s;
+    }
+    .header-nav a:hover { color: var(--text); background: var(--bg3); }
+    .header-nav a.active {
+      color: var(--green); background: var(--green-bg);
+    }
+    .header-badge {
+      font-size: 0.7rem; font-weight: 600; letter-spacing: .04em;
+      background: var(--green-bg); color: var(--green);
+      border: 1px solid var(--green-dim);
+      padding: 2px 8px; border-radius: 20px; margin-left: 4px;
+    }
+
+    /* ── LAYOUT ───────────────────────────────────────────────── */
+    main { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+
+    /* ── HERO STRIP ───────────────────────────────────────────── */
+    .hero {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 2rem;
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .hero-text h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem; font-weight: 700;
+      line-height: 1.2; margin-bottom: .5rem;
+    }
+    .hero-text h1 span { color: var(--green); }
+    .hero-text p { color: var(--text-muted); font-size: .95rem; max-width: 520px; line-height: 1.6; }
+    .cycle-indicator {
+      flex-shrink: 0;
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem 1.5rem;
+      min-width: 220px;
+    }
+    .cycle-indicator .ci-label {
+      font-size: .72rem; text-transform: uppercase; letter-spacing: .08em;
+      color: var(--text-dim); margin-bottom: .75rem;
+    }
+    .cycle-dots {
+      display: flex; gap: 6px; align-items: center;
+    }
+    .cycle-dot {
+      height: 28px; border-radius: 4px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .72rem; font-weight: 600; letter-spacing: .03em;
+    }
+    .cycle-dot.cert { background: var(--green); color: #0e1117; padding: 0 10px; }
+    .cycle-dot.watch { background: var(--bg2); border: 1px solid var(--border); color: var(--text-muted); padding: 0 8px; font-size: .68rem; }
+    .cycle-dot.recert { background: var(--green-bg); border: 1px solid var(--green-dim); color: var(--green); padding: 0 10px; }
+    .cycle-arrow { color: var(--text-dim); font-size: .8rem; }
+
+    /* ── SECTION TABS ─────────────────────────────────────────── */
+    .section-tabs {
+      display: flex; gap: 4px; margin-bottom: 2rem;
+    }
+    .tab-btn {
+      padding: 8px 20px; border-radius: 8px; border: 1px solid var(--border);
+      background: var(--bg2); color: var(--text-muted);
+      font-family: 'DM Sans', sans-serif; font-size: .875rem; font-weight: 500;
+      cursor: pointer; transition: all .18s;
+    }
+    .tab-btn:hover { color: var(--text); border-color: var(--text-dim); }
+    .tab-btn.active { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── PHASE BLOCK ──────────────────────────────────────────── */
+    .phase {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .phase-header {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer; user-select: none;
+      transition: background .15s;
+    }
+    .phase-header:hover { background: var(--bg3); }
+    .phase-num {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--green); color: #0e1117;
+      font-weight: 700; font-size: .8rem;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .phase-num.muted {
+      background: var(--bg3); color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+    .phase-title {
+      flex: 1;
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 600; font-size: 1rem;
+    }
+    .phase-subtitle { color: var(--text-muted); font-size: .8rem; margin-top: 1px; }
+    .phase-toggle {
+      color: var(--text-dim); font-size: .75rem;
+      transition: transform .2s;
+    }
+    .phase-toggle.open { transform: rotate(180deg); }
+    .phase-body { padding: 1.5rem; display: none; }
+    .phase-body.open { display: block; }
+
+    /* ── TASK ROW ─────────────────────────────────────────────── */
+    .task-list { display: flex; flex-direction: column; gap: .75rem; }
+    .task-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: .75rem; align-items: center;
+      padding: .875rem 1.1rem;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; transition: border-color .15s;
+    }
+    .task-row:hover { border-color: var(--text-dim); }
+    .task-row.done { border-color: var(--green-dim); background: rgba(120,200,50,0.04); }
+    .task-info { min-width: 0; }
+    .task-name {
+      font-size: .9rem; font-weight: 500; margin-bottom: 3px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .task-meta { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+    .task-doc {
+      font-size: .78rem; color: var(--text-muted);
+      text-decoration: none;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 4px;
+      border: 1px solid var(--border); background: var(--bg2);
+      transition: all .15s;
+    }
+    .task-doc:hover { border-color: var(--green); color: var(--green); }
+    .task-doc svg { flex-shrink: 0; }
+
+    /* ── RESPONSIBLE BADGE ────────────────────────────────────── */
+    .owner-badge {
+      font-size: .72rem; font-weight: 600;
+      background: var(--green-bg2); color: var(--green);
+      border: 1px solid var(--green-dim);
+      padding: 3px 9px; border-radius: 20px;
+      white-space: nowrap; flex-shrink: 0;
+    }
+
+    /* ── CHECKBOX ─────────────────────────────────────────────── */
+    .task-check {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 4px; flex-shrink: 0;
+    }
+    .task-check input[type="checkbox"] {
+      width: 20px; height: 20px; cursor: pointer;
+      accent-color: var(--green);
+      border-radius: 4px;
+    }
+    .task-check label {
+      font-size: .65rem; color: var(--text-dim);
+      text-align: center; white-space: nowrap;
+    }
+
+    /* ── META FIELDS ──────────────────────────────────────────── */
+    .meta-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .meta-field label {
+      display: block; font-size: .72rem; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--text-dim); margin-bottom: .4rem;
+    }
+    .meta-field input, .meta-field select {
+      width: 100%; padding: .5rem .75rem;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: .875rem;
+      outline: none; transition: border-color .15s;
+    }
+    .meta-field input:focus, .meta-field select:focus { border-color: var(--green); }
+
+    /* ── FINDINGS TABLE ───────────────────────────────────────── */
+    .findings-area {
+      margin-top: 1rem;
+    }
+    .findings-area .fa-label {
+      font-size: .75rem; text-transform: uppercase; letter-spacing: .07em;
+      color: var(--text-dim); margin-bottom: .5rem;
+    }
+    .findings-table {
+      width: 100%; border-collapse: collapse; font-size: .85rem;
+    }
+    .findings-table th {
+      text-align: left; padding: .5rem .75rem;
+      color: var(--text-dim); font-size: .72rem;
+      text-transform: uppercase; letter-spacing: .07em;
+      border-bottom: 1px solid var(--border);
+    }
+    .findings-table td {
+      padding: .6rem .75rem; border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .findings-table tr:last-child td { border-bottom: none; }
+    .severity {
+      font-size: .7rem; font-weight: 600; padding: 2px 7px;
+      border-radius: 4px; white-space: nowrap;
+    }
+    .sev-minor  { background: rgba(255,200,50,.12); color: #ffd84a; border: 1px solid rgba(255,200,50,.3); }
+    .sev-major  { background: rgba(224,82,82,.12);  color: var(--red); border: 1px solid rgba(224,82,82,.3); }
+    .sev-obs    { background: rgba(100,160,255,.1); color: #6eb0ff; border: 1px solid rgba(100,160,255,.3); }
+    .sev-open   { background: rgba(255,200,50,.12); color: #ffd84a; border: 1px solid rgba(255,200,50,.3); }
+    .sev-closed { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-dim); }
+
+    /* ── ADD ROW BUTTON ───────────────────────────────────────── */
+    .add-btn {
+      margin-top: .75rem; padding: 6px 14px;
+      background: transparent; border: 1px dashed var(--border);
+      color: var(--text-dim); border-radius: 6px;
+      font-size: .8rem; cursor: pointer; transition: all .15s;
+    }
+    .add-btn:hover { border-color: var(--green); color: var(--green); }
+
+    /* ── SAVE BAR ─────────────────────────────────────────────── */
+    .save-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--bg2); border-top: 1px solid var(--border);
+      padding: .75rem 2rem;
+      display: flex; justify-content: flex-end; align-items: center;
+      gap: 1rem; z-index: 200;
+    }
+    .save-note { font-size: .8rem; color: var(--text-dim); }
+    .btn-save {
+      background: var(--green); color: #0e1117;
+      border: none; border-radius: 7px;
+      padding: .55rem 1.4rem; font-weight: 700; font-size: .875rem;
+      cursor: pointer; transition: opacity .15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-save:hover { opacity: .88; }
+    .btn-secondary {
+      background: transparent; color: var(--text-muted);
+      border: 1px solid var(--border); border-radius: 7px;
+      padding: .55rem 1.2rem; font-size: .875rem;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all .15s;
+    }
+    .btn-secondary:hover { border-color: var(--text-dim); color: var(--text); }
+
+    /* ── RESPONSIVE ───────────────────────────────────────────── */
+    @media (max-width: 700px) {
+      .hero { flex-direction: column; }
+      .task-row { grid-template-columns: 1fr; }
+      .task-check { flex-direction: row; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <a href="https://helmundwalter.de" class="logo" target="_blank" rel="noopener">
+      <div class="logo-mark">
+        <!-- H&W shield icon -->
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 2L3 5.5V10c0 4 3.1 7.3 7 8 3.9-.7 7-4 7-8V5.5L10 2z" fill="#0e1117"/>
+        </svg>
+      </div>
+      Helm &amp; Walter
+    </a>
+    <nav class="header-nav">
+      <a href="https://helmundwalter.de" target="_blank" rel="noopener">helmundwalter.de ↗</a>
+      <a href="../zerti/" class="active">Zertifizierung <span class="header-badge">ISO 27001</span></a>
+      <a href="../ueberwachung/">Überwachung</a>
+    </nav>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main>
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-text">
+      <h1>ISO 27001<br/><span>Zertifizierungs&shy;audit</span></h1>
+      <p>Erstzertifizierung (Stage 1 + Stage 2) sowie Rezertifizierung nach Ablauf des 3-jährigen Zyklus. Dokumente, Findings und Verantwortlichkeiten zentral erfasst.</p>
+    </div>
+    <div class="cycle-indicator">
+      <div class="ci-label">3-Jahres-Zyklus</div>
+      <div class="cycle-dots">
+        <div class="cycle-dot cert">Erst&shy;zerti</div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-dot watch">Ü1</div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-dot watch">Ü2</div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-dot recert">Re&shy;zerti</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="section-tabs">
+    <button class="tab-btn active" onclick="switchTab('erst')">Erstzertifizierung</button>
+    <button class="tab-btn" onclick="switchTab('rezerti')">Rezertifizierung</button>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════
+       TAB: ERSTZERTIFIZIERUNG
+  ══════════════════════════════════════════════════════════ -->
+  <div id="tab-erst" class="tab-panel active">
+
+    <!-- Phase 1: Stammdaten -->
+    <div class="phase">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div class="phase-num">1</div>
+        <div>
+          <div class="phase-title">Stammdaten &amp; Scope</div>
+          <div class="phase-subtitle">Grundinformationen zum Zertifizierungsverfahren</div>
+        </div>
+        <div class="phase-toggle">▼</div>
+      </div>
+      <div class="phase-body open">
+        <div class="meta-grid">
+          <div class="meta-field"><label>Zertifizierungsstelle</label><input type="text" placeholder="z.B. TÜV, DEKRA, BSI…" /></div>
+          <div class="meta-field"><label>Auditor</label><input type="text" placeholder="Name des Auditors" /></div>
+          <div class="meta-field"><label>ISMS-Scope (Klausel 4.3)</label><input type="text" placeholder="Geltungsbereich" /></div>
+          <div class="meta-field"><label>Zertifikat gültig bis</label><input type="date" /></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2: Vorbereitung -->
+    <div class="phase">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div class="phase-num">2</div>
+        <div>
+          <div class="phase-title">Vorbereitung</div>
+          <div class="phase-subtitle">Kerndokumente &amp; interne Audits vor Stage 1</div>
+        </div>
+        <div class="phase-toggle">▼</div>
+      </div>
+      <div class="phase-body open">
+        <div class="task-list">
+
+          <div class="task-row" id="row-risikoanalyse">
+            <div class="task-info">
+              <div class="task-name">Risikoanalyse &amp; Schwachstellenanalyse</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/risikoanalyse.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  risikoanalyse.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-risikoanalyse" onchange="markDone(this,'row-risikoanalyse')" />
+              <label for="chk-risikoanalyse">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="row-soa">
+            <div class="task-info">
+              <div class="task-name">Statement of Applicability (SoA) / Anwendbarkeitserklärung</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/soa.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  soa.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-soa" onchange="markDone(this,'row-soa')" />
+              <label for="chk-soa">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="row-rtp">
+            <div class="task-info">
+              <div class="task-name">Risikobehandlungsplan (RTP)</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/risikobehandlungsplan.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  risikobehandlungsplan.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-rtp" onchange="markDone(this,'row-rtp')" />
+              <label for="chk-rtp">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="row-richtlinie">
+            <div class="task-info">
+              <div class="task-name">Informationssicherheitsrichtlinie</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/sicherheitsrichtlinie.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  sicherheitsrichtlinie.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">GF</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-richtlinie" onchange="markDone(this,'row-richtlinie')" />
+              <label for="chk-richtlinie">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="row-assets">
+            <div class="task-info">
+              <div class="task-name">Asset-Verzeichnis</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/asset-verzeichnis.xlsx" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  asset-verzeichnis.xlsx
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">IT-Leitung</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-assets" onchange="markDone(this,'row-assets')" />
+              <label for="chk-assets">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="row-rollen">
+            <div class="task-info">
+              <div class="task-name">Rollen &amp; Verantwortlichkeiten (ISMS-Organisation)</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/rollen-verantwortlichkeiten.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  rollen-verantwortlichkeiten.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">GF</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-rollen" onchange="markDone(this,'row-rollen')" />
+              <label for="chk-rollen">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="row-intaudit">
+            <div class="task-info">
+              <div class="task-name">Internes Voraudit (Bericht)</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/internes-audit-bericht.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  internes-audit-bericht.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-intaudit" onchange="markDone(this,'row-intaudit')" />
+              <label for="chk-intaudit">Eingereicht</label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3: Stage 1 -->
+    <div class="phase">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div class="phase-num">3</div>
+        <div>
+          <div class="phase-title">Stage 1 – Dokumentenprüfung</div>
+          <div class="phase-subtitle">Bereitschaftsanalyse durch den externen Auditor</div>
+        </div>
+        <div class="phase-toggle">▼</div>
+      </div>
+      <div class="phase-body open">
+        <div class="meta-grid">
+          <div class="meta-field"><label>Datum Stage 1</label><input type="date" /></div>
+          <div class="meta-field"><label>Auditor</label><input type="text" placeholder="Name" /></div>
+          <div class="meta-field"><label>Ergebnis</label>
+            <select>
+              <option value="">– auswählen –</option>
+              <option>Zertifizierungsreif (Stage 2 freigegeben)</option>
+              <option>Bedingt zertifizierungsreif (Nacharbeit erforderlich)</option>
+              <option>Nicht zertifizierungsreif</option>
+            </select>
+          </div>
+        </div>
+        <div class="task-list">
+          <div class="task-row" id="row-s1bericht">
+            <div class="task-info">
+              <div class="task-name">Stage 1 Auditbericht</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/stage1-auditbericht.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  stage1-auditbericht.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-s1bericht" onchange="markDone(this,'row-s1bericht')" />
+              <label for="chk-s1bericht">Eingereicht</label>
+            </div>
+          </div>
+        </div>
+        <div class="findings-area">
+          <div class="fa-label">Offene Punkte Stage 1</div>
+          <table class="findings-table" id="findings-s1">
+            <thead>
+              <tr><th>Beschreibung</th><th>Schwere</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="text" placeholder="Finding beschreiben…" style="background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;width:100%;outline:none;" /></td>
+                <td>
+                  <select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;">
+                    <option>Minor</option><option>Major</option><option>Observation</option>
+                  </select>
+                </td>
+                <td>
+                  <select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;">
+                    <option>Offen</option><option>In Bearbeitung</option><option>Geschlossen</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="add-btn" onclick="addFindingRow('findings-s1')">+ Finding hinzufügen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 4: Stage 2 -->
+    <div class="phase">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div class="phase-num">4</div>
+        <div>
+          <div class="phase-title">Stage 2 – Implementierungsaudit</div>
+          <div class="phase-subtitle">Vor-Ort-Prüfung Wirksamkeit des ISMS</div>
+        </div>
+        <div class="phase-toggle">▼</div>
+      </div>
+      <div class="phase-body open">
+        <div class="meta-grid">
+          <div class="meta-field"><label>Datum Stage 2</label><input type="date" /></div>
+          <div class="meta-field"><label>Dauer (Tage)</label><input type="number" placeholder="z.B. 3" min="1" /></div>
+          <div class="meta-field"><label>Ergebnis</label>
+            <select>
+              <option value="">– auswählen –</option>
+              <option>Empfehlung zur Zertifizierung</option>
+              <option>Empfehlung mit Auflagen</option>
+              <option>Keine Empfehlung</option>
+            </select>
+          </div>
+        </div>
+        <div class="task-list">
+          <div class="task-row" id="row-s2bericht">
+            <div class="task-info">
+              <div class="task-name">Stage 2 Auditbericht</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/stage2-auditbericht.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  stage2-auditbericht.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-s2bericht" onchange="markDone(this,'row-s2bericht')" />
+              <label for="chk-s2bericht">Eingereicht</label>
+            </div>
+          </div>
+          <div class="task-row" id="row-korrektur">
+            <div class="task-info">
+              <div class="task-name">Korrekturmaßnahmenplan</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/korrekturmassnahmen.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  korrekturmassnahmen.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-korrektur" onchange="markDone(this,'row-korrektur')" />
+              <label for="chk-korrektur">Eingereicht</label>
+            </div>
+          </div>
+        </div>
+        <div class="findings-area">
+          <div class="fa-label">Findings Stage 2</div>
+          <table class="findings-table" id="findings-s2">
+            <thead>
+              <tr><th>Beschreibung</th><th>Schwere</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type="text" placeholder="Finding beschreiben…" style="background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;width:100%;outline:none;" /></td>
+                <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Minor</option><option>Major</option><option>Observation</option></select></td>
+                <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Offen</option><option>In Bearbeitung</option><option>Geschlossen</option></select></td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="add-btn" onclick="addFindingRow('findings-s2')">+ Finding hinzufügen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 5: Zertifikat -->
+    <div class="phase">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div class="phase-num">5</div>
+        <div>
+          <div class="phase-title">Zertifikatserteilung</div>
+          <div class="phase-subtitle">Zertifikat &amp; Gültigkeitsdaten</div>
+        </div>
+        <div class="phase-toggle">▼</div>
+      </div>
+      <div class="phase-body open">
+        <div class="meta-grid">
+          <div class="meta-field"><label>Ausstellungsdatum</label><input type="date" /></div>
+          <div class="meta-field"><label>Gültig bis</label><input type="date" /></div>
+        </div>
+        <div class="task-list">
+          <div class="task-row" id="row-zertifikat">
+            <div class="task-info">
+              <div class="task-name">ISO 27001 Zertifikat</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/zertifikat-iso27001.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  zertifikat-iso27001.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">GF</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-zertifikat" onchange="markDone(this,'row-zertifikat')" />
+              <label for="chk-zertifikat">Archiviert</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-erst -->
+
+
+  <!-- ══════════════════════════════════════════════════════════
+       TAB: REZERTIFIZIERUNG
+  ══════════════════════════════════════════════════════════ -->
+  <div id="tab-rezerti" class="tab-panel">
+
+    <div style="background:var(--green-bg);border:1px solid var(--green-dim);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.5rem;font-size:.875rem;color:var(--green);">
+      ℹ️ Die Rezertifizierung <strong>überschreibt</strong> diesen Tab. Vorherige Auditwerte werden durch die aktuellen Ergebnisse ersetzt. Überwachungsaudits (Ü1 / Ü2) werden separat auf der <a href="../ueberwachung/" style="color:var(--green);font-weight:600;">Überwachungsseite</a> angehängt.
+    </div>
+
+    <div class="phase">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div class="phase-num">1</div>
+        <div>
+          <div class="phase-title">Stammdaten Rezertifizierung</div>
+          <div class="phase-subtitle">Neuer 3-Jahres-Zyklus</div>
+        </div>
+        <div class="phase-toggle">▼</div>
+      </div>
+      <div class="phase-body open">
+        <div class="meta-grid">
+          <div class="meta-field"><label>Zertifizierungsstelle</label><input type="text" placeholder="z.B. TÜV, DEKRA…" /></div>
+          <div class="meta-field"><label>Auditor</label><input type="text" placeholder="Name" /></div>
+          <div class="meta-field"><label>Datum Rezertifizierung</label><input type="date" /></div>
+          <div class="meta-field"><label>Neues Zertifikat gültig bis</label><input type="date" /></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div class="phase-num">2</div>
+        <div>
+          <div class="phase-title">Wesentliche ISMS-Änderungen seit letztem Zyklus</div>
+          <div class="phase-subtitle">Scope-Änderungen, neue Standorte, IT-Änderungen, Personalwechsel</div>
+        </div>
+        <div class="phase-toggle">▼</div>
+      </div>
+      <div class="phase-body open">
+        <div class="task-list">
+          <div class="task-row" id="row-aenderungen">
+            <div class="task-info">
+              <div class="task-name">Änderungsprotokoll ISMS</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/isms-aenderungsprotokoll.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  isms-aenderungsprotokoll.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-aenderungen" onchange="markDone(this,'row-aenderungen')" />
+              <label for="chk-aenderungen">Eingereicht</label>
+            </div>
+          </div>
+          <div class="task-row" id="row-soa-re">
+            <div class="task-info">
+              <div class="task-name">Aktualisiertes SoA</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/soa-aktuell.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  soa-aktuell.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-soa-re" onchange="markDone(this,'row-soa-re')" />
+              <label for="chk-soa-re">Eingereicht</label>
+            </div>
+          </div>
+          <div class="task-row" id="row-risk-re">
+            <div class="task-info">
+              <div class="task-name">Aktualisierte Risikoanalyse</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/risikoanalyse-aktuell.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  risikoanalyse-aktuell.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-risk-re" onchange="markDone(this,'row-risk-re')" />
+              <label for="chk-risk-re">Eingereicht</label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phase">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div class="phase-num">3</div>
+        <div>
+          <div class="phase-title">Stage 1 + Stage 2 – Rezertifizierungsaudit</div>
+          <div class="phase-subtitle">Vollumfängliche Wiederholungsprüfung des ISMS</div>
+        </div>
+        <div class="phase-toggle">▼</div>
+      </div>
+      <div class="phase-body open">
+        <div class="meta-grid">
+          <div class="meta-field"><label>Datum Stage 1</label><input type="date" /></div>
+          <div class="meta-field"><label>Datum Stage 2</label><input type="date" /></div>
+          <div class="meta-field"><label>Ergebnis</label>
+            <select>
+              <option value="">– auswählen –</option>
+              <option>Empfehlung zur Rezertifizierung</option>
+              <option>Empfehlung mit Auflagen</option>
+              <option>Keine Empfehlung</option>
+            </select>
+          </div>
+        </div>
+        <div class="task-list">
+          <div class="task-row" id="row-re-bericht">
+            <div class="task-info">
+              <div class="task-name">Rezertifizierungsaudit Bericht</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/rezertifizierung-bericht.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  rezertifizierung-bericht.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-re-bericht" onchange="markDone(this,'row-re-bericht')" />
+              <label for="chk-re-bericht">Eingereicht</label>
+            </div>
+          </div>
+          <div class="task-row" id="row-re-zertifikat">
+            <div class="task-info">
+              <div class="task-name">Neues ISO 27001 Zertifikat</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/zertifikat-iso27001-neu.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  zertifikat-iso27001-neu.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">GF</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-re-zertifikat" onchange="markDone(this,'row-re-zertifikat')" />
+              <label for="chk-re-zertifikat">Archiviert</label>
+            </div>
+          </div>
+        </div>
+        <div class="findings-area">
+          <div class="fa-label">Findings Rezertifizierung</div>
+          <table class="findings-table" id="findings-re">
+            <thead><tr><th>Beschreibung</th><th>Schwere</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><input type="text" placeholder="Finding beschreiben…" style="background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;width:100%;outline:none;" /></td>
+                <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Minor</option><option>Major</option><option>Observation</option></select></td>
+                <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Offen</option><option>In Bearbeitung</option><option>Geschlossen</option></select></td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="add-btn" onclick="addFindingRow('findings-re')">+ Finding hinzufügen</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tab-rezerti -->
+
+</main>
+
+<!-- SAVE BAR -->
+<div class="save-bar">
+  <span class="save-note">Änderungen werden lokal gespeichert</span>
+  <button class="btn-secondary" onclick="window.location.href='../ueberwachung/'">→ Überwachungsaudits</button>
+  <button class="btn-save" onclick="saveState()">Speichern</button>
+</div>
+
+<script>
+  // ── TAB SWITCH ─────────────────────────────────────────────
+  function switchTab(id) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  // ── PHASE TOGGLE ───────────────────────────────────────────
+  function togglePhase(header) {
+    const body = header.nextElementSibling;
+    const arrow = header.querySelector('.phase-toggle');
+    body.classList.toggle('open');
+    arrow.classList.toggle('open');
+  }
+
+  // ── MARK DONE ──────────────────────────────────────────────
+// Replace the existing markDone() with this:
+async function markDone(chk, rowId) {
+  if (!chk.checked) {
+    chk.checked = true; // can't un-approve
+    return;
+  }
+
+  const docBase = DOC_MAP[rowId];
+  if (!docBase) {
+    // No doc linked — just visual tick
+    document.getElementById(rowId)?.classList.add('done');
+    return;
+  }
+
+  const approver = prompt('Name des Freigebenden (ISB):');
+  if (!approver) { chk.checked = false; return; }
+
+  const role = prompt('Rolle (z.B. ISB, GF, IT-Leitung):') || 'ISB';
+
+  chk.disabled = true;
+  const label = chk.closest('.task-check')?.querySelector('label');
+  if (label) label.textContent = '…';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/approve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ docName: docBase, approver, role })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Server error');
+
+    await loadDocs(); // refresh all links + stamps
+  } catch (e) {
+    alert(`Fehler: ${e.message}`);
+    chk.checked = false;
+    chk.disabled = false;
+    if (label) label.textContent = 'Eingereicht';
+  }
+}
+
+  // ── ADD FINDING ROW ─────────────────────────────────────── 
+  function addFindingRow(tableId) {
+    const tbody = document.querySelector('#' + tableId + ' tbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="text" placeholder="Finding beschreiben…" style="background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;width:100%;outline:none;" /></td>
+      <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Minor</option><option>Major</option><option>Observation</option></select></td>
+      <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Offen</option><option>In Bearbeitung</option><option>Geschlossen</option></select></td>
+    `;
+    tbody.appendChild(row);
+  }
+
+  // ── SAVE (stub — wire up to backend/Dropbox later) ─────────
+  function saveState() {
+    const btn = document.querySelector('.btn-save');
+    btn.textContent = '✓ Gespeichert';
+    btn.style.background = '#4a7d1f';
+    setTimeout(() => { btn.textContent = 'Speichern'; btn.style.background = ''; }, 2000);
+  }
+  document.addEventListener('DOMContentLoaded', loadDocs);
+</script>
+</body>
+</html>

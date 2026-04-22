@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ISO 27001 – Überwachungsaudits | Helm & Walter</title>
+ <script>
+// Add at the very TOP of the existing <script> block:
+const API_BASE = '';
+
+const DOC_MAP = {
+  'ue1-risikoanalyse':        'risikoanalyse-ue1',
+  'ue1-soa':                  'soa-ue1',
+  'ue1-intaudit':             'internes-audit-ue1',
+  'ue1-mgmt':                 'mgmt-review-ue1',
+  'ue1-schulung':             'schulungen-ue1',
+  'ue1-incidents':            'incident-log-ue1',
+  'ue1-korrektur':            'korrektur-nachweis-ue1',
+  'ue1-bericht':              'auditbericht-ue1',
+  'ue2-risikoanalyse':        'risikoanalyse-ue2',
+  'ue2-soa':                  'soa-ue2',
+  'ue2-intaudit':             'internes-audit-ue2',
+  'ue2-mgmt':                 'mgmt-review-ue2',
+  'ue2-schulung':             'schulungen-ue2',
+  'ue2-incidents':            'incident-log-ue2',
+  'ue2-korrektur':            'korrektur-nachweis-ue2',
+  'ue2-rezerti-vorbereitung': 'rezerti-vorabcheck',
+  'ue2-bericht':              'auditbericht-ue2',
+};
+
+async function loadDocs() {
+  const res = await fetch(`${API_BASE}/api/docs`);
+  const groups = await res.json();
+  Object.entries(DOC_MAP).forEach(([rowId, docBase]) => {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+    const group = groups[docBase];
+    if (!group) return;
+    const metaDiv = row.querySelector('.task-meta');
+    metaDiv.innerHTML = '';
+    if (group.odt) {
+      metaDiv.innerHTML += `<a class="task-doc" href="/docs/${group.odt}" target="_blank"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg> ${group.odt}</a>`;
+    }
+    if (group.pdfs && group.pdfs.length > 0) {
+      metaDiv.innerHTML += `<a class="task-doc" href="/docs/${group.pdfs[0]}" target="_blank" style="color:var(--green);border-color:var(--green-dim);"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg> ${group.pdfs[0]}</a>`;
+    }
+    if (group.approval) {
+      const chk = row.querySelector('input[type="checkbox"]');
+      if (chk) { chk.checked = true; chk.disabled = true; }
+      row.classList.add('done');
+      const d = new Date(group.approval.timestamp);
+      const label = row.querySelector('.task-check label');
+      if (label) label.textContent = `✓ ${group.approval.role}`;
+      if (!metaDiv.querySelector('.approval-stamp')) {
+        metaDiv.insertAdjacentHTML('afterend', `<div class="approval-stamp" style="font-size:.72rem;color:var(--green);margin-top:4px;">Freigegeben von ${group.approval.approvedBy} (${group.approval.role}) · ${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE', {hour:'2-digit',minute:'2-digit'})}</div>`);
+      }
+    }
+  });
+}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:          #0e1117;
+      --bg2:         #161b24;
+      --bg3:         #1d2330;
+      --border:      #2a3245;
+      --green:       #78c832;
+      --green-dim:   #4a7d1f;
+      --green-bg:    rgba(120,200,50,0.10);
+      --green-bg2:   rgba(120,200,50,0.18);
+      --text:        #e8edf5;
+      --text-muted:  #8a95a8;
+      --text-dim:    #5a6577;
+      --white:       #ffffff;
+      --red:         #e05252;
+      --radius:      10px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    header {
+      background: var(--bg2); border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .header-inner {
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 2rem; height: 64px;
+    }
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: var(--white);
+      font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.15rem;
+    }
+    .logo-mark {
+      width: 32px; height: 32px; background: var(--green); border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .header-nav { display: flex; align-items: center; gap: 6px; }
+    .header-nav a {
+      color: var(--text-muted); text-decoration: none; font-size: .875rem;
+      padding: 6px 14px; border-radius: 6px; transition: all .18s;
+    }
+    .header-nav a:hover { color: var(--text); background: var(--bg3); }
+    .header-nav a.active { color: var(--green); background: var(--green-bg); }
+    .header-badge {
+      font-size: .7rem; font-weight: 600; letter-spacing: .04em;
+      background: var(--green-bg); color: var(--green);
+      border: 1px solid var(--green-dim);
+      padding: 2px 8px; border-radius: 20px; margin-left: 4px;
+    }
+
+    main { max-width: 1200px; margin: 0 auto; padding: 3rem 2rem 6rem; }
+
+    .hero {
+      display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem;
+      margin-bottom: 3rem; padding-bottom: 2rem; border-bottom: 1px solid var(--border);
+    }
+    .hero-text h1 {
+      font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700;
+      line-height: 1.2; margin-bottom: .5rem;
+    }
+    .hero-text h1 span { color: var(--green); }
+    .hero-text p { color: var(--text-muted); font-size: .95rem; max-width: 520px; line-height: 1.6; }
+
+    .cycle-indicator {
+      flex-shrink: 0; background: var(--bg3); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem 1.5rem; min-width: 220px;
+    }
+    .ci-label { font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; color: var(--text-dim); margin-bottom: .75rem; }
+    .cycle-dots { display: flex; gap: 6px; align-items: center; }
+    .cycle-dot { height: 28px; border-radius: 4px; display: flex; align-items: center; justify-content: center; font-size: .72rem; font-weight: 600; letter-spacing: .03em; }
+    .cycle-dot.cert { background: var(--bg2); border: 1px solid var(--border); color: var(--text-dim); padding: 0 10px; }
+    .cycle-dot.watch { background: var(--green); color: #0e1117; padding: 0 8px; font-size: .68rem; }
+    .cycle-dot.recert { background: var(--bg2); border: 1px solid var(--border); color: var(--text-dim); padding: 0 10px; }
+    .cycle-arrow { color: var(--text-dim); font-size: .8rem; }
+
+    /* ── AUDIT CARD (appended) ─────────────────────────────── */
+    .audit-list { display: flex; flex-direction: column; gap: 2rem; }
+
+    .audit-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+      animation: fadeIn .3s ease;
+    }
+    @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+    .audit-card-header {
+      display: flex; align-items: center; gap: 1rem;
+      padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--border);
+      background: var(--bg3);
+    }
+    .audit-type-badge {
+      font-size: .75rem; font-weight: 700; letter-spacing: .05em;
+      padding: 3px 10px; border-radius: 20px;
+    }
+    .badge-ue1 { background: var(--green-bg2); color: var(--green); border: 1px solid var(--green-dim); }
+    .badge-ue2 { background: rgba(100,160,255,.1); color: #6eb0ff; border: 1px solid rgba(100,160,255,.3); }
+
+    .audit-card-header h2 {
+      flex: 1; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1rem;
+    }
+    .audit-date { font-size: .8rem; color: var(--text-muted); }
+
+    .audit-card-body { padding: 1.5rem; }
+
+    .meta-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .meta-field label {
+      display: block; font-size: .72rem; text-transform: uppercase;
+      letter-spacing: .07em; color: var(--text-dim); margin-bottom: .4rem;
+    }
+    .meta-field input, .meta-field select {
+      width: 100%; padding: .5rem .75rem;
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 6px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; font-size: .875rem;
+      outline: none; transition: border-color .15s;
+    }
+    .meta-field input:focus, .meta-field select:focus { border-color: var(--green); }
+
+    .section-label {
+      font-size: .72rem; text-transform: uppercase; letter-spacing: .07em;
+      color: var(--text-dim); margin-bottom: .6rem; margin-top: 1.25rem;
+    }
+
+    .task-list { display: flex; flex-direction: column; gap: .65rem; }
+    .task-row {
+      display: grid; grid-template-columns: 1fr auto auto;
+      gap: .75rem; align-items: center;
+      padding: .8rem 1rem; background: var(--bg);
+      border: 1px solid var(--border); border-radius: 8px; transition: border-color .15s;
+    }
+    .task-row:hover { border-color: var(--text-dim); }
+    .task-row.done { border-color: var(--green-dim); background: rgba(120,200,50,.04); }
+    .task-name { font-size: .875rem; font-weight: 500; margin-bottom: 3px; }
+    .task-meta { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; }
+    .task-doc {
+      font-size: .78rem; color: var(--text-muted); text-decoration: none;
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 4px;
+      border: 1px solid var(--border); background: var(--bg2); transition: all .15s;
+    }
+    .task-doc:hover { border-color: var(--green); color: var(--green); }
+    .owner-badge {
+      font-size: .72rem; font-weight: 600;
+      background: var(--green-bg2); color: var(--green);
+      border: 1px solid var(--green-dim);
+      padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0;
+    }
+    .task-check { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+    .task-check input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: var(--green); }
+    .task-check label { font-size: .65rem; color: var(--text-dim); text-align: center; white-space: nowrap; }
+
+    .findings-area { margin-top: 1.25rem; }
+    .findings-table { width: 100%; border-collapse: collapse; font-size: .85rem; }
+    .findings-table th {
+      text-align: left; padding: .5rem .75rem; color: var(--text-dim);
+      font-size: .72rem; text-transform: uppercase; letter-spacing: .07em;
+      border-bottom: 1px solid var(--border);
+    }
+    .findings-table td { padding: .6rem .75rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .findings-table tr:last-child td { border-bottom: none; }
+
+    .status-chip {
+      font-size: .7rem; font-weight: 600; padding: 2px 7px; border-radius: 4px;
+    }
+    .chip-valid { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-dim); }
+    .chip-warn  { background: rgba(255,200,50,.12); color: #ffd84a; border: 1px solid rgba(255,200,50,.3); }
+    .chip-invalid { background: rgba(224,82,82,.12); color: var(--red); border: 1px solid rgba(224,82,82,.3); }
+
+    .add-btn {
+      margin-top: .75rem; padding: 6px 14px;
+      background: transparent; border: 1px dashed var(--border);
+      color: var(--text-dim); border-radius: 6px;
+      font-size: .8rem; cursor: pointer; transition: all .15s;
+    }
+    .add-btn:hover { border-color: var(--green); color: var(--green); }
+
+    /* ── ADD NEW AUDIT BUTTON ──────────────────────────────── */
+    .add-audit-strip {
+      margin-top: 2rem; padding: 1.5rem;
+      border: 2px dashed var(--border); border-radius: var(--radius);
+      display: flex; align-items: center; justify-content: center; gap: 1rem;
+      flex-wrap: wrap;
+    }
+    .add-audit-strip span { color: var(--text-muted); font-size: .9rem; }
+    .btn-add-audit {
+      background: var(--green); color: #0e1117;
+      border: none; border-radius: 7px;
+      padding: .6rem 1.4rem; font-weight: 700; font-size: .875rem;
+      cursor: pointer; transition: opacity .15s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .btn-add-audit:hover { opacity: .88; }
+    .btn-add-audit.secondary {
+      background: var(--bg3); color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-add-audit.secondary:hover { color: var(--text); border-color: var(--text-dim); opacity:1; }
+
+    .save-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: var(--bg2); border-top: 1px solid var(--border);
+      padding: .75rem 2rem;
+      display: flex; justify-content: flex-end; align-items: center;
+      gap: 1rem; z-index: 200;
+    }
+    .save-note { font-size: .8rem; color: var(--text-dim); }
+    .btn-save {
+      background: var(--green); color: #0e1117;
+      border: none; border-radius: 7px;
+      padding: .55rem 1.4rem; font-weight: 700; font-size: .875rem;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: opacity .15s;
+    }
+    .btn-save:hover { opacity: .88; }
+    .btn-secondary {
+      background: transparent; color: var(--text-muted);
+      border: 1px solid var(--border); border-radius: 7px;
+      padding: .55rem 1.2rem; font-size: .875rem;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s;
+    }
+    .btn-secondary:hover { border-color: var(--text-dim); color: var(--text); }
+
+    @media (max-width: 700px) {
+      .hero { flex-direction: column; }
+      .task-row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <a href="https://helmundwalter.de" class="logo" target="_blank" rel="noopener">
+      <div class="logo-mark">
+        <svg viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" width="18" height="18">
+          <path d="M10 2L3 5.5V10c0 4 3.1 7.3 7 8 3.9-.7 7-4 7-8V5.5L10 2z" fill="#0e1117"/>
+        </svg>
+      </div>
+      Helm &amp; Walter
+    </a>
+    <nav class="header-nav">
+      <a href="https://helmundwalter.de" target="_blank" rel="noopener">helmundwalter.de ↗</a>
+      <a href="../zerti/">Zertifizierung</a>
+      <a href="../ueberwachung/" class="active">Überwachung <span class="header-badge">ISO 27001</span></a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <div class="hero">
+    <div class="hero-text">
+      <h1>ISO 27001<br/><span>Überwachungs&shy;audits</span></h1>
+      <p>Jährliche Stichprobenaudits in Jahr 2 und 3 des Zertifizierungszyklus. Jedes Audit wird als eigenständiger Block angehängt – die Geschichte bleibt erhalten.</p>
+    </div>
+    <div class="cycle-indicator">
+      <div class="ci-label">3-Jahres-Zyklus</div>
+      <div class="cycle-dots">
+        <div class="cycle-dot cert">Erstzerti</div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-dot watch">Ü1</div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-dot watch">Ü2</div>
+        <div class="cycle-arrow">→</div>
+        <div class="cycle-dot recert">Rezerti</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUDIT LIST (appended) -->
+  <div class="audit-list" id="auditList">
+
+    <!-- ── ÜBERWACHUNGSAUDIT 1 ──────────────────────────────── -->
+    <div class="audit-card">
+      <div class="audit-card-header">
+        <span class="audit-type-badge badge-ue1">Ü1</span>
+        <h2>Überwachungsaudit 1</h2>
+        <span class="audit-date">Jahr 2 des Zertifizierungszyklus</span>
+      </div>
+      <div class="audit-card-body">
+
+        <div class="meta-grid">
+          <div class="meta-field"><label>Datum</label><input type="date" /></div>
+          <div class="meta-field"><label>Auditor</label><input type="text" placeholder="Name" /></div>
+          <div class="meta-field"><label>Dauer (Tage)</label><input type="number" placeholder="1–2" min="1" /></div>
+          <div class="meta-field"><label>Zertifikat-Status nach Audit</label>
+            <select>
+              <option value="">– auswählen –</option>
+              <option>✓ Gültig – keine Einschränkungen</option>
+              <option>⚠ Gültig mit Auflagen</option>
+              <option>✗ Suspendiert</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section-label">Prüfumfang &amp; Fokusthemen</div>
+        <div class="task-list">
+          <div class="task-row" id="ue1-risikoanalyse">
+            <div class="task-info">
+              <div class="task-name">Aktualisierte Risikoanalyse</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/risikoanalyse-ue1.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  risikoanalyse-ue1.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue1-risk" onchange="markDone(this,'ue1-risikoanalyse')" />
+              <label for="chk-ue1-risk">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue1-soa">
+            <div class="task-info">
+              <div class="task-name">Aktualisiertes SoA</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/soa-ue1.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  soa-ue1.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue1-soa" onchange="markDone(this,'ue1-soa')" />
+              <label for="chk-ue1-soa">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue1-intaudit">
+            <div class="task-info">
+              <div class="task-name">Internes Auditprogramm / Bericht (Kl. 9.2)</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/internes-audit-ue1.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  internes-audit-ue1.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue1-int" onchange="markDone(this,'ue1-intaudit')" />
+              <label for="chk-ue1-int">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue1-mgmt">
+            <div class="task-info">
+              <div class="task-name">Management-Review Protokoll (Kl. 9.3)</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/mgmt-review-ue1.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  mgmt-review-ue1.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">GF</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue1-mgmt" onchange="markDone(this,'ue1-mgmt')" />
+              <label for="chk-ue1-mgmt">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue1-schulung">
+            <div class="task-info">
+              <div class="task-name">Schulungsnachweise Mitarbeiter</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/schulungen-ue1.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  schulungen-ue1.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">HR</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue1-schulung" onchange="markDone(this,'ue1-schulung')" />
+              <label for="chk-ue1-schulung">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue1-incidents">
+            <div class="task-info">
+              <div class="task-name">Sicherheitsvorfall-Log / Incident Register</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/incident-log-ue1.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  incident-log-ue1.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue1-inc" onchange="markDone(this,'ue1-incidents')" />
+              <label for="chk-ue1-inc">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue1-korrektur">
+            <div class="task-info">
+              <div class="task-name">Nachweis Korrekturmaßnahmen aus Erstaudit</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/korrektur-nachweis-ue1.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  korrektur-nachweis-ue1.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue1-kor" onchange="markDone(this,'ue1-korrektur')" />
+              <label for="chk-ue1-kor">Eingereicht</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="findings-area">
+          <div class="section-label">Findings Ü1</div>
+          <table class="findings-table" id="findings-ue1">
+            <thead><tr><th>Beschreibung</th><th>Schwere</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><input type="text" placeholder="Finding…" style="background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;width:100%;outline:none;" /></td>
+                <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Minor</option><option>Major</option><option>Observation</option></select></td>
+                <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Offen</option><option>In Bearbeitung</option><option>Geschlossen</option></select></td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="add-btn" onclick="addFindingRow('findings-ue1')">+ Finding hinzufügen</button>
+        </div>
+
+        <div style="margin-top:1.5rem;">
+          <div class="section-label">Auditbericht</div>
+          <div class="task-list">
+            <div class="task-row" id="ue1-bericht">
+              <div class="task-info">
+                <div class="task-name">Überwachungsaudit 1 – Auditbericht</div>
+                <div class="task-meta">
+                  <a class="task-doc" href="../docs/auditbericht-ue1.pdf" target="_blank">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                    auditbericht-ue1.pdf
+                  </a>
+                </div>
+              </div>
+              <span class="owner-badge">ISB</span>
+              <div class="task-check">
+                <input type="checkbox" id="chk-ue1-bericht" onchange="markDone(this,'ue1-bericht')" />
+                <label for="chk-ue1-bericht">Archiviert</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /Ü1 -->
+
+
+    <!-- ── ÜBERWACHUNGSAUDIT 2 ──────────────────────────────── -->
+    <div class="audit-card">
+      <div class="audit-card-header">
+        <span class="audit-type-badge badge-ue2">Ü2</span>
+        <h2>Überwachungsaudit 2</h2>
+        <span class="audit-date">Jahr 3 des Zertifizierungszyklus</span>
+      </div>
+      <div class="audit-card-body">
+
+        <div class="meta-grid">
+          <div class="meta-field"><label>Datum</label><input type="date" /></div>
+          <div class="meta-field"><label>Auditor</label><input type="text" placeholder="Name" /></div>
+          <div class="meta-field"><label>Dauer (Tage)</label><input type="number" placeholder="1–3" min="1" /></div>
+          <div class="meta-field"><label>Zertifikat-Status nach Audit</label>
+            <select>
+              <option value="">– auswählen –</option>
+              <option>✓ Gültig – keine Einschränkungen</option>
+              <option>⚠ Gültig mit Auflagen</option>
+              <option>✗ Suspendiert</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="section-label">Prüfumfang &amp; Fokusthemen (erweiterter Umfang)</div>
+        <div class="task-list">
+
+          <div class="task-row" id="ue2-risikoanalyse">
+            <div class="task-info">
+              <div class="task-name">Aktualisierte Risikoanalyse</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/risikoanalyse-ue2.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  risikoanalyse-ue2.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue2-risk" onchange="markDone(this,'ue2-risikoanalyse')" />
+              <label for="chk-ue2-risk">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue2-soa">
+            <div class="task-info">
+              <div class="task-name">Aktualisiertes SoA</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/soa-ue2.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  soa-ue2.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue2-soa" onchange="markDone(this,'ue2-soa')" />
+              <label for="chk-ue2-soa">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue2-intaudit">
+            <div class="task-info">
+              <div class="task-name">Internes Auditprogramm / Bericht (Kl. 9.2)</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/internes-audit-ue2.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  internes-audit-ue2.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue2-int" onchange="markDone(this,'ue2-intaudit')" />
+              <label for="chk-ue2-int">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue2-mgmt">
+            <div class="task-info">
+              <div class="task-name">Management-Review Protokoll (Kl. 9.3)</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/mgmt-review-ue2.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  mgmt-review-ue2.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">GF</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue2-mgmt" onchange="markDone(this,'ue2-mgmt')" />
+              <label for="chk-ue2-mgmt">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue2-schulung">
+            <div class="task-info">
+              <div class="task-name">Schulungsnachweise</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/schulungen-ue2.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  schulungen-ue2.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">HR</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue2-schulung" onchange="markDone(this,'ue2-schulung')" />
+              <label for="chk-ue2-schulung">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue2-incidents">
+            <div class="task-info">
+              <div class="task-name">Sicherheitsvorfall-Log</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/incident-log-ue2.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  incident-log-ue2.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue2-inc" onchange="markDone(this,'ue2-incidents')" />
+              <label for="chk-ue2-inc">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue2-korrektur">
+            <div class="task-info">
+              <div class="task-name">Nachweis Korrekturmaßnahmen aus Ü1</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/korrektur-nachweis-ue2.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  korrektur-nachweis-ue2.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue2-kor" onchange="markDone(this,'ue2-korrektur')" />
+              <label for="chk-ue2-kor">Eingereicht</label>
+            </div>
+          </div>
+
+          <div class="task-row" id="ue2-rezerti-vorbereitung">
+            <div class="task-info">
+              <div class="task-name">Vorbereitung Rezertifizierung (Vorabcheck, &gt;6 Monate vor Ablauf)</div>
+              <div class="task-meta">
+                <a class="task-doc" href="../docs/rezerti-vorabcheck.pdf" target="_blank">
+                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                  rezerti-vorabcheck.pdf
+                </a>
+              </div>
+            </div>
+            <span class="owner-badge">ISB</span>
+            <div class="task-check">
+              <input type="checkbox" id="chk-ue2-rvb" onchange="markDone(this,'ue2-rezerti-vorbereitung')" />
+              <label for="chk-ue2-rvb">Eingereicht</label>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="findings-area">
+          <div class="section-label">Findings Ü2</div>
+          <table class="findings-table" id="findings-ue2">
+            <thead><tr><th>Beschreibung</th><th>Schwere</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr>
+                <td><input type="text" placeholder="Finding…" style="background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;width:100%;outline:none;" /></td>
+                <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Minor</option><option>Major</option><option>Observation</option></select></td>
+                <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Offen</option><option>In Bearbeitung</option><option>Geschlossen</option></select></td>
+              </tr>
+            </tbody>
+          </table>
+          <button class="add-btn" onclick="addFindingRow('findings-ue2')">+ Finding hinzufügen</button>
+        </div>
+
+        <div style="margin-top:1.5rem;">
+          <div class="section-label">Auditbericht</div>
+          <div class="task-list">
+            <div class="task-row" id="ue2-bericht">
+              <div class="task-info">
+                <div class="task-name">Überwachungsaudit 2 – Auditbericht</div>
+                <div class="task-meta">
+                  <a class="task-doc" href="../docs/auditbericht-ue2.pdf" target="_blank">
+                    <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+                    auditbericht-ue2.pdf
+                  </a>
+                </div>
+              </div>
+              <span class="owner-badge">ISB</span>
+              <div class="task-check">
+                <input type="checkbox" id="chk-ue2-bericht" onchange="markDone(this,'ue2-bericht')" />
+                <label for="chk-ue2-bericht">Archiviert</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /Ü2 -->
+
+  </div><!-- /auditList -->
+
+  <!-- ADD NEXT AUDIT -->
+  <div class="add-audit-strip">
+    <span>Neuen Audit-Zyklus beginnen?</span>
+    <button class="btn-add-audit secondary" onclick="appendAudit('Ü1')">+ Ü1 nächster Zyklus</button>
+    <button class="btn-add-audit secondary" onclick="appendAudit('Ü2')">+ Ü2 nächster Zyklus</button>
+  </div>
+
+</main>
+
+<div class="save-bar">
+  <span class="save-note">Änderungen werden lokal gespeichert</span>
+  <button class="btn-secondary" onclick="window.location.href='../zerti/'">← Zertifizierung</button>
+  <button class="btn-save" onclick="saveState()">Speichern</button>
+</div>
+
+<script>
+  let auditCounter = 2; // already have Ü1 + Ü2
+
+// Replace the existing markDone() with this:
+async function markDone(chk, rowId) {
+  if (!chk.checked) {
+    chk.checked = true; // can't un-approve
+    return;
+  }
+
+  const docBase = DOC_MAP[rowId];
+  if (!docBase) {
+    // No doc linked — just visual tick
+    document.getElementById(rowId)?.classList.add('done');
+    return;
+  }
+
+  const approver = prompt('Name des Freigebenden (ISB):');
+  if (!approver) { chk.checked = false; return; }
+
+  const role = prompt('Rolle (z.B. ISB, GF, IT-Leitung):') || 'ISB';
+
+  chk.disabled = true;
+  const label = chk.closest('.task-check')?.querySelector('label');
+  if (label) label.textContent = '…';
+
+  try {
+    const res = await fetch(`${API_BASE}/api/approve`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ docName: docBase, approver, role })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Server error');
+
+    await loadDocs(); // refresh all links + stamps
+  } catch (e) {
+    alert(`Fehler: ${e.message}`);
+    chk.checked = false;
+    chk.disabled = false;
+    if (label) label.textContent = 'Eingereicht';
+  }
+}
+
+  function addFindingRow(tableId) {
+    const tbody = document.querySelector('#' + tableId + ' tbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td><input type="text" placeholder="Finding…" style="background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;width:100%;outline:none;" /></td>
+      <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Minor</option><option>Major</option><option>Observation</option></select></td>
+      <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Offen</option><option>In Bearbeitung</option><option>Geschlossen</option></select></td>
+    `;
+    tbody.appendChild(row);
+  }
+
+  function appendAudit(type) {
+    auditCounter++;
+    const badgeClass = type === 'Ü1' ? 'badge-ue1' : 'badge-ue2';
+    const findId = 'findings-dyn-' + auditCounter;
+    const card = document.createElement('div');
+    card.className = 'audit-card';
+    card.innerHTML = `
+      <div class="audit-card-header">
+        <span class="audit-type-badge ${badgeClass}">${type}</span>
+        <h2>Überwachungsaudit ${type} – Zyklus ${Math.ceil(auditCounter/2)}</h2>
+        <span class="audit-date">Neu hinzugefügt</span>
+      </div>
+      <div class="audit-card-body">
+        <div class="meta-grid">
+          <div class="meta-field"><label>Datum</label><input type="date" /></div>
+          <div class="meta-field"><label>Auditor</label><input type="text" placeholder="Name" /></div>
+          <div class="meta-field"><label>Dauer (Tage)</label><input type="number" min="1" /></div>
+          <div class="meta-field"><label>Zertifikat-Status</label>
+            <select>
+              <option value="">– auswählen –</option>
+              <option>✓ Gültig</option><option>⚠ Gültig mit Auflagen</option><option>✗ Suspendiert</option>
+            </select>
+          </div>
+        </div>
+        <div class="section-label">Findings</div>
+        <table class="findings-table" id="${findId}">
+          <thead><tr><th>Beschreibung</th><th>Schwere</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><input type="text" placeholder="Finding…" style="background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;width:100%;outline:none;" /></td>
+              <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Minor</option><option>Major</option><option>Observation</option></select></td>
+              <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Offen</option><option>In Bearbeitung</option><option>Geschlossen</option></select></td>
+            </tr>
+          </tbody>
+        </table>
+        <button class="add-btn" onclick="addFindingRow('${findId}')">+ Finding hinzufügen</button>
+      </div>
+    `;
+    document.getElementById('auditList').appendChild(card);
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function saveState() {
+    const btn = document.querySelector('.btn-save');
+    btn.textContent = '✓ Gespeichert';
+    btn.style.background = '#4a7d1f';
+    setTimeout(() => { btn.textContent = 'Speichern'; btn.style.background = ''; }, 2000);
+  }
+  document.addEventListener('DOMContentLoaded', loadDocs);
+</script>
+</body>
+</html>

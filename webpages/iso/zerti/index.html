@@ -369,6 +369,138 @@ async function loadDocs() {
       .task-row { grid-template-columns: 1fr; }
       .task-check { flex-direction: row; align-items: center; }
     }
+
+    /* ── SOA TABLE ────────────────────────────────────────────── */
+.soa-section { margin-bottom: 2rem; }
+.soa-section-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: .8rem; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
+  color: var(--green); padding: .6rem 1rem;
+  background: var(--green-bg); border: 1px solid var(--green-dim);
+  border-radius: 6px 6px 0 0; margin-bottom: 0;
+}
+.soa-table {
+  width: 100%; border-collapse: collapse;
+  background: var(--bg2); border: 1px solid var(--border);
+  border-top: none; border-radius: 0 0 var(--radius) var(--radius);
+  overflow: hidden;
+}
+.soa-table th {
+  text-align: left; padding: .55rem .9rem;
+  font-size: .7rem; text-transform: uppercase; letter-spacing: .07em;
+  color: var(--text-dim); border-bottom: 1px solid var(--border);
+  background: var(--bg3); white-space: nowrap;
+}
+.soa-table td {
+  padding: .55rem .9rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: middle; font-size: .85rem;
+}
+.soa-table tr:last-child td { border-bottom: none; }
+.soa-table tr:hover td { background: rgba(255,255,255,.02); }
+.soa-table tr.soa-relevant td { background: rgba(120,200,50,.04); }
+
+.soa-id {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: .78rem; font-weight: 600; color: var(--text-muted);
+  white-space: nowrap;
+}
+.soa-name { font-weight: 500; }
+.soa-info-btn {
+  background: none; border: 1px solid var(--border);
+  color: var(--text-dim); border-radius: 50%;
+  width: 18px; height: 18px; font-size: .65rem;
+  cursor: pointer; display: inline-flex;
+  align-items: center; justify-content: center;
+  transition: all .15s; flex-shrink: 0;
+  vertical-align: middle; margin-left: 5px;
+}
+.soa-info-btn:hover { border-color: var(--green); color: var(--green); }
+
+.soa-check input[type="checkbox"] {
+  width: 18px; height: 18px; cursor: pointer;
+  accent-color: var(--green);
+}
+
+.soa-text-input {
+  width: 100%; background: transparent; border: none;
+  border-bottom: 1px solid var(--border);
+  color: var(--text); font-family: 'DM Sans', sans-serif;
+  font-size: .82rem; padding: 2px 4px; outline: none;
+  transition: border-color .15s;
+  min-width: 120px;
+}
+.soa-text-input:focus { border-bottom-color: var(--green); }
+.soa-text-input::placeholder { color: var(--text-dim); }
+
+.soa-doc-link {
+  font-size: .75rem; color: var(--text-muted); text-decoration: none;
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 7px; border-radius: 4px;
+  border: 1px solid var(--border); background: var(--bg3);
+  transition: all .15s; white-space: nowrap;
+}
+.soa-doc-link:hover { border-color: var(--green); color: var(--green); }
+
+.soa-progress-bar {
+  background: var(--bg3); border: 1px solid var(--border);
+  border-radius: 8px; padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;
+}
+.soa-progress-bar .sp-label {
+  font-size: .75rem; text-transform: uppercase;
+  letter-spacing: .07em; color: var(--text-dim);
+}
+.soa-progress-bar .sp-nums {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.1rem; font-weight: 700; color: var(--green);
+}
+.soa-progress-bar .sp-nums span { color: var(--text-muted); font-size: .85rem; font-weight: 400; }
+.sp-track {
+  flex: 1; min-width: 150px; height: 6px;
+  background: var(--bg); border-radius: 3px; overflow: hidden;
+}
+.sp-fill {
+  height: 100%; background: var(--green);
+  border-radius: 3px; transition: width .4s ease;
+}
+
+/* ── POPUP ────────────────────────────────────────────────── */
+.soa-popup-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,.7); z-index: 500;
+  align-items: center; justify-content: center;
+}
+.soa-popup-overlay.open { display: flex; }
+.soa-popup {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 1.75rem;
+  max-width: 480px; width: 90%; position: relative;
+  box-shadow: 0 16px 48px rgba(0,0,0,.6);
+}
+.soa-popup h3 {
+  font-family: 'Space Grotesk', sans-serif; font-size: 1rem;
+  font-weight: 700; margin-bottom: .25rem;
+}
+.soa-popup .sp-id {
+  font-size: .75rem; color: var(--green); font-weight: 600;
+  margin-bottom: .75rem; display: block;
+}
+.soa-popup p {
+  font-size: .875rem; color: var(--text-muted);
+  line-height: 1.6; margin-bottom: 0;
+}
+.soa-popup-close {
+  position: absolute; top: 1rem; right: 1rem;
+  background: none; border: 1px solid var(--border);
+  color: var(--text-dim); border-radius: 6px;
+  width: 28px; height: 28px; cursor: pointer; font-size: 1rem;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.soa-popup-close:hover { border-color: var(--red); color: var(--red); }
   </style>
 </head>
 <body>
@@ -420,7 +552,8 @@ async function loadDocs() {
   <div class="section-tabs">
     <button class="tab-btn active" onclick="switchTab('erst')">Erstzertifizierung</button>
     <button class="tab-btn" onclick="switchTab('rezerti')">Rezertifizierung</button>
-  </div>
+  <button class="tab-btn" onclick="switchTab('soa')">SoA – Annex A</button>
+</div>
 
   <!-- ══════════════════════════════════════════════════════════
        TAB: ERSTZERTIFIZIERUNG
@@ -931,7 +1064,95 @@ async function loadDocs() {
     </div>
 
   </div><!-- /tab-rezerti -->
+<!-- ══════════════════════════════════════════════════════════
+     TAB: SOA – ANNEX A
+══════════════════════════════════════════════════════════ -->
+<div id="tab-soa" class="tab-panel">
 
+  <div class="soa-progress-bar">
+    <div>
+      <div class="sp-label">Relevant markiert</div>
+      <div class="sp-nums" id="soaCount">0 <span>/ 93</span></div>
+    </div>
+    <div class="sp-track"><div class="sp-fill" id="soaFill" style="width:0%"></div></div>
+    <div style="font-size:.78rem;color:var(--text-dim);">Alle 93 Controls nach ISO 27001:2022 Annex A</div>
+  </div>
+
+  <!-- A.5 Organisational (37) -->
+  <div class="soa-section">
+    <div class="soa-section-title">A.5 · Organisatorische Maßnahmen (37 Controls)</div>
+    <table class="soa-table">
+      <thead><tr>
+        <th style="width:80px">Control</th>
+        <th>Bezeichnung</th>
+        <th style="width:80px;text-align:center">Relevant</th>
+        <th>Begründung / Umsetzung</th>
+        <th style="width:110px">Verantwortlich</th>
+        <th style="width:110px">Dokument</th>
+      </tr></thead>
+      <tbody id="soa-a5"></tbody>
+    </table>
+  </div>
+
+  <!-- A.6 People (8) -->
+  <div class="soa-section">
+    <div class="soa-section-title">A.6 · Personenbezogene Maßnahmen (8 Controls)</div>
+    <table class="soa-table">
+      <thead><tr>
+        <th style="width:80px">Control</th>
+        <th>Bezeichnung</th>
+        <th style="width:80px;text-align:center">Relevant</th>
+        <th>Begründung / Umsetzung</th>
+        <th style="width:110px">Verantwortlich</th>
+        <th style="width:110px">Dokument</th>
+      </tr></thead>
+      <tbody id="soa-a6"></tbody>
+    </table>
+  </div>
+
+  <!-- A.7 Physical (14) -->
+  <div class="soa-section">
+    <div class="soa-section-title">A.7 · Physische Maßnahmen (14 Controls)</div>
+    <table class="soa-table">
+      <thead><tr>
+        <th style="width:80px">Control</th>
+        <th>Bezeichnung</th>
+        <th style="width:80px;text-align:center">Relevant</th>
+        <th>Begründung / Umsetzung</th>
+        <th style="width:110px">Verantwortlich</th>
+        <th style="width:110px">Dokument</th>
+      </tr></thead>
+      <tbody id="soa-a7"></tbody>
+    </table>
+  </div>
+
+  <!-- A.8 Technological (34) -->
+  <div class="soa-section">
+    <div class="soa-section-title">A.8 · Technologische Maßnahmen (34 Controls)</div>
+    <table class="soa-table">
+      <thead><tr>
+        <th style="width:80px">Control</th>
+        <th>Bezeichnung</th>
+        <th style="width:80px;text-align:center">Relevant</th>
+        <th>Begründung / Umsetzung</th>
+        <th style="width:110px">Verantwortlich</th>
+        <th style="width:110px">Dokument</th>
+      </tr></thead>
+      <tbody id="soa-a8"></tbody>
+    </table>
+  </div>
+
+</div><!-- /tab-soa -->
+
+<!-- SOA POPUP -->
+<div class="soa-popup-overlay" id="soaPopup">
+  <div class="soa-popup">
+    <button class="soa-popup-close" onclick="closeSoaPopup()">✕</button>
+    <span class="sp-id" id="popupId"></span>
+    <h3 id="popupName"></h3>
+    <p id="popupDesc"></p>
+  </div>
+</div>
 </main>
 
 <!-- SAVE BAR -->
@@ -943,12 +1164,15 @@ async function loadDocs() {
 
 <script>
   // ── TAB SWITCH ─────────────────────────────────────────────
-  function switchTab(id) {
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('tab-' + id).classList.add('active');
-    event.target.classList.add('active');
-  }
+function switchTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  // highlight correct button
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    if (b.getAttribute('onclick') === `switchTab('${id}')`) b.classList.add('active');
+  });
+}
 
   // ── PHASE TOGGLE ───────────────────────────────────────────
   function togglePhase(header) {
@@ -1019,7 +1243,208 @@ async function markDone(chk, rowId) {
     btn.style.background = '#4a7d1f';
     setTimeout(() => { btn.textContent = 'Speichern'; btn.style.background = ''; }, 2000);
   }
-  document.addEventListener('DOMContentLoaded', loadDocs);
-</script>
+  // ── ANNEX A DATA (ISO 27001:2022, alle 93 Controls) ────────
+const ANNEX_A = {
+  'a5': [
+    ['5.1','Informationssicherheitsrichtlinien','Richtlinien für Informationssicherheit werden definiert, vom Management genehmigt, veröffentlicht, kommuniziert und in regelmäßigen Abständen überprüft.'],
+    ['5.2','Rollen und Verantwortlichkeiten für Informationssicherheit','Alle Verantwortlichkeiten für Informationssicherheit werden definiert und zugewiesen.'],
+    ['5.3','Aufgabentrennung','Konfliktreiche Aufgaben und Verantwortungsbereiche werden getrennt, um unbefugte oder unbeabsichtigte Änderungen an Vermögenswerten zu reduzieren.'],
+    ['5.4','Verantwortlichkeiten des Managements','Das Management verlangt von allen Beschäftigten, Informationssicherheit gemäß der festgelegten Richtlinien umzusetzen.'],
+    ['5.5','Kontakt mit Behörden','Die Organisation pflegt geeignete Kontakte zu relevanten Behörden.'],
+    ['5.6','Kontakt mit speziellen Interessengruppen','Geeignete Kontakte zu Fachgruppen, Sicherheitsforen und Berufsverbänden werden gepflegt.'],
+    ['5.7','Bedrohungsintelligenz','★ NEU – Informationen über Bedrohungen werden gesammelt und analysiert, um Erkenntnisse über Bedrohungslandschaften zu gewinnen.'],
+    ['5.8','Informationssicherheit im Projektmanagement','Informationssicherheit wird in das Projektmanagement integriert.'],
+    ['5.9','Inventar der Informationen und sonstiger Assets','Ein Inventar der Informationen und sonstiger verbundener Assets wird erstellt und gepflegt.'],
+    ['5.10','Akzeptable Nutzung von Informationen und sonstiger Assets','Regeln für die akzeptable Nutzung und den Umgang mit Informationen und Assets werden identifiziert, dokumentiert und umgesetzt.'],
+    ['5.11','Rückgabe von Assets','Beschäftigte und externe Parteien geben bei Beendigung der Beschäftigung alle Assets der Organisation zurück.'],
+    ['5.12','Klassifizierung von Informationen','Informationen werden entsprechend den Sicherheitsbedürfnissen klassifiziert.'],
+    ['5.13','Kennzeichnung von Informationen','Geeignete Verfahren zur Kennzeichnung von Informationen werden entwickelt und umgesetzt.'],
+    ['5.14','Informationsübertragung','Regeln, Verfahren oder Vereinbarungen für die Übertragung von Informationen werden für alle Arten von Übertragungseinrichtungen eingeführt.'],
+    ['5.15','Zugangskontrolle','Regeln zur Steuerung des physischen und logischen Zugangs zu Informationen und sonstigen Assets werden festgelegt und umgesetzt.'],
+    ['5.16','Identitätsverwaltung','Der vollständige Lebenszyklus von Identitäten wird verwaltet.'],
+    ['5.17','Authentifizierungsinformationen','Die Zuteilung und Verwaltung von Authentifizierungsinformationen werden durch einen formalen Verwaltungsprozess gesteuert.'],
+    ['5.18','Zugriffsrechte','Zugriffsrechte auf Informationen und sonstige Assets werden entsprechend der Zugangskontrollrichtlinie bereitgestellt, überprüft, geändert und entzogen.'],
+    ['5.19','Informationssicherheit in Lieferantenbeziehungen','Prozesse und Verfahren zum Management von Informationssicherheitsrisiken in Lieferantenbeziehungen werden definiert und umgesetzt.'],
+    ['5.20','Informationssicherheitsanforderungen in Lieferantenverträgen','Relevante Informationssicherheitsanforderungen werden mit jedem Lieferanten vereinbart und dokumentiert.'],
+    ['5.21','Management der Informationssicherheit in der IKT-Lieferkette','Prozesse und Verfahren zum Management von IS-Risiken in der IKT-Lieferkette werden definiert und umgesetzt.'],
+    ['5.22','Überwachung, Überprüfung und Änderungsmanagement von Lieferantendienstleistungen','Die Organisation überwacht, überprüft und verwaltet regelmäßig Änderungen an Lieferantenpraktiken.'],
+    ['5.23','Informationssicherheit bei der Nutzung von Cloud-Diensten','★ NEU – Prozesse zum Erwerb, zur Nutzung, zur Verwaltung und zum Ausstieg aus Cloud-Diensten werden festgelegt.'],
+    ['5.24','Planung und Vorbereitung des Umgangs mit Informationssicherheitsvorfällen','Die Organisation plant und bereitet sich auf den Umgang mit Informationssicherheitsvorfällen vor.'],
+    ['5.25','Beurteilung und Entscheidung über Informationssicherheitsereignisse','Die Organisation bewertet Sicherheitsereignisse und entscheidet, ob sie als Vorfälle eingestuft werden.'],
+    ['5.26','Reaktion auf Informationssicherheitsvorfälle','Auf Informationssicherheitsvorfälle wird gemäß dokumentierten Verfahren reagiert.'],
+    ['5.27','Erkenntnisse aus Informationssicherheitsvorfällen','Aus Informationssicherheitsvorfällen gewonnene Erkenntnisse werden genutzt, um Sicherheitsmaßnahmen zu stärken.'],
+    ['5.28','Sammlung von Beweisen','Die Organisation legt Verfahren zur Identifizierung, Sammlung, Beschaffung und Aufbewahrung von Beweisen fest.'],
+    ['5.29','Informationssicherheit bei Unterbrechungen','Die Organisation plant, wie Informationssicherheit bei Unterbrechungen aufrechterhalten wird.'],
+    ['5.30','IKT-Bereitschaft für Geschäftskontinuität','★ NEU – IKT-Bereitschaft wird geplant, umgesetzt, aufrechterhalten und getestet.'],
+    ['5.31','Rechtliche, gesetzliche, regulatorische und vertragliche Anforderungen','Gesetzliche, regulatorische und vertragliche Anforderungen für Informationssicherheit werden identifiziert und dokumentiert.'],
+    ['5.32','Rechte an geistigem Eigentum','Die Organisation implementiert Verfahren zum Schutz von Rechten an geistigem Eigentum.'],
+    ['5.33','Schutz von Aufzeichnungen','Aufzeichnungen werden vor Verlust, Zerstörung, Verfälschung, unbefugtem Zugang und unbefugter Freigabe geschützt.'],
+    ['5.34','Datenschutz und Schutz personenbezogener Daten','Datenschutz und der Schutz personenbezogener Daten werden gemäß geltenden Gesetzen gewährleistet.'],
+    ['5.35','Unabhängige Überprüfung der Informationssicherheit','Der Ansatz der Organisation für das Informationssicherheitsmanagement und seine Umsetzung werden unabhängig überprüft.'],
+    ['5.36','Einhaltung von Richtlinien und Normen','Die Einhaltung der Informationssicherheitsrichtlinien, -verfahren und -normen wird regelmäßig überprüft.'],
+    ['5.37','Dokumentierte Betriebsverfahren','Betriebsverfahren für Informationsverarbeitungseinrichtungen werden dokumentiert und allen Betroffenen zur Verfügung gestellt.'],
+  ],
+  'a6': [
+    ['6.1','Überprüfung','Überprüfungen der Hintergründe aller Kandidaten werden vor ihrem Eintritt in die Organisation und danach regelmäßig durchgeführt.'],
+    ['6.2','Beschäftigungsbedingungen','Arbeitsverträge enthalten die Verantwortlichkeiten der Beschäftigten und der Organisation für Informationssicherheit.'],
+    ['6.3','Informationssicherheitsbewusstsein, -ausbildung und -schulung','Alle Beschäftigten und relevante externe Parteien erhalten angemessene Schulungen zu Informationssicherheitsbewusstsein.'],
+    ['6.4','Disziplinarverfahren','Ein Disziplinarverfahren wird formalisiert und kommuniziert, um auf Verstöße gegen die Informationssicherheitsrichtlinie zu reagieren.'],
+    ['6.5','Verantwortlichkeiten nach Beendigung oder Änderung der Beschäftigung','IS-Verantwortlichkeiten und -pflichten gelten nach Beendigung oder Änderung der Beschäftigung fort.'],
+    ['6.6','Vertraulichkeits- oder Geheimhaltungsvereinbarungen','Anforderungen an Vertraulichkeits- oder Geheimhaltungsvereinbarungen werden identifiziert, dokumentiert und regelmäßig überprüft.'],
+    ['6.7','Fernarbeit','Sicherheitsmaßnahmen werden umgesetzt, wenn Beschäftigte remote arbeiten.'],
+    ['6.8','Meldung von Informationssicherheitsereignissen','Beschäftigte können Informationssicherheitsereignisse über geeignete Kanäle melden.'],
+  ],
+  'a7': [
+    ['7.1','Physische Sicherheitsperimeter','Sicherheitsperimeter werden definiert und genutzt, um Bereiche zu schützen, die sensible Informationen enthalten.'],
+    ['7.2','Physische Zugangskontrollen','Gesicherte Bereiche werden durch angemessene Einlasskontrollen und Zugangspunkte geschützt.'],
+    ['7.3','Sicherung von Büros, Räumen und Einrichtungen','Physische Sicherheit für Büros, Räume und Einrichtungen wird entwickelt und umgesetzt.'],
+    ['7.4','Physische Sicherheitsüberwachung','★ NEU – Räumlichkeiten werden kontinuierlich auf unbefugten physischen Zugang überwacht.'],
+    ['7.5','Schutz vor physischen und umweltbedingten Bedrohungen','Schutz vor physischen und umweltbedingten Bedrohungen (Naturkatastrophen, Vandalismus) wird entwickelt und umgesetzt.'],
+    ['7.6','Arbeiten in gesicherten Bereichen','Sicherheitsmaßnahmen für die Arbeit in gesicherten Bereichen werden entwickelt und umgesetzt.'],
+    ['7.7','Aufgeräumter Schreibtisch und aufgeräumter Bildschirm','Regeln für aufgeräumte Schreibtische und aufgeräumte Bildschirme werden definiert und angemessen durchgesetzt.'],
+    ['7.8','Aufstellung und Schutz von Geräten','Geräte werden sicher aufgestellt und geschützt.'],
+    ['7.9','Sicherheit von Assets außerhalb des Betriebsgeländes','Off-Site-Assets werden geschützt, unter Berücksichtigung der verschiedenen Risiken des Arbeitens außerhalb der Räumlichkeiten.'],
+    ['7.10','Speichermedien','Speichermedien werden über ihren Lebenszyklus hinweg verwaltet – Erwerb, Nutzung, Transport und Entsorgung.'],
+    ['7.11','Unterstützende Versorgungseinrichtungen','Informationsverarbeitungseinrichtungen werden vor Stromausfällen und sonstigen Störungen durch unterstützende Einrichtungen geschützt.'],
+    ['7.12','Verkabelungssicherheit','Kabel, die Strom, Daten oder unterstützende IS übertragen, werden vor Abfangen, Interferenz oder Beschädigung geschützt.'],
+    ['7.13','Wartung von Geräten','Geräte werden korrekt gewartet, um Verfügbarkeit, Integrität und Vertraulichkeit zu gewährleisten.'],
+    ['7.14','Sichere Entsorgung oder Wiederverwendung von Geräten','Geräte werden überprüft, um sicherzustellen, dass sensible Daten und lizenzierte Software vor der Entsorgung oder Wiederverwendung entfernt wurden.'],
+  ],
+  'a8': [
+    ['8.1','Benutzerendgeräte','Informationen, die auf Benutzerendgeräten gespeichert, verarbeitet oder über diese zugänglich sind, werden geschützt.'],
+    ['8.2','Privilegierte Zugriffsrechte','Zuteilung und Nutzung privilegierter Zugriffsrechte werden eingeschränkt und verwaltet.'],
+    ['8.3','Beschränkung des Zugangs zu Informationen','Der Zugang zu Informationen und sonstigen verbundenen Assets wird gemäß der Zugangskontrollrichtlinie eingeschränkt.'],
+    ['8.4','Zugang zum Quellcode','Lese- und Schreibzugang zu Quellcode, Entwicklungswerkzeugen und Softwarebibliotheken wird angemessen verwaltet.'],
+    ['8.5','Sichere Authentifizierung','Sichere Authentifizierungstechnologien und -verfahren werden auf der Grundlage von Zugangsbeschränkungen und der Zugangskontrollrichtlinie umgesetzt.'],
+    ['8.6','Kapazitätsmanagement','Die Nutzung von Ressourcen wird überwacht und angepasst, um aktuelle und erwartete Kapazitätsanforderungen zu erfüllen.'],
+    ['8.7','Schutz gegen Malware','Der Schutz gegen Malware wird umgesetzt und durch angemessenes Benutzerbewusstsein unterstützt.'],
+    ['8.8','Management technischer Schwachstellen','Informationen über technische Schwachstellen der genutzten IS werden zeitnah eingeholt, das Risiko wird bewertet und geeignete Maßnahmen werden ergriffen.'],
+    ['8.9','Konfigurationsmanagement','★ NEU – Konfigurationen, einschließlich Sicherheitskonfigurationen von Hardware, Software, Diensten und Netzwerken werden festgelegt, dokumentiert, umgesetzt und überwacht.'],
+    ['8.10','Informationslöschung','★ NEU – Auf IS-Systemen, Geräten oder anderen Speichermedien gespeicherte Informationen werden gelöscht, wenn sie nicht mehr benötigt werden.'],
+    ['8.11','Datenmaskierung','★ NEU – Datenmaskierung wird gemäß der organisationsspezifischen Zugangskontrollrichtlinie und anderen zugehörigen Richtlinien sowie unter Berücksichtigung geltender Gesetze eingesetzt.'],
+    ['8.12','Verhinderung von Datenlecks','★ NEU – Maßnahmen zur Verhinderung von Datenlecks werden auf Systeme, Netzwerke und sonstige Geräte angewendet, die sensible Informationen verarbeiten, speichern oder übertragen.'],
+    ['8.13','Sicherung von Informationen','Sicherungskopien von Informationen, Software und Systemen werden aufbewahrt und regelmäßig auf der Grundlage einer vereinbarten Sicherungsrichtlinie getestet.'],
+    ['8.14','Redundanz der IS-Einrichtungen','IS-Einrichtungen werden mit ausreichender Redundanz implementiert, um Verfügbarkeitsanforderungen zu erfüllen.'],
+    ['8.15','Protokollierung','Protokolle, die Aktivitäten, Ausnahmen, Fehler und andere relevante Ereignisse aufzeichnen, werden erstellt, gespeichert, geschützt und analysiert.'],
+    ['8.16','Überwachungsaktivitäten','★ NEU – Netzwerke, Systeme und Anwendungen werden auf anomales Verhalten überwacht und zur Beurteilung potenzieller IS-Vorfälle geeignete Maßnahmen ergriffen.'],
+    ['8.17','Synchronisation von Uhren','Die Uhren der IS-Systeme, die von der Organisation oder ihren Kunden genutzt werden, werden mit genehmigten Zeitquellen synchronisiert.'],
+    ['8.18','Nutzung privilegierter Dienstprogramme','Die Verwendung von Dienstprogrammen, die IS-Systeme und -Steuerungen außer Kraft setzen könnten, wird eingeschränkt und streng kontrolliert.'],
+    ['8.19','Installation von Software auf Betriebssystemen','Verfahren und Maßnahmen werden umgesetzt, um die Installation von Software auf Betriebssystemen sicher zu verwalten.'],
+    ['8.20','Netzwerksicherheit','Netzwerke und Netzwerkgeräte werden gesichert, verwaltet und kontrolliert, um Informationen in Systemen und Anwendungen zu schützen.'],
+    ['8.21','Sicherheit von Netzwerkdiensten','Sicherheitsmechanismen, Dienstleistungsmerkmale und Servicelevel aller Netzwerkdienste werden identifiziert, umgesetzt und überwacht.'],
+    ['8.22','Trennung von Netzwerken','Gruppen von IS-Diensten, Benutzern und Systemen werden in den Netzwerken der Organisation getrennt.'],
+    ['8.23','Web-Filterung','★ NEU – Zugang zu externen Websites wird verwaltet, um die Exposition gegenüber schädlichen Inhalten zu reduzieren.'],
+    ['8.24','Einsatz von Kryptographie','Regeln für den wirksamen Einsatz von Kryptographie, einschließlich kryptographischem Schlüsselmanagement, werden definiert und umgesetzt.'],
+    ['8.25','Sicherer Entwicklungslebenszyklus','Regeln für die sichere Entwicklung von Software und Systemen werden festgelegt und auf Entwicklungen innerhalb der Organisation angewendet.'],
+    ['8.26','Anforderungen an die Anwendungssicherheit','IS-Anforderungen werden bei der Entwicklung oder dem Erwerb von Anwendungen identifiziert, spezifiziert und genehmigt.'],
+    ['8.27','Sichere Systemarchitektur und technische Grundsätze','Grundsätze für die Entwicklung sicherer Systeme werden festgelegt, dokumentiert, gepflegt und auf alle IS-Implementierungsaktivitäten angewendet.'],
+    ['8.28','Sichere Programmierung','★ NEU – Grundsätze sicherer Programmierung werden auf die Softwareentwicklung angewendet.'],
+    ['8.29','Sicherheitstests in Entwicklung und Abnahme','Sicherheitstestprozesse werden in den Entwicklungslebenszyklus integriert.'],
+    ['8.30','Ausgelagerte Entwicklung','Die Organisation leitet, überwacht und überprüft die Aktivitäten im Zusammenhang mit ausgelagerter Systementwicklung.'],
+    ['8.31','Trennung von Entwicklungs-, Test- und Produktionsumgebungen','Entwicklungs-, Test- und Produktionsumgebungen werden getrennt und gesichert.'],
+    ['8.32','Änderungsmanagement','Änderungen an IS-Einrichtungen und IS werden einem Änderungsmanagementverfahren unterzogen.'],
+    ['8.33','Testinformationen','Testinformationen werden angemessen ausgewählt, geschützt und verwaltet.'],
+    ['8.34','Schutz von IS-Systemen bei Prüfungen','Prüftests und andere Sicherungsprüfungen, die Betriebssysteme beinhalten, werden geplant und zwischen dem Prüfer und dem Management vereinbart.'],
+  ],
+};
+
+const SOA_STATE_KEY = 'hw-iso-soa-state';
+
+function saveSoaState() {
+  const state = {};
+  document.querySelectorAll('.soa-row').forEach(row => {
+    const id = row.dataset.id;
+    const chk = row.querySelector('.soa-chk');
+    const reason = row.querySelector('.soa-reason');
+    const owner = row.querySelector('.soa-owner');
+    state[id] = {
+      relevant: chk ? chk.checked : false,
+      reason: reason ? reason.value : '',
+      owner: owner ? owner.value : '',
+    };
+  });
+  localStorage.setItem(SOA_STATE_KEY, JSON.stringify(state));
+}
+
+function loadSoaState() {
+  try { return JSON.parse(localStorage.getItem(SOA_STATE_KEY) || '{}'); } catch { return {}; }
+}
+
+function updateSoaProgress() {
+  const total = document.querySelectorAll('.soa-chk').length;
+  const checked = document.querySelectorAll('.soa-chk:checked').length;
+  document.getElementById('soaCount').innerHTML = `${checked} <span>/ ${total}</span>`;
+  document.getElementById('soaFill').style.width = `${(checked/total)*100}%`;
+  document.querySelectorAll('.soa-row').forEach(row => {
+    const chk = row.querySelector('.soa-chk');
+    if (chk && chk.checked) row.classList.add('soa-relevant');
+    else row.classList.remove('soa-relevant');
+  });
+}
+
+function buildSoaTable(tbodyId, controls) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  const state = loadSoaState();
+  tbody.innerHTML = '';
+  controls.forEach(([id, name, desc]) => {
+    const key = id;
+    const s = state[key] || {};
+    const docName = `annex-a-${id.replace('.', '-')}`;
+    const tr = document.createElement('tr');
+    tr.className = 'soa-row' + (s.relevant ? ' soa-relevant' : '');
+    tr.dataset.id = key;
+    tr.innerHTML = `
+      <td><span class="soa-id">A.${id}</span></td>
+      <td>
+        <span class="soa-name">${name}</span>
+        <button class="soa-info-btn" onclick="openSoaPopup('A.${id}','${name.replace(/'/g,"\\'")}','${desc.replace(/'/g,"\\'")}')">?</button>
+      </td>
+      <td style="text-align:center" class="soa-check">
+        <input type="checkbox" class="soa-chk" ${s.relevant ? 'checked' : ''}
+          onchange="updateSoaProgress();saveSoaState();" />
+      </td>
+      <td>
+        <input type="text" class="soa-text-input soa-reason"
+          placeholder="Begründung der Relevanz oder Ausschluss…"
+          value="${(s.reason||'').replace(/"/g,'&quot;')}"
+          oninput="saveSoaState()" />
+      </td>
+      <td>
+        <input type="text" class="soa-text-input soa-owner"
+          placeholder="z.B. ISB, IT"
+          value="${(s.owner||'').replace(/"/g,'&quot;')}"
+          oninput="saveSoaState()" />
+      </td>
+      <td>
+        <a class="soa-doc-link" href="/docs/${docName}.odt" target="_blank">
+          <svg width="10" height="10" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
+          A.${id}
+        </a>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+  updateSoaProgress();
+}
+
+function openSoaPopup(id, name, desc) {
+  document.getElementById('popupId').textContent = id;
+  document.getElementById('popupName').textContent = name;
+  document.getElementById('popupDesc').textContent = desc;
+  document.getElementById('soaPopup').classList.add('open');
+}
+function closeSoaPopup() {
+  document.getElementById('soaPopup').classList.remove('open');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSoaPopup(); });
+
+function initSoa() {
+  buildSoaTable('soa-a5', ANNEX_A.a5);
+  buildSoaTable('soa-a6', ANNEX_A.a6);
+  buildSoaTable('soa-a7', ANNEX_A.a7);
+  buildSoaTable('soa-a8', ANNEX_A.a8);
+}
+document.addEventListener('DOMContentLoaded', () => { loadDocs(); initSoa(); });</script>
 </body>
 </html>

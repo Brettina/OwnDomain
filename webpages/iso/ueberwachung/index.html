@@ -6,6 +6,33 @@
   <title>ISO 27001 – Überwachungsaudits | Helm & Walter</title>
  <script>
 // Add at the very TOP of the existing <script> block:
+let CFG = {};
+let CONFIG_READY = false;
+
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadConfig();
+  await loadDocs();
+});
+function applyResponsibilities() {
+  if (!CFG.responsibilities) return;
+  Object.entries(CFG.responsibilities).forEach(([rowId, role]) => {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+    const badge = row.querySelector('.owner-badge');
+    if (badge) badge.textContent = role;
+  });
+}
+
+async function loadConfig() {
+  try {
+    const res = await fetch(`${API_BASE}/api/config`);
+    CFG = await res.json();
+    applyResponsibilities();
+    CONFIG_READY = true;
+  } catch(e) { console.warn(e); }
+}
+
+
 const API_BASE = '';
 
 const DOC_MAP = {
@@ -876,7 +903,7 @@ Danke.`
     btn.style.background = '#4a7d1f';
     setTimeout(() => { btn.textContent = 'Speichern'; btn.style.background = ''; }, 2000);
   }
-  document.addEventListener('DOMContentLoaded', loadDocs);
+  //document.addEventListener('DOMContentLoaded', loadDocs);
 </script>
 </body>
 </html>

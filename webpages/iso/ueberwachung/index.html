@@ -757,32 +757,38 @@ async function markDone(chk, rowId) {
   // STEP 1: ask if user wants email OR direct approval
   const mode = prompt('1 = Mail senden, 2 = Direkt freigeben');
 
-  if (mode === '1') {
-    const email = prompt('Empfänger E-Mail:');
-    if (!email) return;
+if (mode === '1') {
+  const role = CFG.responsibilities[rowId];
+  const email = (CFG.emails || {})[role];
 
-    const name = prompt('Dein Name:') || '';
-    const role = prompt('Deine Rolle:') || '';
+  if (!email) {
+    alert(`Keine E-Mail für Rolle "${role}" hinterlegt`);
+    chk.checked = false;
+    return;
+  }
 
-    const subject = encodeURIComponent(`Freigabe erforderlich: ${docBase}`);
-    const body = encodeURIComponent(
-`Hallo,
+  const name = prompt('Dein Name:') || '';
+  const userRole = prompt('Deine Rolle:') || '';
+
+  const subject = encodeURIComponent(`Freigabe erforderlich: ${docBase}`);
+  const body = encodeURIComponent(
+`Hallo ${role},
 
 das Dokument "${docBase}" wurde aktualisiert.
 
 Bitte prüfen und freigeben.
 
 Name: ${name}
-Rolle: ${role}
+Rolle: ${userRole}
 
 Danke.`
-    );
+  );
 
-    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+  window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
 
-    chk.checked = false; // no approval yet
-    return;
-  }
+  chk.checked = false;
+  return;
+}
 
   if (mode === '2') {
     const approver = prompt('Freigabe durch (Name):');

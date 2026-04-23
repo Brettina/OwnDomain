@@ -34,5 +34,11 @@
     "risikoanalyse-aktuell": "https://drive.google.com/file/d/YOUR_ID/view",
     "rezertifizierung-bericht": "https://drive.google.com/file/d/YOUR_ID/view",
     "zertifikat-iso27001-neu": "https://drive.google.com/file/d/YOUR_ID/view"
+  },
+  "emails": {
+    "ISB": "anfrage@weichware-lohr.de",
+    "GF": "anfrage@weichware-lohr.de",
+        "IT-Leitung": "it@company.com"
+
   }
 }

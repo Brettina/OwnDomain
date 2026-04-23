@@ -1237,42 +1237,62 @@ function switchTab(id) {
   // ── MARK DONE ──────────────────────────────────────────────
 // Replace the existing markDone() with this:
 async function markDone(chk, rowId) {
-  if (!chk.checked) {
-    chk.checked = true; // can't untick
+  const docBase = DOC_MAP[rowId];
+  if (!docBase) return;
+
+  // STEP 1: ask if user wants email OR direct approval
+  const mode = prompt('1 = Mail senden, 2 = Direkt freigeben');
+
+  if (mode === '1') {
+    const email = prompt('Empfänger E-Mail:');
+    if (!email) return;
+
+    const name = prompt('Dein Name:') || '';
+    const role = prompt('Deine Rolle:') || '';
+
+    const subject = encodeURIComponent(`Freigabe erforderlich: ${docBase}`);
+    const body = encodeURIComponent(
+`Hallo,
+
+das Dokument "${docBase}" wurde aktualisiert.
+
+Bitte prüfen und freigeben.
+
+Name: ${name}
+Rolle: ${role}
+
+Danke.`
+    );
+
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+
+    chk.checked = false; // no approval yet
     return;
   }
 
-  const docBase = DOC_MAP[rowId];
+  if (mode === '2') {
+    const approver = prompt('Freigabe durch (Name):');
+    if (!approver) { chk.checked = false; return; }
 
-  // Just a visual confirmation tick — no API call needed
-  const row = document.getElementById(rowId);
-  if (row) row.classList.add('done');
-  chk.disabled = true;
-  const label = chk.closest('.task-check')?.querySelector('label');
-  if (label) label.textContent = '✓ Notiert';
+    const role = prompt('Rolle:') || 'ISB';
 
-  // Optionally also trigger the approval flow if a doc exists
-  if (docBase) {
-    const doApprove = confirm(`Dokument „${docBase}" als freigegeben markieren und PDF erzeugen?\n\nOK = Ja (ISB-Freigabe)\nAbbrechen = Nur als erledigt markieren`);
-    if (doApprove) {
-      const approver = prompt('Name des Freigebenden:');
-      if (!approver) return;
-      const role = prompt('Rolle (z.B. ISB, GF, IT-Leitung):') || 'ISB';
+    chk.disabled = true;
 
-      if (label) label.textContent = '…';
-      try {
-        const res = await fetch(`${API_BASE}/api/approve`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ docName: docBase, approver, role })
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Server error');
-        await loadDocs();
-      } catch (e) {
-        alert(`Freigabe-Fehler: ${e.message}\nHaken bleibt gesetzt.`);
-        if (label) label.textContent = '✓ Notiert';
-      }
+    try {
+      const res = await fetch(`${API_BASE}/api/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ docName: docBase, approver, role })
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      await loadDocs();
+    } catch (e) {
+      alert(e.message);
+      chk.checked = false;
+      chk.disabled = false;
     }
   }
 }
@@ -1502,6 +1522,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadConfig();
   await loadDocs();
   initSoa();
-});</script>
+});
+</script>
 </body>
 </html>

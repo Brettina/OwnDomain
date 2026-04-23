@@ -2,7 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const { exec } = require('child_process');
-
+const nodemailer = require('nodemailer');
 const app = express();
 app.use(express.json());
 
@@ -10,6 +10,16 @@ const ISO_DIR = __dirname;
 const DOCS_DIR = path.join(ISO_DIR, 'docs');
 const APPROVALS_FILE = path.join(ISO_DIR, 'approvals.json');
 const CONFIG_FILE = path.join(ISO_DIR, 'config.json');
+
+const transporter = nodemailer.createTransport({
+  host: 'smtp.yourprovider.com',
+  port: 587,
+  secure: false,
+  auth: {
+    user: 'your@email.com',
+    pass: 'your-password'
+  }
+});
 
 if (!fs.existsSync(DOCS_DIR)) fs.mkdirSync(DOCS_DIR);
 if (!fs.existsSync(APPROVALS_FILE)) fs.writeFileSync(APPROVALS_FILE, '{}');
@@ -24,6 +34,8 @@ function loadConfig() {
   try { return JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8')); }
   catch { return { responsibilities: {}, driveLinks: {} }; }
 }
+
+
 
 // GET /api/config — send responsibilities + driveLinks to frontend
 app.get('/api/config', (req, res) => {
@@ -95,10 +107,34 @@ app.post('/api/approve', (req, res) => {
     approvals[docName] = { approvedBy: approver, role, timestamp: now.toISOString(), pdfFilename: stampedPdf };
     saveApprovals(approvals);
 
-    res.json({ ok: true, pdfFilename: stampedPdf, timestamp: now.toISOString() });
-  });
-});
+// load config to resolve email
+const config = loadConfig();
+const roleEmail = config.emails?.[role];
 
+// send email if mapping exists
+if (roleEmail) {
+  transporter.sendMail({
+    from: '"ISO System" <no-reply@yourdomain.com>',
+    to: roleEmail,
+    subject: `Dokument freigegeben: ${docName}`,
+    text: `
+Dokument: ${docName}
+Freigegeben von: ${approver}
+Rolle: ${role}
+Zeit: ${now.toISOString()}
+    `
+  }, (err) => {
+    if (err) console.error('Mail error:', err);
+  });
+}
+
+res.json({
+  ok: true,
+  pdfFilename: stampedPdf,
+  timestamp: now.toISOString()
+});
+});
+});
 app.use('/docs', express.static(DOCS_DIR));
 app.use('/zerti', express.static(path.join(ISO_DIR, 'zerti')));
 app.use('/ueberwachung', express.static(path.join(ISO_DIR, 'ueberwachung')));

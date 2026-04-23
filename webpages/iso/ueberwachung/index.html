@@ -750,44 +750,64 @@ async function loadDocs() {
 <script>
   let auditCounter = 2; // already have Ü1 + Ü2
 
-// Replace the existing markDone() with this:
 async function markDone(chk, rowId) {
-  if (!chk.checked) {
-    chk.checked = true; // can't un-approve
-    return;
-  }
-
   const docBase = DOC_MAP[rowId];
-  if (!docBase) {
-    // No doc linked — just visual tick
-    document.getElementById(rowId)?.classList.add('done');
+  if (!docBase) return;
+
+  // STEP 1: ask if user wants email OR direct approval
+  const mode = prompt('1 = Mail senden, 2 = Direkt freigeben');
+
+  if (mode === '1') {
+    const email = prompt('Empfänger E-Mail:');
+    if (!email) return;
+
+    const name = prompt('Dein Name:') || '';
+    const role = prompt('Deine Rolle:') || '';
+
+    const subject = encodeURIComponent(`Freigabe erforderlich: ${docBase}`);
+    const body = encodeURIComponent(
+`Hallo,
+
+das Dokument "${docBase}" wurde aktualisiert.
+
+Bitte prüfen und freigeben.
+
+Name: ${name}
+Rolle: ${role}
+
+Danke.`
+    );
+
+    window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
+
+    chk.checked = false; // no approval yet
     return;
   }
 
-  const approver = prompt('Name des Freigebenden (ISB):');
-  if (!approver) { chk.checked = false; return; }
+  if (mode === '2') {
+    const approver = prompt('Freigabe durch (Name):');
+    if (!approver) { chk.checked = false; return; }
 
-  const role = prompt('Rolle (z.B. ISB, GF, IT-Leitung):') || 'ISB';
+    const role = prompt('Rolle:') || 'ISB';
 
-  chk.disabled = true;
-  const label = chk.closest('.task-check')?.querySelector('label');
-  if (label) label.textContent = '…';
+    chk.disabled = true;
 
-  try {
-    const res = await fetch(`${API_BASE}/api/approve`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ docName: docBase, approver, role })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Server error');
+    try {
+      const res = await fetch(`${API_BASE}/api/approve`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ docName: docBase, approver, role })
+      });
 
-    await loadDocs(); // refresh all links + stamps
-  } catch (e) {
-    alert(`Fehler: ${e.message}`);
-    chk.checked = false;
-    chk.disabled = false;
-    if (label) label.textContent = 'Eingereicht';
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      await loadDocs();
+    } catch (e) {
+      alert(e.message);
+      chk.checked = false;
+      chk.disabled = false;
+    }
   }
 }
 

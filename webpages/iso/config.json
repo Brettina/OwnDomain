@@ -1,0 +1,38 @@
+{
+  "responsibilities": {
+    "row-risikoanalyse": "ISB",
+    "row-soa": "ISB",
+    "row-rtp": "ISB",
+    "row-richtlinie": "GF",
+    "row-assets": "IT-Leitung",
+    "row-rollen": "GF",
+    "row-intaudit": "ISB",
+    "row-s1bericht": "ISB",
+    "row-s2bericht": "ISB",
+    "row-korrektur": "ISB",
+    "row-zertifikat": "GF",
+    "row-aenderungen": "ISB",
+    "row-soa-re": "ISB",
+    "row-risk-re": "ISB",
+    "row-re-bericht": "ISB",
+    "row-re-zertifikat": "GF"
+  },
+  "driveLinks": {
+    "risikoanalyse": "https://drive.google.com/drive/folders/1sw2gsXm7BjTk4buCHPuetJqKcHybOk6W?usp=drive_link",
+    "soa": "https://docs.google.com/document/d/1lXPQKXlTrxVl0XQQFhLvkpPr1yMrxUqcgwWn7uchSm8/edit?usp=drive_link",
+    "risikobehandlungsplan": "https://drive.google.com/file/d/YOUR_ID/view",
+    "sicherheitsrichtlinie": "https://drive.google.com/file/d/YOUR_ID/view",
+    "asset-verzeichnis": "https://drive.google.com/file/d/YOUR_ID/view",
+    "rollen-verantwortlichkeiten": "https://drive.google.com/file/d/YOUR_ID/view",
+    "internes-audit-bericht": "https://drive.google.com/file/d/YOUR_ID/view",
+    "stage1-auditbericht": "https://drive.google.com/file/d/YOUR_ID/view",
+    "stage2-auditbericht": "https://drive.google.com/file/d/YOUR_ID/view",
+    "korrekturmassnahmen": "https://drive.google.com/file/d/YOUR_ID/view",
+    "zertifikat-iso27001": "https://drive.google.com/file/d/YOUR_ID/view",
+    "isms-aenderungsprotokoll": "https://drive.google.com/file/d/YOUR_ID/view",
+    "soa-aktuell": "https://drive.google.com/file/d/YOUR_ID/view",
+    "risikoanalyse-aktuell": "https://drive.google.com/file/d/YOUR_ID/view",
+    "rezertifizierung-bericht": "https://drive.google.com/file/d/YOUR_ID/view",
+    "zertifikat-iso27001-neu": "https://drive.google.com/file/d/YOUR_ID/view"
+  }
+}

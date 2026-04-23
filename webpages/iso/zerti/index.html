@@ -9,7 +9,6 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;600;700&display=swap" rel="stylesheet" />
  
   <script>
-// Add at the very TOP of the existing <script> block:
 const API_BASE = '';
 
 const DOC_MAP = {
@@ -31,35 +30,88 @@ const DOC_MAP = {
   'row-re-zertifikat':  'zertifikat-iso27001-neu',
 };
 
+let CFG = { responsibilities: {}, driveLinks: {} };
+
+// Icon SVG shared
+const FILE_ICON = `<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>`;
+const DRIVE_ICON = `<svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M15.545 6.558a9.42 9.42 0 0 1 .139 1.626c0 2.434-.87 4.492-2.384 5.885h.002C11.978 15.292 10.158 16 8 16A8 8 0 1 1 8 0a7.689 7.689 0 0 1 5.352 2.082l-2.284 2.284A4.347 4.347 0 0 0 8 3.166c-2.087 0-3.86 1.408-4.492 3.304a4.792 4.792 0 0 0 0 3.063h.003c.635 1.893 2.405 3.301 4.492 3.301 1.078 0 2.004-.276 2.722-.764h-.003a3.702 3.702 0 0 0 1.599-2.431H8v-3.08h7.545z"/></svg>`;
+
+async function loadConfig() {
+  try {
+    const res = await fetch(`${API_BASE}/api/config`);
+    CFG = await res.json();
+    applyResponsibilities();
+  } catch(e) { console.warn('Config load failed', e); }
+}
+
+function applyResponsibilities() {
+  Object.entries(CFG.responsibilities || {}).forEach(([rowId, label]) => {
+    const row = document.getElementById(rowId);
+    if (!row) return;
+    const badge = row.querySelector('.owner-badge');
+    if (badge) badge.textContent = label;
+  });
+}
+
+function makeDocLink(href, label, isGdrive, isPdf) {
+  const color = isPdf ? 'var(--green)' : '';
+  const borderColor = isPdf ? 'var(--green-dim)' : '';
+  const icon = isGdrive ? DRIVE_ICON : FILE_ICON;
+  const colorStyle = isPdf ? `color:${color};border-color:${borderColor};` : '';
+  const title = isGdrive ? ' title="Google Drive Fallback"' : '';
+  return `<a class="task-doc" href="${href}" target="_blank" style="${colorStyle}"${title}>${icon} ${label}</a>`;
+}
+
 async function loadDocs() {
-  const res = await fetch(`${API_BASE}/api/docs`);
-  const groups = await res.json();
+  let groups = {};
+  try {
+    const res = await fetch(`${API_BASE}/api/docs`);
+    groups = await res.json();
+  } catch(e) { console.warn('Docs API unavailable, using Drive fallbacks'); }
+
   Object.entries(DOC_MAP).forEach(([rowId, docBase]) => {
     const row = document.getElementById(rowId);
     if (!row) return;
-    const group = groups[docBase];
-    if (!group) return;
     const metaDiv = row.querySelector('.task-meta');
+    if (!metaDiv) return;
     metaDiv.innerHTML = '';
-    if (group.odt) {
-      metaDiv.innerHTML += `<a class="task-doc" href="/docs/${group.odt}" target="_blank"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg> ${group.odt}</a>`;
+
+    const group = groups[docBase];
+    const driveUrl = (CFG.driveLinks || {})[docBase];
+
+    if (group && (group.odt || group.pdf)) {
+      // Show latest ODT
+      if (group.odt) {
+        metaDiv.innerHTML += makeDocLink(`/docs/${group.odt}`, group.odt, false, false);
+      }
+      // Show latest PDF
+      if (group.pdf) {
+        metaDiv.innerHTML += makeDocLink(`/docs/${group.pdf}`, group.pdf, false, true);
+      }
+    } else if (driveUrl) {
+      // Fallback: Google Drive link
+      metaDiv.innerHTML += makeDocLink(driveUrl, `${docBase} (Drive)`, true, false);
     }
-    if (group.pdfs && group.pdfs.length > 0) {
-      metaDiv.innerHTML += `<a class="task-doc" href="/docs/${group.pdfs[0]}" target="_blank" style="color:var(--green);border-color:var(--green-dim);"><svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg> ${group.pdfs[0]}</a>`;
-    }
-    if (group.approval) {
+
+    // Approval stamp
+    if (group && group.approval) {
       const chk = row.querySelector('input[type="checkbox"]');
       if (chk) { chk.checked = true; chk.disabled = true; }
       row.classList.add('done');
-      const d = new Date(group.approval.timestamp);
       const label = row.querySelector('.task-check label');
       if (label) label.textContent = `✓ ${group.approval.role}`;
       if (!metaDiv.querySelector('.approval-stamp')) {
-        metaDiv.insertAdjacentHTML('afterend', `<div class="approval-stamp" style="font-size:.72rem;color:var(--green);margin-top:4px;">Freigegeben von ${group.approval.approvedBy} (${group.approval.role}) · ${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE', {hour:'2-digit',minute:'2-digit'})}</div>`);
+        const d = new Date(group.approval.timestamp);
+        metaDiv.insertAdjacentHTML('afterend',
+          `<div class="approval-stamp" style="font-size:.72rem;color:var(--green);margin-top:4px;">
+            Freigegeben von ${group.approval.approvedBy} (${group.approval.role}) · 
+            ${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE', {hour:'2-digit',minute:'2-digit'})}
+          </div>`);
       }
     }
   });
-}</script>
+}
+</script>
   <style>
     /* ── HW BRAND TOKENS ──────────────────────────────────────── */
     :root {
@@ -1186,41 +1238,42 @@ function switchTab(id) {
 // Replace the existing markDone() with this:
 async function markDone(chk, rowId) {
   if (!chk.checked) {
-    chk.checked = true; // can't un-approve
+    chk.checked = true; // can't untick
     return;
   }
 
   const docBase = DOC_MAP[rowId];
-  if (!docBase) {
-    // No doc linked — just visual tick
-    document.getElementById(rowId)?.classList.add('done');
-    return;
-  }
 
-  const approver = prompt('Name des Freigebenden (ISB):');
-  if (!approver) { chk.checked = false; return; }
-
-  const role = prompt('Rolle (z.B. ISB, GF, IT-Leitung):') || 'ISB';
-
+  // Just a visual confirmation tick — no API call needed
+  const row = document.getElementById(rowId);
+  if (row) row.classList.add('done');
   chk.disabled = true;
   const label = chk.closest('.task-check')?.querySelector('label');
-  if (label) label.textContent = '…';
+  if (label) label.textContent = '✓ Notiert';
 
-  try {
-    const res = await fetch(`${API_BASE}/api/approve`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ docName: docBase, approver, role })
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Server error');
+  // Optionally also trigger the approval flow if a doc exists
+  if (docBase) {
+    const doApprove = confirm(`Dokument „${docBase}" als freigegeben markieren und PDF erzeugen?\n\nOK = Ja (ISB-Freigabe)\nAbbrechen = Nur als erledigt markieren`);
+    if (doApprove) {
+      const approver = prompt('Name des Freigebenden:');
+      if (!approver) return;
+      const role = prompt('Rolle (z.B. ISB, GF, IT-Leitung):') || 'ISB';
 
-    await loadDocs(); // refresh all links + stamps
-  } catch (e) {
-    alert(`Fehler: ${e.message}`);
-    chk.checked = false;
-    chk.disabled = false;
-    if (label) label.textContent = 'Eingereicht';
+      if (label) label.textContent = '…';
+      try {
+        const res = await fetch(`${API_BASE}/api/approve`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ docName: docBase, approver, role })
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Server error');
+        await loadDocs();
+      } catch (e) {
+        alert(`Freigabe-Fehler: ${e.message}\nHaken bleibt gesetzt.`);
+        if (label) label.textContent = '✓ Notiert';
+      }
+    }
   }
 }
 
@@ -1445,6 +1498,10 @@ function initSoa() {
   buildSoaTable('soa-a7', ANNEX_A.a7);
   buildSoaTable('soa-a8', ANNEX_A.a8);
 }
-document.addEventListener('DOMContentLoaded', () => { loadDocs(); initSoa(); });</script>
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadConfig();
+  await loadDocs();
+  initSoa();
+});</script>
 </body>
 </html>

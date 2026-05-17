@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<title>Freisassen e.V. i. G.</title>
+<title>Freisassen e.V. i.G.</title>
 
 <style>
 
@@ -26,7 +26,7 @@ header{
             rgba(0,0,0,0.65),
             rgba(0,0,0,0.75)
         ),
-        url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1600&auto=format&fit=crop');
+        url('pics/saftladen_vorn.jpg');
     background-size:cover;
     background-position:center;
     color:white;
@@ -172,13 +172,78 @@ footer{
 }
 
 </style>
+<script>
+function parseGermanDate(day, timeRange) {
+
+    const [d,m,y] = day.split(".");
+    const [from,to] = timeRange.split("-");
+
+    return {
+        start: `${y}-${m}-${d}T${from}:00`,
+        end: `${y}-${m}-${d}T${to}:00`
+    };
+}
+
+async function loadCalendar() {
+
+    const raw = await fetch("calendar.json")
+        .then(r => r.json());
+
+    const el = document.getElementById("calendar");
+
+    raw.items.forEach(item => {
+
+        const t = parseGermanDate(item.day, item.time);
+
+        const div = document.createElement("div");
+
+        div.className = "card";
+
+        div.innerHTML = `
+            <h3>
+                <a href="/webpages/projects/?open=${item.project}">
+                    ${item.title}
+                </a>
+            </h3>
+
+            <p>
+                ${item.day}
+                ·
+                ${item.time}
+            </p>
+
+            <p>
+                ${item.description || ""}
+            </p>
+
+            <p class="small">
+                ${item.location || ""}
+            </p>
+
+            <p class="small">
+                ${item.responsible?.name || ""}
+                ${item.responsible?.email
+                    ? `· <a href="mailto:${item.responsible.email}">
+                        ${item.responsible.email}
+                      </a>`
+                    : ""
+                }
+            </p>
+        `;
+
+        el.appendChild(div);
+    });
+}
+
+window.addEventListener("DOMContentLoaded", loadCalendar);
+</script>
 </head>
 
 <body>
 
 <header>
 
-    <h1>Freisassen e.V. i. G.</h1>
+    <h1>Freisassen e.V. i.G.</h1>
 
     <p>
         Freiwillige, Bastler, Christen, Entwickler,
@@ -206,7 +271,7 @@ footer{
     <h2>Wer wir sind</h2>
 
     <p>
-        Freisassen e.V. i. G. ist ein gemeinnütziger Verein
+        Freisassen e.V. i.G. ist ein gemeinnütziger Verein
         mit Sitz in Jahnsdorf.
         Wir verbinden ehrenamtliches Engagement,
         technische Projekte,
@@ -337,6 +402,7 @@ footer{
         Wenn du sinnvoll mithelfen möchtest,
         bist du willkommen.
     </p>
+    <div id="calendar" class="grid"></div>
     <div class="card">
 
     <h3>Kontakt</h3>
@@ -356,8 +422,8 @@ footer{
 
     <p>
         💬 Telefon / WhatsApp:<br>
-        <a href="https://wa.me/4917612345678">
-            +49 176 12345678
+        <a href="https://wa.me/4915758068547">
+            +49 1575 8068 547
         </a>
     </p>
 
@@ -408,51 +474,6 @@ footer{
 
 </section>
 
-<section id="spenden">
-
-    <h2>Spenden</h2>
-
-    <p>
-        Der Verein finanziert sich
-        durch freiwillige Unterstützung,
-        Mitgliedsbeiträge
-        und Spenden.
-    </p>
-
-    <div class="grid">
-
-        <div class="card">
-
-            <h3>Banküberweisung</h3>
-
-            <p>
-                <strong>Freisassen e.V.</strong><br>
-                IBAN: DE00 0000 0000 0000 0000 00<br>
-                BIC: XXXXXXXX
-            </p>
-
-        </div>
-
-        <div class="card">
-
-            <h3>SumUp</h3>
-
-            <p>
-                Hier später
-                SumUp-Link oder QR-Code einfügen.
-            </p>
-
-        </div>
-
-    </div>
-
-    <p class="small">
-        Spenden werden ausschließlich
-        für die satzungsgemäßen Zwecke
-        des Vereins verwendet.
-    </p>
-
-</section>
 
 <section id="spenden">
 
@@ -484,8 +505,8 @@ footer{
             <h3>SumUp</h3>
 
             <p>
-                Hier später
-                SumUp-Link oder QR-Code einfügen.
+                
+                SumUp-Link oder QR-Code
             </p>
 
         </div>
@@ -512,7 +533,7 @@ footer{
 
             <p class="small">
 
-                Freisassen e.V. i. G.<br>
+                Freisassen e.V. i.G.<br>
                 Sitz des Vereins: 09387 Jahnsdorf<br>
                 Thalheimer Str. 14<br>
                 Deutschland
@@ -666,16 +687,7 @@ footer{
     </div>
   </div>
 </section>
-<footer>
 
-    © 2026 Freisassen e.V. i. G.
-    — Gemeinnützig, selbstlos
-    und ehrenamtlich organisiert.
-
-</footer>
-
-</body>
-</html>
 </main>
 
 <footer>

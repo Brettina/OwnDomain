@@ -218,29 +218,15 @@ footer{
 
 </style>
 <script>
-async function loadCalendar() {
-const raw = await fetch("calendar.json?v=" + Date.now()).then(r => r.json());    window.calendarEvents = {};
+    async function loadCalendar() {
+    const raw = await fetch("calendar.json?v=" + Date.now()).then(r => r.json());
+    window.calendarEvents = {};
     raw.items.forEach(item => {
         window.calendarEvents[item.day] = item;
     });
     renderCalendar(new Date().getFullYear(), new Date().getMonth());
 }
 
-
-window.openLightbox = function(src, title, desc) {
-    const lb = document.createElement("div");
-    lb.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;cursor:pointer";
-    lb.innerHTML = `
-        <img src="${src}" style="max-width:90vw;max-height:75vh;border-radius:12px;object-fit:contain">
-        <p style="color:white;margin-top:16px;font-weight:600">${title}</p>
-        <p style="color:#aaa;font-size:0.9rem;margin-top:4px">${desc}</p>
-        <p style="color:#aaa;font-size:0.8rem;margin-top:16px">Klicken zum Schließen</p>
-    `;
-    lb.onclick = () => lb.remove();
-    document.body.appendChild(lb);
-};
-
-window.addEventListener("DOMContentLoaded", loadNews);
 function renderCalendar(year, month) {
     const WEEKDAYS = ['Mo','Di','Mi','Do','Fr','Sa','So'];
     const MONTHS = ['Januar','Februar','März','April','Mai','Juni',
@@ -282,16 +268,15 @@ function renderCalendar(year, month) {
         const key = `${dd}.${mm}.${year}`;
         const has = !!events[key];
         const isToday = d === now.getDate() && month === now.getMonth() && year === now.getFullYear();
-        const todayStyle = isToday ? `position:relative;` : "";
-        const todayBadge = isToday ? `<span style="position:absolute;top:6px;right:8px;font-size:0.65rem;color:#5ea0ff">heute</span>` : "";
-html += `
-    <div class="cal-day ${has ? "has-event" : ""}" style="
-        ${todayStyle}
-${has ? `background-image:url('pics/favicon.png');background-size:contain;background-position:center;background-repeat:no-repeat;background-color:#0d1a2e;border:2px solid #5ea0ff;` : ""}    " onclick="showCalEvent('${key}')">
-        <div class="cal-num" style="${has ? "background:rgba(0,0,0,0.45);display:inline-block;padding:1px 5px;border-radius:6px;" : ""}">${d}</div>
-        ${todayBadge}
-    </div>
-`;
+        html += `
+            <div class="cal-day ${has ? "has-event" : ""}" style="
+                ${isToday ? "position:relative;" : ""}
+                ${has ? "background-image:url('pics/favicon.png');background-size:contain;background-position:center;background-repeat:no-repeat;background-color:#0d1a2e;border:2px solid #5ea0ff;" : ""}
+            " onclick="showCalEvent('${key}')">
+                <div class="cal-num" style="${has ? "background:rgba(0,0,0,0.45);display:inline-block;padding:1px 5px;border-radius:6px;" : ""}">${d}</div>
+                ${isToday ? `<span style="position:absolute;top:6px;right:8px;font-size:0.65rem;color:#5ea0ff">heute</span>` : ""}
+            </div>
+        `;
     }
 
     const total = startDow + daysInMonth;
@@ -317,15 +302,12 @@ window.calNav = function(dir) {
     renderCalendar(year, month);
 };
 
-// Hilfsfunktion: alle Bilder zu einem Datum finden
 function renderGallery(day, container) {
     const wrap = document.createElement("div");
     wrap.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px";
     container.appendChild(wrap);
-
     for (let i = 1; i <= 20; i++) {
-        const exts = ["jpg", "jpeg", "png"];
-        exts.forEach(ext => {
+        ["jpg","jpeg","png"].forEach(ext => {
             const src = `news/${day} (${i}).${ext}`;
             const img = document.createElement("img");
             img.src = src;
@@ -338,82 +320,10 @@ function renderGallery(day, container) {
     }
 }
 
-// Hilfsfunktion: alle Bilder zu einem Datum finden
-async function findImagesForDate(day) {
-    const imgs = [];
-    // Erstes Bild: "22.04.2026.jpg"
-    const first = `news/${day}.jpg`;
-    // Weitere: "22.04.2026 (2).jpg", "22.04.2026 (3).jpg" ...
-    imgs.push(first);
-    for (let i = 2; i <= 10; i++) {
-        imgs.push(`news/${day} (${i}).jpg`);
-    }
-    // Prüfen welche wirklich existieren
-    const results = await Promise.all(imgs.map(src =>
-        fetch(src, { method: "HEAD" })
-            .then(r => r.ok ? src : null)
-            .catch(() => null)
-    ));
-    return results.filter(Boolean);
-}
-
-function renderGallery(images, container) {
-    if (!images.length) return;
-    container.insertAdjacentHTML("beforeend", `
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px">
-            ${images.map(src => `
-                <img src="${src}"
-                     style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer"
-                     onclick="openLightbox('${src}')">
-            `).join("")}
-        </div>
-    `);
-}
-
-async function loadNews() {
-    const raw = await fetch("calendar.json?v=" + Date.now()).then(r => r.json());
-    const today = new Date();
-
-    const past = raw.items
-        .map(item => {
-            const [d, m, y] = item.day.split(".");
-            return { ...item, date: new Date(y, m - 1, d) };
-        })
-        .filter(item => item.date <= today)
-        .sort((a, b) => b.date - a.date);
-
-    const gallery = document.getElementById("news-gallery");
-    if (!past.length) {
-        gallery.innerHTML = `<p class="small">Noch keine Neuigkeiten.</p>`;
-        return;
-    }
-
-    const latestDate = past[0].day;
-    const latestEvents = past.filter(e => e.day === latestDate);
-
-    gallery.innerHTML = `<p class="small" style="margin-bottom:16px">Zuletzt aktiv am ${latestDate}</p>`;
-
-    for (const item of latestEvents) {
-        const images = await findImagesForDate(item.day);
-        if (!images.length) continue;
-
-        const block = document.createElement("div");
-        block.className = "card";
-        block.style.marginBottom = "16px";
-        block.innerHTML = `
-            <strong>${item.title}</strong>
-            <p class="small" style="margin:4px 0 8px">${item.description}</p>
-        `;
-renderGallery(item.day, block);
-        gallery.appendChild(block);
-    }
-}
-
 window.showCalEvent = function(key) {
     const events = window.calendarEvents;
     const box = document.getElementById("eventbox");
     box.style.display = "block";
-
     if (!events[key]) {
         box.innerHTML = `
             <div style="display:flex;justify-content:space-between;align-items:center">
@@ -424,7 +334,6 @@ window.showCalEvent = function(key) {
             <p class="small">Keine Termine.</p>`;
         return;
     }
-
     const item = events[key];
     box.innerHTML = `
         <div style="display:flex;justify-content:space-between;align-items:flex-start">
@@ -442,12 +351,42 @@ window.showCalEvent = function(key) {
         </p>
         <div id="eventbox-gallery"></div>
     `;
-
-    // Bilder nachladen
-    findImagesForDate(key).then(images => {
-findImagesForDate(key).then(...)  // diese Zeile komplett ersetzen durch:
-renderGallery(key, document.getElementById("eventbox-gallery"));    });
+    renderGallery(key, document.getElementById("eventbox-gallery"));
 };
+
+async function loadNews() {
+    const raw = await fetch("calendar.json?v=" + Date.now()).then(r => r.json());
+    const today = new Date();
+    const past = raw.items
+        .map(item => {
+            const [d, m, y] = item.day.split(".");
+            return { ...item, date: new Date(y, m - 1, d) };
+        })
+        .filter(item => item.date <= today)
+        .sort((a, b) => b.date - a.date);
+
+    const gallery = document.getElementById("news-gallery");
+    if (!past.length) {
+        gallery.innerHTML = `<p class="small">Noch keine Neuigkeiten.</p>`;
+        return;
+    }
+
+    const latestDate = past[0].day;
+    const latestEvents = past.filter(e => e.day === latestDate);
+    gallery.innerHTML = `<p class="small" style="margin-bottom:16px">Zuletzt aktiv am ${latestDate}</p>`;
+
+    for (const item of latestEvents) {
+        const block = document.createElement("div");
+        block.className = "card";
+        block.style.marginBottom = "16px";
+        block.innerHTML = `
+            <strong>${item.title}</strong>
+            <p class="small" style="margin:4px 0 8px">${item.description}</p>
+        `;
+        renderGallery(item.day, block);
+        gallery.appendChild(block);
+    }
+}
 
 window.openLightbox = function(src) {
     const lb = document.createElement("div");
@@ -458,16 +397,6 @@ window.openLightbox = function(src) {
 };
 
 window.addEventListener("DOMContentLoaded", () => { loadCalendar(); loadNews(); });
-window.openLightbox = function(src) {
-    const lb = document.createElement("div");
-    lb.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1000;display:flex;align-items:center;justify-content:center;cursor:pointer";
-    lb.innerHTML = `<img src="${src}" style="max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain">`;
-    lb.onclick = () => lb.remove();
-    document.body.appendChild(lb);
-};
-
-window.addEventListener("DOMContentLoaded", () => { loadCalendar(); loadNews(); });
-window.addEventListener("DOMContentLoaded", loadCalendar);
 </script>
 
 </head>

@@ -306,18 +306,28 @@ function renderGallery(day, container) {
     const wrap = document.createElement("div");
     wrap.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px";
     container.appendChild(wrap);
+
+    // jpg und png getrennt, damit Grid-Slots nicht kollidieren
+    const srcs = [];
     for (let i = 1; i <= 20; i++) {
-        ["jpg","jpeg","png"].forEach(ext => {
-            const src = `news/${day} (${i}).${ext}`;
-            const img = document.createElement("img");
-            img.src = src;
-            img.style.cssText = "width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;display:none";
-            img.onload = () => { img.style.display = "block"; };
-            img.onerror = () => { img.remove(); };
-            img.onclick = () => openLightbox(src);
-            wrap.appendChild(img);
-        });
+        srcs.push(`news/${day} (${i}).jpg`);
+        srcs.push(`news/${day} (${i}).jpeg`);
+        srcs.push(`news/${day} (${i}).png`);
     }
+
+    srcs.forEach(src => {
+        const img = document.createElement("img");
+        img.src = src;
+        img.style.cssText = "width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;display:none";
+        img.onload = () => {
+            img.style.display = "block";
+            // Leere Grid-Lücken entfernen
+            wrap.style.gridTemplateColumns = "repeat(auto-fill,minmax(120px,1fr))";
+        };
+        img.onerror = () => img.remove();
+        img.onclick = () => openLightbox(src);
+        wrap.appendChild(img);
+    });
 }
 
 window.showCalEvent = function(key) {

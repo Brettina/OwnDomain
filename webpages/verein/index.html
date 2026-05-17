@@ -220,8 +220,7 @@ footer{
 </style>
 <script>
 async function loadCalendar() {
-    const raw = await fetch("calendar.json").then(r => r.json());
-    window.calendarEvents = {};
+const raw = await fetch("calendar.json?v=" + Date.now()).then(r => r.json());    window.calendarEvents = {};
     raw.items.forEach(item => {
         window.calendarEvents[item.day] = item;
     });
@@ -271,13 +270,15 @@ function renderCalendar(year, month) {
         const isToday = d === now.getDate() && month === now.getMonth() && year === now.getFullYear();
         const todayStyle = isToday ? `position:relative;` : "";
         const todayBadge = isToday ? `<span style="position:absolute;top:6px;right:8px;font-size:0.65rem;color:#5ea0ff">heute</span>` : "";
-        html += `
-            <div class="cal-day ${has ? "has-event" : ""}" style="${todayStyle}"
-                 onclick="showCalEvent('${key}')">
-                <div class="cal-num">${d}</div>
-                ${todayBadge}
-${has ? `<img src="pics/favicon.png" style="width:16px;height:16px;margin-top:4px;display:block;object-fit:contain;opacity:0.85">` : ""}            </div>
-        `;
+html += `
+    <div class="cal-day ${has ? "has-event" : ""}" style="
+        ${todayStyle}
+        ${has ? `background-image:url('pics/favicon.png');background-size:cover;background-position:center;background-repeat:no-repeat;border:2px solid #5ea0ff;` : ""}
+    " onclick="showCalEvent('${key}')">
+        <div class="cal-num" style="${has ? "background:rgba(0,0,0,0.45);display:inline-block;padding:1px 5px;border-radius:6px;" : ""}">${d}</div>
+        ${todayBadge}
+    </div>
+`;
     }
 
     const total = startDow + daysInMonth;

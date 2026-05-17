@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+<link rel="icon" type="image/jpeg" href="pics/favicon.png">
+<meta property="og:image" content="pics/saftladen_vorn.jpg">
 <title>Freisassen e.V. i.G.</title>
 
 <style>
@@ -91,6 +92,49 @@ h2{
 
 .card h3{
     margin-top:0;
+}
+
+#calendar{
+    background:#0b1020;
+    color:white;
+    border-radius:18px;
+    padding:24px;
+    margin-top:24px;
+}
+
+.cal-grid{
+    display:grid;
+    grid-template-columns:repeat(7,1fr);
+    gap:10px;
+    margin-top:20px;
+}
+
+.cal-day{
+    border:1px solid rgba(255,255,255,0.18);
+    border-radius:12px;
+    min-height:70px;
+    padding:10px;
+    cursor:pointer;
+    transition:0.15s;
+}
+
+.cal-day:hover{
+    background:rgba(255,255,255,0.06);
+}
+
+.cal-day.has-event{
+    border:2px solid #5ea0ff;
+}
+
+.cal-num{
+    font-weight:700;
+    font-size:0.95rem;
+}
+
+#eventbox{
+    background:#111827;
+    color:white;
+    border-color:#222;
 }
 
 .highlight{
@@ -186,22 +230,73 @@ function parseGermanDate(day, timeRange) {
 }
 
 async function loadCalendar() {
-console.log("calendar loading");
-console.log(raw);
+
     const raw = await fetch("calendar.json")
         .then(r => r.json());
 
-    const el = document.getElementById("calendar");
+    const cal = document.getElementById("calendar");
+    const box = document.getElementById("eventbox");
+
+    const now = new Date();
+
+    const year = now.getFullYear();
+    const month = now.getMonth();
+
+    const first = new Date(year, month, 1);
+    const last = new Date(year, month + 1, 0);
+
+    const events = {};
 
     raw.items.forEach(item => {
+        events[item.day] = item;
+    });
 
-        const t = parseGermanDate(item.day, item.time);
+    let html = `
+        <h3 style="margin-top:0;">
+            Kalender
+        </h3>
 
-        const div = document.createElement("div");
+        <div class="small" style="color:#aaa;">
+            Klick auf einen markierten Tag
+        </div>
 
-        div.className = "card";
+        <div class="cal-grid">
+    `;
 
-        div.innerHTML = `
+    for(let i=1;i<=last.getDate();i++){
+
+        const dd = String(i).padStart(2,"0");
+        const mm = String(month+1).padStart(2,"0");
+
+        const key = `${dd}.${mm}.${year}`;
+
+        const has = !!events[key];
+
+        html += `
+            <div
+                class="cal-day ${has ? "has-event" : ""}"
+                ${has ? `onclick="showEvent('${key}')"` : ""}
+            >
+                <div class="cal-num">
+                    ${i}
+                </div>
+            </div>
+        `;
+    }
+
+    html += `</div>`;
+
+    cal.innerHTML = html;
+
+    window.calendarEvents = events;
+
+    window.showEvent = function(key){
+
+        const item = events[key];
+
+        box.style.display = "block";
+
+        box.innerHTML = `
             <h3>
                 <a href="/webpages/projects/?open=${item.project}">
                     ${item.title}
@@ -224,17 +319,9 @@ console.log(raw);
 
             <p class="small">
                 ${item.responsible?.name || ""}
-                ${item.responsible?.email
-                    ? `· <a href="mailto:${item.responsible.email}">
-                        ${item.responsible.email}
-                      </a>`
-                    : ""
-                }
             </p>
         `;
-
-        el.appendChild(div);
-    });
+    };
 }
 
 window.addEventListener("DOMContentLoaded", loadCalendar);
@@ -414,7 +501,10 @@ window.addEventListener("DOMContentLoaded", loadCalendar);
         Wenn du sinnvoll mithelfen möchtest,
         bist du willkommen.
     </p>
-    <div id="calendar" class="grid"></div>
+<div id="calendar"></div>
+
+<div id="eventbox" class="card" style="display:none; margin-top:20px;">
+</div>
     <div class="card">
 
     <h3>Kontakt</h3>

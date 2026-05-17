@@ -385,7 +385,7 @@ async function loadNews() {
 
     const latestDate = past[0].day;
     const latestEvents = past.filter(e => e.day === latestDate);
-    gallery.innerHTML = `<p class="small" style="margin-bottom:16px">Zuletzt aktiv am ${latestDate}</p>`;
+    gallery.innerHTML = `<p class="small" style="margin-bottom:16px"> </p>`;
 
     for (const item of latestEvents) {
         const block = document.createElement("div");
@@ -515,7 +515,6 @@ window.addEventListener("DOMContentLoaded", () => { loadCalendar(); loadNews(); 
             <h3>Gemeinnützigkeit</h3>
 
             <p>
-                Keine private Gewinnverteilung.
                 Vereinsmittel werden ausschließlich
                 satzungsgemäß verwendet.
             </p>
@@ -600,7 +599,7 @@ window.addEventListener("DOMContentLoaded", () => { loadCalendar(); loadNews(); 
     <li>Materialkosten und Aufwände über den Verein abrechnen</li>
     <li>Tätigkeiten unabhängig von der eigenen wirtschaftlichen Situation vergütet bekommen</li>
     <li>Kompetenzen und Lizenzen anderer Mitglieder mitnutzen</li>
-    <li>Mitsprache bei der Ausrichtung des Vereins</li>
+    <li>Mitsprache bei der Ausrichtung des Vereins und der Priorisierung der Projekte</li>
 </ul>
 <div id="calendar"></div>
 
@@ -678,7 +677,7 @@ window.addEventListener("DOMContentLoaded", () => { loadCalendar(); loadNews(); 
             <h3>Einzelne Veranstaltungen</h3>
 
             <p>
-                Mithelfen, dabei sein, vor Ort betreuen.
+                Mithelfen, dabei sein, Erfahrungen sammeln und vor Ort betreuen.
             </p>
 
         </div>

@@ -318,35 +318,24 @@ window.calNav = function(dir) {
 };
 
 // Hilfsfunktion: alle Bilder zu einem Datum finden
-async function findImagesForDate(day) {
-    const imgs = [];
-    // Erstes Bild: "22.04.2026.jpg"
-    const first = `news/${day}.jpg`;
-    // Weitere: "22.04.2026 (2).jpg", "22.04.2026 (3).jpg" ...
-    imgs.push(first);
-    for (let i = 2; i <= 10; i++) {
-        imgs.push(`news/${day} (${i}).jpg`);
-    }
-    // Prüfen welche wirklich existieren
-    const results = await Promise.all(imgs.map(src =>
-        fetch(src, { method: "HEAD" })
-            .then(r => r.ok ? src : null)
-            .catch(() => null)
-    ));
-    return results.filter(Boolean);
-}
+function renderGallery(day, container) {
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px";
+    container.appendChild(wrap);
 
-function renderGallery(images, container) {
-    if (!images.length) return;
-    container.insertAdjacentHTML("beforeend", `
-        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px">
-            ${images.map(src => `
-                <img src="${src}"
-                     style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer"
-                     onclick="openLightbox('${src}')">
-            `).join("")}
-        </div>
-    `);
+    for (let i = 1; i <= 20; i++) {
+        const exts = ["jpg", "jpeg", "png"];
+        exts.forEach(ext => {
+            const src = `news/${day} (${i}).${ext}`;
+            const img = document.createElement("img");
+            img.src = src;
+            img.style.cssText = "width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer;display:none";
+            img.onload = () => { img.style.display = "block"; };
+            img.onerror = () => { img.remove(); };
+            img.onclick = () => openLightbox(src);
+            wrap.appendChild(img);
+        });
+    }
 }
 
 // Hilfsfunktion: alle Bilder zu einem Datum finden
@@ -415,7 +404,7 @@ async function loadNews() {
             <strong>${item.title}</strong>
             <p class="small" style="margin:4px 0 8px">${item.description}</p>
         `;
-        renderGallery(images, block);
+renderGallery(item.day, block);
         gallery.appendChild(block);
     }
 }
@@ -456,8 +445,8 @@ window.showCalEvent = function(key) {
 
     // Bilder nachladen
     findImagesForDate(key).then(images => {
-        renderGallery(images, document.getElementById("eventbox-gallery"));
-    });
+findImagesForDate(key).then(...)  // diese Zeile komplett ersetzen durch:
+renderGallery(key, document.getElementById("eventbox-gallery"));    });
 };
 
 window.openLightbox = function(src) {

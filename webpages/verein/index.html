@@ -1,66 +1,313 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>Freisassen e.V.</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:Inter, Arial, sans-serif;
+    background:#f4f4f4;
+    color:#1f1f1f;
+    line-height:1.7;
+}
+
+header{
+    background:
+        linear-gradient(
+            rgba(0,0,0,0.65),
+            rgba(0,0,0,0.75)
+        ),
+        url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=1600&auto=format&fit=crop');
+    background-size:cover;
+    background-position:center;
+    color:white;
+    padding:110px 24px;
+    text-align:center;
+}
+
+header h1{
+    margin:0;
+    font-size:4rem;
+    letter-spacing:-2px;
+}
+
+header p{
+    max-width:760px;
+    margin:24px auto 0;
+    font-size:1.2rem;
+    opacity:0.95;
+}
+
+main{
+    max-width:1100px;
+    margin:auto;
+    padding:40px 20px 80px;
+}
+
+section{
+    background:white;
+    margin-bottom:28px;
+    padding:36px;
+    border-radius:18px;
+    box-shadow:
+        0 6px 24px rgba(0,0,0,0.06);
+}
+
+h2{
+    margin-top:0;
+    font-size:2rem;
+    margin-bottom:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:
+        repeat(auto-fit,minmax(260px,1fr));
+    gap:20px;
+    margin-top:24px;
+}
+
+.card{
+    background:#fafafa;
+    border:1px solid #ececec;
+    border-radius:14px;
+    padding:22px;
+    transition:0.2s ease;
+}
+
+.card:hover{
+    transform:translateY(-3px);
+}
+
+.card h3{
+    margin-top:0;
+}
+
+.highlight{
+    background:#111;
+    color:white;
+    padding:28px;
+    border-radius:14px;
+    margin:28px 0;
+}
+
+ul{
+    padding-left:22px;
+}
+
+.small{
+    font-size:0.93rem;
+    color:#555;
+}
+
+a{
+    color:#0d63d6;
+    text-decoration:none;
+}
+
+a:hover{
+    text-decoration:underline;
+}
+
+footer{
+    background:#111;
+    color:#d7d7d7;
+    padding:40px 20px;
+    text-align:center;
+    font-size:0.95rem;
+}
+
+.badge{
+    display:inline-block;
+    background:#ececec;
+    color:#333;
+    padding:6px 12px;
+    border-radius:999px;
+    margin:6px;
+    font-size:0.9rem;
+}
+
+.hero-buttons{
+    margin-top:32px;
+}
+
+.hero-buttons a{
+    display:inline-block;
+    padding:14px 22px;
+    border-radius:10px;
+    margin:8px;
+    font-weight:600;
+}
+
+.btn-primary{
+    background:white;
+    color:black;
+}
+
+.btn-secondary{
+    background:rgba(255,255,255,0.12);
+    color:white;
+    border:1px solid rgba(255,255,255,0.25);
+}
+
+@media(max-width:700px){
+
+    header h1{
+        font-size:2.7rem;
+    }
+
+    section{
+        padding:24px;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
 <header>
+
     <h1>Freisassen e.V.</h1>
 
     <p>
         Freiwillige, Bastler, Christen, Entwickler,
-        Kreative und Praktiker, die gemeinsam
-        gemeinnützige Ideen umsetzen wollen.
+        Kreative und Praktiker,
+        die gemeinsam gemeinnützige Ideen
+        möglich machen wollen.
     </p>
+
+    <div class="hero-buttons">
+        <a class="btn-primary" href="#mitmachen">
+            Mitmachen
+        </a>
+
+        <a class="btn-secondary" href="#spenden">
+            Unterstützen
+        </a>
+    </div>
+
 </header>
 
+<main>
+
 <section>
+
     <h2>Wer wir sind</h2>
 
     <p>
         Freisassen e.V. ist ein gemeinnütziger Verein
         mit Sitz in Jahnsdorf.
         Wir verbinden ehrenamtliches Engagement,
-        praktische Projekte, Bildungsarbeit,
-        technische Experimente und soziale Unterstützung.
+        technische Projekte,
+        Bildungsarbeit,
+        kreative Experimente
+        und soziale Unterstützung.
     </p>
 
     <p>
-        Unser Ziel ist es, Menschen zusammenzubringen,
+        Unser Ziel ist es,
+        Menschen zusammenzubringen,
         die Dinge nicht nur diskutieren,
-        sondern bauen, organisieren und tatsächlich umsetzen wollen.
+        sondern bauen,
+        organisieren
+        und tatsächlich umsetzen wollen.
     </p>
 
-    <p>
-        Der Verein fördert insbesondere:
-    </p>
+    <div>
 
-    <ul>
-        <li>Bildungsarbeit und Veröffentlichungen</li>
-        <li>Wissenschaft und Forschung</li>
-        <li>ehrenamtliches Engagement</li>
-        <li>gemeinnützige Projekte</li>
-        <li>Zusammenarbeit mit anderen Organisationen</li>
-        <li>soziale und internationale Hilfsprojekte</li>
-        <li>praktische, technische und kreative Initiativen</li>
-    </ul>
+        <span class="badge">Gemeinnützig</span>
+        <span class="badge">Bildung</span>
+        <span class="badge">Technik</span>
+        <span class="badge">Ehrenamt</span>
+        <span class="badge">Forschung</span>
+        <span class="badge">Zusammenarbeit</span>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+
+            <h3>Gemeinschaft</h3>
+
+            <p>
+                Menschen mit unterschiedlichen Fähigkeiten
+                arbeiten gemeinsam
+                an sinnvollen Projekten.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Bildung & Projekte</h3>
+
+            <p>
+                Workshops,
+                Veröffentlichungen,
+                Veranstaltungen
+                und praktische Experimente.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Gemeinnützigkeit</h3>
+
+            <p>
+                Keine private Gewinnverteilung.
+                Vereinsmittel werden ausschließlich
+                satzungsgemäß verwendet.
+            </p>
+
+        </div>
+
+    </div>
+
 </section>
 
 <section>
+
     <h2>Was wir wollen</h2>
 
     <p>
-        Viele gute Ideen scheitern an Bürokratie,
-        fehlender Infrastruktur oder organisatorischen Hürden.
+        Viele gute Ideen scheitern nicht an Motivation,
+        sondern an Bürokratie,
+        fehlender Infrastruktur
+        oder organisatorischen Hürden.
     </p>
 
-    <p>
-        Genau dort setzt Freisassen an:
-    </p>
+    <div class="highlight">
 
-    <div class="cta">
-        <strong>Du hast eine Idee?</strong><br><br>
+        <h3>Du hast eine Idee?</h3>
 
-        Statt sofort selbst ein Unternehmen,
-        einen Shop oder eine komplizierte Struktur aufzubauen,
-        kannst du dein Projekt zunächst über den Verein ausprobieren.
+        <p>
+            Statt sofort selbst ein Unternehmen,
+            einen Shop
+            oder eine komplizierte Struktur aufzubauen,
+            kannst du dein Projekt zunächst
+            gemeinsam mit uns ausprobieren.
+        </p>
 
-        Gemeinsam schaffen wir Infrastruktur,
-        Reichweite, Zusammenarbeit und praktische Umsetzung.
+        <p>
+            Wir helfen bei Organisation,
+            Infrastruktur,
+            Zusammenarbeit
+            und praktischer Umsetzung.
+        </p>
+
     </div>
 
     <ul>
@@ -69,101 +316,219 @@
         <li>gemeinsam Werkzeuge und Ressourcen nutzen</li>
         <li>gemeinnützige Projekte beschleunigen</li>
         <li>Bürokratie für Einzelpersonen reduzieren</li>
+        <li>Bildungsangebote und Veranstaltungen organisieren</li>
     </ul>
+
 </section>
 
-<section>
-    <h2>Spenden</h2>
+<section id="mitmachen">
+
+    <h2>Mitmachen</h2>
+
+    <p>
+        Egal ob Technik,
+        Medien,
+        Bildung,
+        Musik,
+        Handwerk,
+        Organisation,
+        Design
+        oder soziale Arbeit:
+        Wenn du sinnvoll mithelfen möchtest,
+        bist du willkommen.
+    </p>
 
     <div class="grid">
 
         <div class="card">
-            <h3>Banküberweisung</h3>
+
+            <h3>Projekte</h3>
 
             <p>
-                Freisassen e.V.<br>
-                IBAN: DE00 0000 0000 0000 0000 00<br>
-                BIC: XXXXXXXX
+                Eigene Ideen starten
+                oder bei laufenden Projekten mitmachen.
             </p>
+
         </div>
 
         <div class="card">
+
+            <h3>Workshops</h3>
+
+            <p>
+                Wissen teilen,
+                lernen
+                und gemeinsam experimentieren.
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Kooperationen</h3>
+
+            <p>
+                Zusammenarbeit mit Vereinen,
+                Initiativen
+                und gemeinnützigen Organisationen.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section id="spenden">
+
+    <h2>Spenden</h2>
+
+    <p>
+        Der Verein finanziert sich
+        durch freiwillige Unterstützung,
+        Mitgliedsbeiträge
+        und Spenden.
+    </p>
+
+    <div class="grid">
+
+        <div class="card">
+
+            <h3>Banküberweisung</h3>
+
+            <p>
+                <strong>Freisassen e.V.</strong><br>
+                IBAN: DE00 0000 0000 0000 0000 00<br>
+                BIC: XXXXXXXX
+            </p>
+
+        </div>
+
+        <div class="card">
+
             <h3>SumUp</h3>
 
             <p>
-                SumUp-Link oder QR-Code hier einfügen.
+                Hier später
+                SumUp-Link oder QR-Code einfügen.
             </p>
+
         </div>
 
     </div>
 
     <p class="small">
         Spenden werden ausschließlich
-        für die satzungsgemäßen Zwecke des Vereins verwendet.
+        für die satzungsgemäßen Zwecke
+        des Vereins verwendet.
     </p>
+
 </section>
 
 <section>
-    <h2>Impressum</h2>
 
-    <p class="small">
-        Angaben gemäß § 5 TMG
-    </p>
+    <h2>Impressum & Rechtliches</h2>
 
-    <p class="small">
-        Freisassen e.V.<br>
-        Sitz des Vereins: Jahnsdorf<br>
-        Deutschland
-    </p>
+    <div class="grid">
 
-    <p class="small">
-        Vertreten durch den Vorstand gemäß § 26 BGB:
-    </p>
+        <div class="card">
 
-    <ul class="small">
-        <li>Maximilian Adrien Daniel Gaboury</li>
-        <li>Bettina Lohr</li>
-    </ul>
+            <h3>Impressum</h3>
 
-    <p class="small">
-        E-Mail: kontakt@freisassen.org
-    </p>
+            <p class="small">
 
-    <p class="small">
-        Vereinsregister: in Eintragung<br>
-        Registergericht: Amtsgericht Chemnitz
-    </p>
+                Freisassen e.V.<br>
+                Sitz des Vereins: Jahnsdorf<br>
+                Deutschland
 
-    <p class="small">
-        Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV:<br>
-        Maximilian Adrien Daniel Gaboury
-    </p>
+                <br><br>
+
+                Vertreten durch den Vorstand
+                gemäß § 26 BGB:
+
+                <br><br>
+
+                Maximilian Adrien Daniel Gaboury<br>
+                Bettina Lohr
+
+                <br><br>
+
+                E-Mail:
+                kontakt@freisassen.org
+
+                <br><br>
+
+                Vereinsregister:
+                in Eintragung<br>
+
+                Registergericht:
+                Amtsgericht Chemnitz
+
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Gemeinnützigkeit</h3>
+
+            <p class="small">
+
+                Der Verein verfolgt ausschließlich
+                und unmittelbar gemeinnützige Zwecke
+                im Sinne der §§ 51 ff. AO.
+
+                <br><br>
+
+                Mittel des Vereins dürfen nur
+                für satzungsgemäße Zwecke
+                verwendet werden.
+
+                <br><br>
+
+                Es erfolgt keine private Gewinnverteilung.
+
+            </p>
+
+        </div>
+
+        <div class="card">
+
+            <h3>Hinweise</h3>
+
+            <p class="small">
+
+                Inhalte dieser Website dienen
+                allgemeinen Informationszwecken.
+
+                <br><br>
+
+                Für externe Inhalte verlinkter Seiten
+                wird keine Haftung übernommen.
+
+                <br><br>
+
+                Beim Besuch der Website
+                können technisch notwendige
+                Server-Logdaten verarbeitet werden.
+
+            </p>
+
+        </div>
+
+    </div>
+
 </section>
 
-<section>
-    <h2>Rechtliche Hinweise</h2>
+</main>
 
-    <p class="small">
-        Der Verein verfolgt ausschließlich
-        und unmittelbar gemeinnützige Zwecke
-        im Sinne der §§ 51 ff. AO.
-    </p>
+<footer>
 
-    <p class="small">
-        Mittel des Vereins dürfen nur
-        für satzungsgemäße Zwecke verwendet werden.
-        Es erfolgt keine private Gewinnverteilung.
-    </p>
+    © 2025 Freisassen e.V.
+    — Gemeinnützig, selbstlos
+    und ehrenamtlich organisiert.
 
-    <p class="small">
-        Inhalte dieser Website dienen ausschließlich
-        allgemeinen Informationszwecken.
-        Für externe Inhalte verlinkter Seiten
-        wird keine Haftung übernommen.
-    </p>
+</footer>
 
-    <p class="small">
-        Beim Besuch der Website können technisch notwendige
-        Server-Logdaten verarbeitet werden.
-    </p>
-</section>
+</body>
+</html>

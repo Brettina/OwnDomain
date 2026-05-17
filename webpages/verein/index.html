@@ -36,13 +36,14 @@ header{
 
 header h1{
     margin:0;
+    margin-top:-60px;
     font-size:4rem;
     letter-spacing:-2px;
 }
 
 header p{
     max-width:760px;
-    margin:24px auto 0;
+    margin:90px auto 0;
     font-size:1.2rem;
     opacity:0.95;
 }
@@ -137,7 +138,7 @@ footer{
 }
 
 .hero-buttons{
-    margin-top:32px;
+    margin-top:48px;
 }
 
 .hero-buttons a{
@@ -185,7 +186,8 @@ function parseGermanDate(day, timeRange) {
 }
 
 async function loadCalendar() {
-
+console.log("calendar loading");
+console.log(raw);
     const raw = await fetch("calendar.json")
         .then(r => r.json());
 

@@ -272,8 +272,7 @@ function renderCalendar(year, month) {
 html += `
     <div class="cal-day ${has ? "has-event" : ""}" style="
         ${todayStyle}
-        ${has ? `background-image:url('pics/favicon.png');background-size:cover;background-position:center;background-repeat:no-repeat;border:2px solid #5ea0ff;` : ""}
-    " onclick="showCalEvent('${key}')">
+${has ? `background-image:url('pics/favicon.png');background-size:contain;background-position:center;background-repeat:no-repeat;background-color:#0d1a2e;border:2px solid #5ea0ff;` : ""}    " onclick="showCalEvent('${key}')">
         <div class="cal-num" style="${has ? "background:rgba(0,0,0,0.45);display:inline-block;padding:1px 5px;border-radius:6px;" : ""}">${d}</div>
         ${todayBadge}
     </div>

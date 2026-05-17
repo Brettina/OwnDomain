@@ -27,7 +27,7 @@
       "time": "13:00",
       "description": "Wir wünschen alles Gute und zeigen Dir in einer kleinen Broschüre was für eine tolle Person du bist - eine Seite je Lebensjahr.",
       "type": "veroeffentlichung",
-      "project": "pychologie",
+      "project": "veroeffentlichung",
       "location": "Jahnsdorf",
       "responsible": { "name": "Bettina Lohr", "email": "kontakt@freisassen.org" }
     }

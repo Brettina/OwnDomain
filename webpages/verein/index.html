@@ -45,6 +45,7 @@ header h1{
 header p{
     max-width:760px;
     margin:90px auto 0;
+    margin-top: 20px;
     font-size:1.2rem;
     opacity:0.95;
 }
@@ -217,6 +218,121 @@ footer{
 }
 
 </style>
+<script>
+async function loadCalendar() {
+    const raw = await fetch("calendar.json").then(r => r.json());
+    window.calendarEvents = {};
+    raw.items.forEach(item => {
+        window.calendarEvents[item.day] = item;
+    });
+    renderCalendar(new Date().getFullYear(), new Date().getMonth());
+}
+
+function renderCalendar(year, month) {
+    const WEEKDAYS = ['Mo','Di','Mi','Do','Fr','Sa','So'];
+    const MONTHS = ['Januar','Februar','März','April','Mai','Juni',
+                    'Juli','August','September','Oktober','November','Dezember'];
+    const events = window.calendarEvents;
+    const now = new Date();
+    const cal = document.getElementById("calendar");
+
+    const first = new Date(year, month, 1);
+    let startDow = first.getDay();
+    startDow = startDow === 0 ? 6 : startDow - 1;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const prevDays = new Date(year, month, 0).getDate();
+
+    let html = `
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+            <div style="font-weight:700">${MONTHS[month]} ${year}</div>
+            <div style="display:flex;gap:6px">
+                <button onclick="calNav(-1)" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;border-radius:8px;padding:4px 10px;cursor:pointer">←</button>
+                <button onclick="calNav(0)"  style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;border-radius:8px;padding:4px 10px;cursor:pointer">Heute</button>
+                <button onclick="calNav(1)"  style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:white;border-radius:8px;padding:4px 10px;cursor:pointer">→</button>
+            </div>
+        </div>
+        <div class="small" style="color:#aaa;margin-bottom:10px">Markierte Tage haben Termine.</div>
+        <div class="cal-grid">
+    `;
+
+    WEEKDAYS.forEach(d => {
+        html += `<div style="text-align:center;font-size:0.8rem;color:#aaa;padding:4px 0">${d}</div>`;
+    });
+
+    for (let i = 0; i < startDow; i++) {
+        html += `<div class="cal-day" style="opacity:0.25"><div class="cal-num">${prevDays - startDow + 1 + i}</div></div>`;
+    }
+
+    for (let d = 1; d <= daysInMonth; d++) {
+        const dd = String(d).padStart(2, "0");
+        const mm = String(month + 1).padStart(2, "0");
+        const key = `${dd}.${mm}.${year}`;
+        const has = !!events[key];
+        const isToday = d === now.getDate() && month === now.getMonth() && year === now.getFullYear();
+        const todayStyle = isToday ? `position:relative;` : "";
+        const todayBadge = isToday ? `<span style="position:absolute;top:6px;right:8px;font-size:0.65rem;color:#5ea0ff">heute</span>` : "";
+        html += `
+            <div class="cal-day ${has ? "has-event" : ""}" style="${todayStyle}"
+                 onclick="showCalEvent('${key}')">
+                <div class="cal-num">${d}</div>
+                ${todayBadge}
+${has ? `<img src="pics/favicon.png" style="width:16px;height:16px;margin-top:4px;display:block;object-fit:contain;opacity:0.85">` : ""}            </div>
+        `;
+    }
+
+    const total = startDow + daysInMonth;
+    const remaining = total % 7 === 0 ? 0 : 7 - (total % 7);
+    for (let i = 1; i <= remaining; i++) {
+        html += `<div class="cal-day" style="opacity:0.25"><div class="cal-num">${i}</div></div>`;
+    }
+
+    html += `</div>`;
+    cal.innerHTML = html;
+    cal.dataset.year = year;
+    cal.dataset.month = month;
+}
+
+window.calNav = function(dir) {
+    const cal = document.getElementById("calendar");
+    let year = parseInt(cal.dataset.year);
+    let month = parseInt(cal.dataset.month);
+    const now = new Date();
+    if (dir === 0) { year = now.getFullYear(); month = now.getMonth(); }
+    else { month += dir; if (month < 0) { month = 11; year--; } if (month > 11) { month = 0; year++; } }
+    document.getElementById("eventbox").style.display = "none";
+    renderCalendar(year, month);
+};
+
+window.showCalEvent = function(key) {
+    const events = window.calendarEvents;
+    const box = document.getElementById("eventbox");
+    box.style.display = "block";
+    if (!events[key]) {
+        box.innerHTML = `
+            <div style="display:flex;justify-content:space-between;align-items:center">
+                <strong>${key}</strong>
+                <button onclick="document.getElementById('eventbox').style.display='none'"
+                    style="background:none;border:none;color:#aaa;cursor:pointer;font-size:1.1rem">✕</button>
+            </div>
+            <p class="small">Keine Termine.</p>`;
+        return;
+    }
+    const item = events[key];
+    box.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <h3 style="margin:0"><a href="/webpages/projects/?open=${item.project}">${item.title}</a></h3>
+            <button onclick="document.getElementById('eventbox').style.display='none'"
+                style="background:none;border:none;color:#aaa;cursor:pointer;font-size:1.1rem;margin-left:12px">✕</button>
+        </div>
+        <p>${item.day} · ${item.time}</p>
+        <p>${item.description || ""}</p>
+        <p class="small">${item.location || ""}</p>
+        <p class="small">${item.responsible?.name || ""}</p>
+    `;
+};
+
+window.addEventListener("DOMContentLoaded", loadCalendar);
+</script>
 <script>
 function parseGermanDate(day, timeRange) {
 

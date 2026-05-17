@@ -44,8 +44,8 @@ header h1{
 
 header p{
     max-width:760px;
-    margin:90px auto 0;
-    margin-top: 20px;
+    margin:50px auto 0;
+    margin-top: 50px;
     font-size:1.2rem;
     opacity:0.95;
 }
@@ -183,7 +183,7 @@ footer{
 }
 
 .hero-buttons{
-    margin-top:48px;
+    margin-top:30px;
 }
 
 .hero-buttons a{
@@ -337,115 +337,7 @@ box.innerHTML = `
 
 window.addEventListener("DOMContentLoaded", loadCalendar);
 </script>
-<script>
-function parseGermanDate(day, timeRange) {
 
-    const [d,m,y] = day.split(".");
-    const [from,to] = timeRange.split("-");
-
-    return {
-        start: `${y}-${m}-${d}T${from}:00`,
-        end: `${y}-${m}-${d}T${to}:00`
-    };
-}
-
-async function loadCalendar() {
-
-    const raw = await fetch("calendar.json")
-        .then(r => r.json());
-
-    const cal = document.getElementById("calendar");
-    const box = document.getElementById("eventbox");
-
-    const now = new Date();
-
-    const year = now.getFullYear();
-    const month = now.getMonth();
-
-    const first = new Date(year, month, 1);
-    const last = new Date(year, month + 1, 0);
-
-    const events = {};
-
-    raw.items.forEach(item => {
-        events[item.day] = item;
-    });
-
-    let html = `
-        <h3 style="margin-top:0;">
-            Kalender
-        </h3>
-
-        <div class="small" style="color:#aaa;">
-            Klick auf einen markierten Tag
-        </div>
-
-        <div class="cal-grid">
-    `;
-
-    for(let i=1;i<=last.getDate();i++){
-
-        const dd = String(i).padStart(2,"0");
-        const mm = String(month+1).padStart(2,"0");
-
-        const key = `${dd}.${mm}.${year}`;
-
-        const has = !!events[key];
-
-        html += `
-            <div
-                class="cal-day ${has ? "has-event" : ""}"
-                ${has ? `onclick="showEvent('${key}')"` : ""}
-            >
-                <div class="cal-num">
-                    ${i}
-                </div>
-            </div>
-        `;
-    }
-
-    html += `</div>`;
-
-    cal.innerHTML = html;
-
-    window.calendarEvents = events;
-
-    window.showEvent = function(key){
-
-        const item = events[key];
-
-        box.style.display = "block";
-
-        box.innerHTML = `
-            <h3>
-                <a href="/webpages/projects/?open=${item.project}">
-                    ${item.title}
-                </a>
-            </h3>
-
-            <p>
-                ${item.day}
-                ·
-                ${item.time}
-            </p>
-
-            <p>
-                ${item.description || ""}
-            </p>
-
-            <p class="small">
-                ${item.location || ""}
-            </p>
-
-            <p class="small">
-                ${item.responsible?.name || ""}
-            </p>
-        `;
-    };
-}
-
-window.addEventListener("DOMContentLoaded", loadCalendar);
-</script>
 </head>
 
 <body>

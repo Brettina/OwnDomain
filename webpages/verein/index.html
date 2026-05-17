@@ -349,6 +349,38 @@ function renderGallery(images, container) {
     `);
 }
 
+// Hilfsfunktion: alle Bilder zu einem Datum finden
+async function findImagesForDate(day) {
+    const imgs = [];
+    // Erstes Bild: "22.04.2026.jpg"
+    const first = `news/${day}.jpg`;
+    // Weitere: "22.04.2026 (2).jpg", "22.04.2026 (3).jpg" ...
+    imgs.push(first);
+    for (let i = 2; i <= 10; i++) {
+        imgs.push(`news/${day} (${i}).jpg`);
+    }
+    // Prüfen welche wirklich existieren
+    const results = await Promise.all(imgs.map(src =>
+        fetch(src, { method: "HEAD" })
+            .then(r => r.ok ? src : null)
+            .catch(() => null)
+    ));
+    return results.filter(Boolean);
+}
+
+function renderGallery(images, container) {
+    if (!images.length) return;
+    container.insertAdjacentHTML("beforeend", `
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:10px;margin-top:12px">
+            ${images.map(src => `
+                <img src="${src}"
+                     style="width:100%;aspect-ratio:1;object-fit:cover;border-radius:8px;cursor:pointer"
+                     onclick="openLightbox('${src}')">
+            `).join("")}
+        </div>
+    `);
+}
+
 async function loadNews() {
     const raw = await fetch("calendar.json?v=" + Date.now()).then(r => r.json());
     const today = new Date();
@@ -428,6 +460,15 @@ window.showCalEvent = function(key) {
     });
 };
 
+window.openLightbox = function(src) {
+    const lb = document.createElement("div");
+    lb.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1000;display:flex;align-items:center;justify-content:center;cursor:pointer";
+    lb.innerHTML = `<img src="${src}" style="max-width:90vw;max-height:90vh;border-radius:12px;object-fit:contain">`;
+    lb.onclick = () => lb.remove();
+    document.body.appendChild(lb);
+};
+
+window.addEventListener("DOMContentLoaded", () => { loadCalendar(); loadNews(); });
 window.openLightbox = function(src) {
     const lb = document.createElement("div");
     lb.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:1000;display:flex;align-items:center;justify-content:center;cursor:pointer";
@@ -677,7 +718,7 @@ window.addEventListener("DOMContentLoaded", loadCalendar);
             </p>
 
         </div>
-        
+
         <div class="card">
 
             <h3>Kooperationen und Spenden für Dritte</h3>

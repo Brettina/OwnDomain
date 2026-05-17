@@ -318,17 +318,21 @@ window.showCalEvent = function(key) {
         return;
     }
     const item = events[key];
-    box.innerHTML = `
-        <div style="display:flex;justify-content:space-between;align-items:flex-start">
-            <h3 style="margin:0"><a href="/webpages/projects/?open=${item.project}">${item.title}</a></h3>
-            <button onclick="document.getElementById('eventbox').style.display='none'"
-                style="background:none;border:none;color:#aaa;cursor:pointer;font-size:1.1rem;margin-left:12px">✕</button>
-        </div>
-        <p>${item.day} · ${item.time}</p>
-        <p>${item.description || ""}</p>
-        <p class="small">${item.location || ""}</p>
-        <p class="small">${item.responsible?.name || ""}</p>
-    `;
+box.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+        <h3 style="margin:0"><a href="/webpages/projects/?open=${item.project}">${item.title}</a></h3>
+        <button onclick="document.getElementById('eventbox').style.display='none'"
+            style="background:none;border:none;color:#aaa;cursor:pointer;font-size:1.1rem;margin-left:12px">✕</button>
+    </div>
+    <p>${item.day} · ${item.time}</p>
+    <p>${item.description || ""}</p>
+    <p class="small">
+        ${item.location ? `📍 ${item.location} · ` : ""}
+        Die Veranstaltung gehört zum Projekt <a href="/webpages/projects/?open=${item.project}">${item.project}</a>
+        und wird verantwortet von ${item.responsible?.name || "–"},
+        zu erreichen über <a href="mailto:${item.responsible?.email}">${item.responsible?.email || "–"}</a>.
+    </p>
+`;
 };
 
 window.addEventListener("DOMContentLoaded", loadCalendar);

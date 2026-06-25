@@ -1,3 +1,37 @@
+<!--
+===============================================================================
+
+Future document knowledge base
+
+Goal:
+Do not display original Office/PDF documents directly.
+
+Instead:
+1. Collect documents from various Nextcloud folders.
+2. Convert them into website-friendly formats.
+3. Store the converted files inside docs/ (or docs/conv_*).
+4. The website only reads converted data.
+
+Possible converted outputs:
+- conv_text/ (*.md / *.txt)      -> AI search, summaries, Q&A
+- conv_tables/ (*.json / *.csv)  -> interactive tables
+- conv_meta/ (*.json)            -> metadata, classifications, relations
+- original documents remain downloadable if needed.
+
+Later:
+- Full-text search
+- AI summaries
+- Question answering
+- Cross-document references
+- Related document suggestions
+
+The website should never need to know where the originals came from
+(local folder, Nextcloud, SharePoint, ...). It only consumes the
+converted outputs.
+
+===============================================================================
+-->
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -554,7 +588,49 @@ async function loadDocs() {
   transition: all .15s;
 }
 .soa-popup-close:hover { border-color: var(--red); color: var(--red); }
+  .doc-panel{
+    position:fixed;
+    top:0;
+    right:-45%;
+    width:45%;
+    height:100%;
+    background:#fff;
+    box-shadow:-5px 0 20px rgba(0,0,0,.25);
+    transition:right .25s;
+    z-index:5000;
+    display:flex;
+    flex-direction:column;
+}
+
+.doc-panel.open{
+    right:0;
+}
+
+.doc-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:1rem;
+    border-bottom:1px solid #ddd;
+}
+
+.doc-content{
+    overflow:auto;
+    padding:1.5rem;
+    flex:1;
+}
+
+.doc-content h1,
+.doc-content h2,
+.doc-content h3{
+    margin-top:1.5rem;
+}
+
+#closeDocBtn{
+    cursor:pointer;
+}
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
 <!-- ===== Zugriffs-Guard: direkt nach <body> einfügen (zerti + ueberwachung) ===== -->
@@ -579,7 +655,10 @@ async function loadDocs() {
   if (!role){ window.location.href = "/welcome/"; return; }
 
   const norm = s => decodeURIComponent(String(s)).trim().toLowerCase().replace(/\s+/g," ");
-
+const PATHS = {
+    markdown: "/docs/conv_markdown/",
+    meta: "/docs/conv_meta/"
+};
   // Basisname aus einem href/Text ziehen: Pfad + Endung + Zeitstempel entfernen
   function baseName(s){
     let n = decodeURIComponent(String(s)).split(/[\\/]/).pop();   // nur Dateiname
@@ -641,6 +720,30 @@ async function loadDocs() {
       sweep(document);   // erneuter Durchlauf, jetzt mit Regeln
     })
     .catch(e => console.error("Guard: JSON-Fehler", e));
+async function openMarkdown(file, title){
+
+    const panel = document.getElementById("docPanel");
+    const content = document.getElementById("docContent");
+
+    document.getElementById("docTitle").textContent = title;
+
+    panel.classList.add("open");
+
+    content.innerHTML = "Lade Dokument...";
+
+    const response = await fetch(PATHS.markdown + file);
+
+    const markdown = await response.text();
+
+    content.innerHTML = marked.parse(markdown);
+
+}
+
+document.getElementById("closeDocBtn").onclick = () => {
+
+    document.getElementById("docPanel").classList.remove("open");
+
+};
 })();
 </script>
 <!-- ===== Ende Guard ===== -->
@@ -663,6 +766,12 @@ async function loadDocs() {
     </nav>
   </div>
 </header>
+<button onclick="openMarkdown(
+'infosicherheitsrichtlinie.md',
+'Informationssicherheitsrichtlinie'
+)">
+    📄 Informationssicherheitsrichtlinie
+</button>
 
 <!-- MAIN -->
 <main>
@@ -1617,5 +1726,20 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSoa();
 });
 </script>
+<div id="docPanel" class="doc-panel">
+
+    <div class="doc-header">
+        <h2 id="docTitle">Dokument</h2>
+
+        <button id="closeDocBtn">
+            ✕
+        </button>
+    </div>
+
+    <div id="docContent" class="doc-content">
+        Dokument wird geladen...
+    </div>
+
+</div>
 </body>
 </html>

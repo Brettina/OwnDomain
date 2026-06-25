@@ -229,9 +229,27 @@ app.use('/docs', (req, res, next) => {
 }, express.static(DOCS_DIR));
 
 // GATED pages
-app.use('/zerti', requireLogin, express.static(path.join(ISO_DIR, 'zerti')));
-app.use('/ueberwachung', requireLogin, express.static(path.join(ISO_DIR, 'ueberwachung')));
+//app.use('/zerti', requireLogin, express.static(path.join(ISO_DIR, 'zerti')));
+//app.use('/ueberwachung', requireLogin, express.static(path.join(ISO_DIR, 'ueberwachung')));
+// Automatically expose every webpage inside ISO
+for (const entry of fs.readdirSync(ISO_DIR, { withFileTypes: true })) {
 
+  if (!entry.isDirectory()) continue;
+
+  if (entry.name === "welcome") continue;
+
+  const folder = path.join(ISO_DIR, entry.name);
+
+  if (!fs.existsSync(path.join(folder, "index.html"))) continue;
+
+  console.log(`Page: /${entry.name}`);
+
+  app.use(
+    "/" + entry.name,
+    requireLogin,
+    express.static(folder)
+  );
+}
 // PUBLIC login page
 app.use('/welcome', express.static(path.join(ISO_DIR, 'welcome')));
 

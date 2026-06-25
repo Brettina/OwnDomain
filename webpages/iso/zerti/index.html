@@ -46,22 +46,15 @@ converted outputs.
 const API_BASE = '';
 
 const DOC_MAP = {
-  'row-risikoanalyse':  'risikoanalyse',
-  'row-soa':            'soa',
-  'row-rtp':            'risikobehandlungsplan',
-  'row-richtlinie':     'sicherheitsrichtlinie',
+  'row-risikoanalyse':  'dat-010 Risikomanagement',
+  'row-soa': 'dat-016 soa',
+  'row-richtlinie':     'gov-001 Infosicherheitsrichtlinie2',
   'row-assets':         'asset-verzeichnis',
   'row-rollen':         'rollen-verantwortlichkeiten',
   'row-intaudit':       'internes-audit-bericht',
-  'row-s1bericht':      'stage1-auditbericht',
-  'row-s2bericht':      'stage2-auditbericht',
   'row-korrektur':      'korrekturmassnahmen',
   'row-zertifikat':     'zertifikat-iso27001',
   'row-aenderungen':    'isms-aenderungsprotokoll',
-  'row-soa-re':         'soa-aktuell',
-  'row-risk-re':        'risikoanalyse-aktuell',
-  'row-re-bericht':     'rezertifizierung-bericht',
-  'row-re-zertifikat':  'zertifikat-iso27001-neu',
 };
 
 let CFG = { responsibilities: {}, driveLinks: {} };
@@ -112,6 +105,12 @@ async function loadDocs() {
     metaDiv.innerHTML = '';
 
     const group = groups[docBase];
+    const badge = row.querySelector(".owner-badge");
+
+const roles = FILE_ROLES[baseName(docBase)] || [];
+
+if (badge)
+    badge.textContent = roles.join(", ");
     const driveUrl = (CFG.driveLinks || {})[docBase];
 
     if (group && (group.odt || group.pdf)) {
@@ -667,9 +666,10 @@ const PATHS = {
     return norm(n);
   }
 
-  let allowed = new Set();      // erlaubte Basisnamen für diese Rolle
-  let classified = new Set();   // alle in der JSON klassifizierten Basisnamen
-  let ready = false;
+let allowed = new Set();
+let classified = new Set();
+const FILE_ROLES = {};
+let ready = false;
 
   document.getElementById("authrole").textContent = "Angemeldet als: " + role;
   document.getElementById("authout").addEventListener("click", () => {
@@ -711,16 +711,29 @@ const PATHS = {
       const fromIdx = idx === -1 ? HIERARCHY.length : idx;  // unbekannte Rolle = nichts
       HIERARCHY.forEach((level, i) => {
         (data[level]?.files || []).forEach(f => {
+
           const b = baseName(f);
+
           classified.add(b);
-          if (i >= fromIdx) allowed.add(b);
+
+          FILE_ROLES[b] = data[level].roles;
+
+          if (i >= fromIdx)
+              allowed.add(b);
+
         });
       });
-      ready = true;
-      sweep(document);   // erneuter Durchlauf, jetzt mit Regeln
+
+ready = true;
+
+loadDocs();
+
+sweep(document);
     })
     .catch(e => console.error("Guard: JSON-Fehler", e));
-async function openMarkdown(file, title){
+
+
+    async function openMarkdown(file, title){
     const panel = document.getElementById("docPanel");
     const content = document.getElementById("docContent");
 
@@ -737,6 +750,8 @@ async function openMarkdown(file, title){
     content.innerHTML = marked.parse(markdown);
 
 }
+
+
 window.openMarkdown = openMarkdown;
 
 async function showTable(file, title){
@@ -811,8 +826,8 @@ window.showTable = showTable;   // <<< ADD THIS LINE
   <!-- HERO -->
   <div class="hero">
     <div class="hero-text">
-      <h1>ISO 27001<br/><span>Zertifizierungs&shy;audit</span></h1>
-      <p>Erstzertifizierung (Stage 1 + Stage 2) sowie Rezertifizierung nach Ablauf des 3-jährigen Zyklus. Dokumente, Findings und Verantwortlichkeiten zentral erfasst.</p>
+      <h1>ISO 27001, ISO 27701, ISO 22301, ISO 9001<br/><span>Überblick</span></h1>
+      <p>Hier sind zentrale Dokumente hinterlegt und können von KI zusammengefasst werden.</p>
     </div>
     <div class="cycle-indicator">
       <div class="ci-label">3-Jahres-Zyklus</div>
@@ -828,45 +843,217 @@ window.showTable = showTable;   // <<< ADD THIS LINE
     </div>
   </div>
 
-  <!-- TABS -->
-  <div class="section-tabs">
-    <button class="tab-btn active" onclick="switchTab('erst')">Erstzertifizierung</button>
-    <button class="tab-btn" onclick="switchTab('rezerti')">Rezertifizierung</button>
-  <button class="tab-btn" onclick="switchTab('soa')">SoA – Annex A</button>
-</div>
+
 
   <!-- ══════════════════════════════════════════════════════════
        TAB: ERSTZERTIFIZIERUNG
   ══════════════════════════════════════════════════════════ -->
   <div id="tab-erst" class="tab-panel active">
 
-    <!-- Phase 1: Stammdaten -->
-    <div class="phase">
-      <div class="phase-header" onclick="togglePhase(this)">
+    <!-- AI -->
+<!-- AI -->
+<div class="phase">
+
+    <div class="phase-header" onclick="togglePhase(this)">
+
         <div class="phase-num">1</div>
-        <div>
-          <div class="phase-title">Stammdaten &amp; Scope</div>
-          <div class="phase-subtitle">Grundinformationen zum Zertifizierungsverfahren</div>
+
+        <div style="flex:1">
+            <div class="phase-title">
+                Stelle deine Frage
+            </div>
+
+            <div class="phase-subtitle">
+                KI-Suche, Zusammenfassungen und Fragen zu allen Dokumenten
+            </div>
         </div>
-        <div class="phase-toggle">▼</div>
-      </div>
-      <div class="phase-body open">
-        <div class="meta-grid">
-          <div class="meta-field"><label>Zertifizierungsstelle</label><input type="text" placeholder="z.B. TÜV, DEKRA, BSI…" /></div>
-          <div class="meta-field"><label>Auditor</label><input type="text" placeholder="Name des Auditors" /></div>
-          <div class="meta-field"><label>ISMS-Scope (Klausel 4.3)</label><input type="text" placeholder="Geltungsbereich" /></div>
-          <div class="meta-field"><label>Zertifikat gültig bis</label><input type="date" /></div>
-        </div>
-      </div>
+
+        <div class="phase-toggle open">▼</div>
+
     </div>
 
-    <!-- Phase 2: Vorbereitung -->
+    <div class="phase-body open">
+
+        <div class="meta-field">
+
+            <label>Frage</label>
+
+            <div style="display:flex;gap:1rem;align-items:center;">
+
+                <input
+                    id="aiQuestion"
+                    type="text"
+                    placeholder="z.B. Fasse die Risikoanalyse zusammen..."
+                    style="flex:1;">
+
+                <button
+                    id="aiAskBtn"
+                    class="btn-save"
+                    onclick="askAI()">
+
+                    Enter
+
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="meta-field" style="margin-top:1.5rem;">
+
+            <label>Antwort</label>
+
+            <div
+                id="aiAnswer"
+                style="
+                    min-height:320px;
+                    max-height:420px;
+                    overflow-y:auto;
+                    background:var(--bg);
+                    border:1px solid var(--border);
+                    border-radius:8px;
+                    padding:1rem;
+                    white-space:pre-wrap;
+                    line-height:1.6;
+                    color:var(--text-muted);
+                ">
+
+Hier erscheint später die Antwort der KI.
+
+Mögliche Funktionen
+
+• Dokument zusammenfassen
+
+• Auditorfragen beantworten
+
+• Risiken erklären
+
+• Controls erläutern
+
+• Unterschiede zwischen Dokumenten finden
+
+• Maßnahmen vorschlagen
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Compliance Monitor -->
+<div class="phase">
+
+    <div class="phase-header" onclick="togglePhase(this)">
+
+        <div class="phase-num">2</div>
+
+        <div style="flex:1">
+            <div class="phase-title">
+                Compliance Monitor
+            </div>
+
+            <div class="phase-subtitle">
+                Zeitbasierte Prüfungen und logische Konsistenz
+            </div>
+        </div>
+
+        <div class="phase-toggle open">▼</div>
+
+    </div>
+
+    <div class="phase-body open">
+
+        <div style="
+            display:grid;
+            grid-template-columns:1fr 1fr;
+            gap:1.5rem;
+        ">
+
+            <!-- Upcoming -->
+
+            <div style="
+                background:var(--bg);
+                border:1px solid var(--border);
+                border-radius:8px;
+                padding:1rem;
+            ">
+
+                <h3 style="
+                    margin-bottom:1rem;
+                    color:var(--green);
+                    font-size:1rem;
+                    font-family:'Space Grotesk',sans-serif;
+                ">
+                    Upcoming
+                </h3>
+
+                <div id="upcomingMonitor">
+
+                    <div class="task-row">
+                        <div class="task-info">
+                            <div class="task-name">
+                                Keine offenen Termine.
+                            </div>
+                            <div class="task-meta">
+                                Zeitbasierte Prüfungen erscheinen hier.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Inconsistencies -->
+
+            <div style="
+                background:var(--bg);
+                border:1px solid var(--border);
+                border-radius:8px;
+                padding:1rem;
+            ">
+
+                <h3 style="
+                    margin-bottom:1rem;
+                    color:var(--green);
+                    font-size:1rem;
+                    font-family:'Space Grotesk',sans-serif;
+                ">
+                    Inconsistencies
+                </h3>
+
+                <div id="consistencyMonitor">
+
+                    <div class="task-row">
+                        <div class="task-info">
+                            <div class="task-name">
+                                Keine Inkonsistenzen gefunden.
+                            </div>
+                            <div class="task-meta">
+                                Logische Widersprüche erscheinen hier.
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+    <!-- Docs -->
     <div class="phase">
       <div class="phase-header" onclick="togglePhase(this)">
-        <div class="phase-num">2</div>
+        <div class="phase-num">3</div>
         <div>
-          <div class="phase-title">Vorbereitung</div>
-          <div class="phase-subtitle">Kerndokumente &amp; interne Audits vor Stage 1</div>
+          <div class="phase-title">Zentrale Dokumente</div>
+          <div class="phase-subtitle">Kerndokumente</div>
         </div>
         <div class="phase-toggle">▼</div>
       </div>
@@ -878,7 +1065,7 @@ window.showTable = showTable;   // <<< ADD THIS LINE
               <div class="task-name">Risikoanalyse</div>
               <button class="btn"
             onclick="showTable('dat-010 Risikomanagement.json','Risikomanagement')">
-            OFI
+            Risikomanagement
         </button>
               <div class="task-meta">
                 <a class="task-doc" href="../docs/risikoanalyse.pdf" target="_blank">
@@ -899,7 +1086,7 @@ window.showTable = showTable;   // <<< ADD THIS LINE
               <div class="task-name">Statement of Applicability (SoA) / Anwendbarkeitserklärung</div>
               <button class="btn"
             onclick="showTable('dat-016 soa.json','SoA')">
-            OFI
+            SoA
         </button>
               <div class="task-meta">
                 <a class="task-doc" href="../docs/soa.pdf" target="_blank">
@@ -934,7 +1121,7 @@ window.showTable = showTable;   // <<< ADD THIS LINE
                 </a>
               </div>
             </div>
-            <span class="owner-badge">GF</span>
+            <span class="owner-badge">ISB</span>
             <div class="task-check">
               <input type="checkbox" id="chk-richtlinie" onchange="markDone(this,'row-richtlinie')" />
               <label for="chk-richtlinie">Eingereicht</label>
@@ -951,7 +1138,7 @@ window.showTable = showTable;   // <<< ADD THIS LINE
                 </a>
               </div>
             </div>
-            <span class="owner-badge">IT-Leitung</span>
+            <span class="owner-badge">ISB</span>
             <div class="task-check">
               <input type="checkbox" id="chk-assets" onchange="markDone(this,'row-assets')" />
               <label for="chk-assets">Eingereicht</label>
@@ -967,193 +1154,14 @@ window.showTable = showTable;   // <<< ADD THIS LINE
                 </a>
               </div>
             </div>
-            <span class="owner-badge">IT-Leitung</span>
+            <span class="owner-badge">ISB</span>
             <div class="task-check">
               <input type="checkbox" id="chk-assets" onchange="markDone(this,'row-assets')" />
               <label for="chk-assets">Eingereicht</label>
             </div>
           </div>
 
-    <!-- Phase 3: Stage 1 -->
-    <div class="phase">
-      <div class="phase-header" onclick="togglePhase(this)">
-        <div class="phase-num">3</div>
-        <div>
-          <div class="phase-title">Stage 1 – Dokumentenprüfung</div>
-          <div class="phase-subtitle">Bereitschaftsanalyse durch den externen Auditor</div>
-        </div>
-        <div class="phase-toggle">▼</div>
-      </div>
-      <div class="phase-body open">
-        <div class="meta-grid">
-          <div class="meta-field"><label>Datum Stage 1</label><input type="date" /></div>
-          <div class="meta-field"><label>Auditor</label><input type="text" placeholder="Name" /></div>
-          <div class="meta-field"><label>Ergebnis</label>
-            <select>
-              <option value="">– auswählen –</option>
-              <option>Zertifizierungsreif (Stage 2 freigegeben)</option>
-              <option>Bedingt zertifizierungsreif (Nacharbeit erforderlich)</option>
-              <option>Nicht zertifizierungsreif</option>
-            </select>
-          </div>
-        </div>
-        <div class="task-list">
-          <div class="task-row" id="row-s1bericht">
-            <div class="task-info">
-              <div class="task-name">Stage 1 Auditbericht</div>
-              <div class="task-meta">
-                <a class="task-doc" href="../docs/stage1-auditbericht.pdf" target="_blank">
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
-                  stage1-auditbericht.pdf
-                </a>
-              </div>
-            </div>
-            <span class="owner-badge">ISB</span>
-            <div class="task-check">
-              <input type="checkbox" id="chk-s1bericht" onchange="markDone(this,'row-s1bericht')" />
-              <label for="chk-s1bericht">Eingereicht</label>
-            </div>
-          </div>
-        </div>
-        <div class="findings-area">
-          <div class="fa-label">Offene Punkte Stage 1</div>
-          <table class="findings-table" id="findings-s1">
-            <thead>
-              <tr><th>Beschreibung</th><th>Schwere</th><th>Status</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><input type="text" placeholder="Finding beschreiben…" style="background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;width:100%;outline:none;" /></td>
-                <td>
-                  <select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;">
-                    <option>Minor</option><option>Major</option><option>Observation</option>
-                  </select>
-                </td>
-                <td>
-                  <select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;">
-                    <option>Offen</option><option>In Bearbeitung</option><option>Geschlossen</option>
-                  </select>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <button class="add-btn" onclick="addFindingRow('findings-s1')">+ Finding hinzufügen</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Phase 4: Stage 2 -->
-    <div class="phase">
-      <div class="phase-header" onclick="togglePhase(this)">
-        <div class="phase-num">4</div>
-        <div>
-          <div class="phase-title">Stage 2 – Implementierungsaudit</div>
-          <div class="phase-subtitle">Vor-Ort-Prüfung Wirksamkeit des ISMS</div>
-        </div>
-        <div class="phase-toggle">▼</div>
-      </div>
-      <div class="phase-body open">
-        <div class="meta-grid">
-          <div class="meta-field"><label>Datum Stage 2</label><input type="date" /></div>
-          <div class="meta-field"><label>Dauer (Tage)</label><input type="number" placeholder="z.B. 3" min="1" /></div>
-          <div class="meta-field"><label>Ergebnis</label>
-            <select>
-              <option value="">– auswählen –</option>
-              <option>Empfehlung zur Zertifizierung</option>
-              <option>Empfehlung mit Auflagen</option>
-              <option>Keine Empfehlung</option>
-            </select>
-          </div>
-        </div>
-        <div class="task-list">
-          <div class="task-row" id="row-s2bericht">
-            <div class="task-info">
-              <div class="task-name">Stage 2 Auditbericht</div>
-              <div class="task-meta">
-                <a class="task-doc" href="../docs/stage2-auditbericht.pdf" target="_blank">
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
-                  stage2-auditbericht.pdf
-                </a>
-              </div>
-            </div>
-            <span class="owner-badge">ISB</span>
-            <div class="task-check">
-              <input type="checkbox" id="chk-s2bericht" onchange="markDone(this,'row-s2bericht')" />
-              <label for="chk-s2bericht">Eingereicht</label>
-            </div>
-          </div>
-          <div class="task-row" id="row-korrektur">
-            <div class="task-info">
-              <div class="task-name">Korrekturmaßnahmenplan</div>
-              <div class="task-meta">
-                <a class="task-doc" href="../docs/korrekturmassnahmen.pdf" target="_blank">
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
-                  korrekturmassnahmen.pdf
-                </a>
-              </div>
-            </div>
-            <span class="owner-badge">ISB</span>
-            <div class="task-check">
-              <input type="checkbox" id="chk-korrektur" onchange="markDone(this,'row-korrektur')" />
-              <label for="chk-korrektur">Eingereicht</label>
-            </div>
-          </div>
-        </div>
-        <div class="findings-area">
-          <div class="fa-label">Findings Stage 2</div>
-          <table class="findings-table" id="findings-s2">
-            <thead>
-              <tr><th>Beschreibung</th><th>Schwere</th><th>Status</th></tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td><input type="text" placeholder="Finding beschreiben…" style="background:transparent;border:none;color:var(--text);font-family:inherit;font-size:.85rem;width:100%;outline:none;" /></td>
-                <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Minor</option><option>Major</option><option>Observation</option></select></td>
-                <td><select style="background:var(--bg3);border:1px solid var(--border);color:var(--text);border-radius:4px;font-size:.75rem;padding:2px 6px;"><option>Offen</option><option>In Bearbeitung</option><option>Geschlossen</option></select></td>
-              </tr>
-            </tbody>
-          </table>
-          <button class="add-btn" onclick="addFindingRow('findings-s2')">+ Finding hinzufügen</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Phase 5: Zertifikat -->
-    <div class="phase">
-      <div class="phase-header" onclick="togglePhase(this)">
-        <div class="phase-num">5</div>
-        <div>
-          <div class="phase-title">Zertifikatserteilung</div>
-          <div class="phase-subtitle">Zertifikat &amp; Gültigkeitsdaten</div>
-        </div>
-        <div class="phase-toggle">▼</div>
-      </div>
-      <div class="phase-body open">
-        <div class="meta-grid">
-          <div class="meta-field"><label>Ausstellungsdatum</label><input type="date" /></div>
-          <div class="meta-field"><label>Gültig bis</label><input type="date" /></div>
-        </div>
-        <div class="task-list">
-          <div class="task-row" id="row-zertifikat">
-            <div class="task-info">
-              <div class="task-name">ISO 27001 Zertifikat</div>
-              <div class="task-meta">
-                <a class="task-doc" href="../docs/zertifikat-iso27001.pdf" target="_blank">
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
-                  zertifikat-iso27001.pdf
-                </a>
-              </div>
-            </div>
-            <span class="owner-badge">GF</span>
-            <div class="task-check">
-              <input type="checkbox" id="chk-zertifikat" onchange="markDone(this,'row-zertifikat')" />
-              <label for="chk-zertifikat">Archiviert</label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
+   
   </div><!-- /tab-erst -->
 
 
@@ -1166,24 +1174,81 @@ window.showTable = showTable;   // <<< ADD THIS LINE
       ℹ️ Die Rezertifizierung <strong>überschreibt</strong> diesen Tab. Vorherige Auditwerte werden durch die aktuellen Ergebnisse ersetzt. Überwachungsaudits (Ü1 / Ü2) werden separat auf der <a href="../ueberwachung/" style="color:var(--green);font-weight:600;">Überwachungsseite</a> angehängt.
     </div>
 
-    <div class="phase">
-      <div class="phase-header" onclick="togglePhase(this)">
-        <div class="phase-num">1</div>
-        <div>
-          <div class="phase-title">Stammdaten Rezertifizierung</div>
-          <div class="phase-subtitle">Neuer 3-Jahres-Zyklus</div>
-        </div>
-        <div class="phase-toggle">▼</div>
-      </div>
-      <div class="phase-body open">
-        <div class="meta-grid">
-          <div class="meta-field"><label>Zertifizierungsstelle</label><input type="text" placeholder="z.B. TÜV, DEKRA…" /></div>
-          <div class="meta-field"><label>Auditor</label><input type="text" placeholder="Name" /></div>
-          <div class="meta-field"><label>Datum Rezertifizierung</label><input type="date" /></div>
-          <div class="meta-field"><label>Neues Zertifikat gültig bis</label><input type="date" /></div>
-        </div>
+<!-- AI -->
+<div class="phase">
+
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-num">1</div>
+
+    <div>
+      <div class="phase-title">Stelle deine Frage</div>
+      <div class="phase-subtitle">
+        KI-Suche, Zusammenfassungen und Fragen zu allen Dokumenten
       </div>
     </div>
+
+    <div class="phase-toggle">▼</div>
+  </div>
+
+  <div class="phase-body open">
+
+    <div class="meta-field" style="margin-bottom:1rem;">
+      <label>Frage</label>
+
+      <div style="display:flex;gap:1rem;align-items:flex-end;">
+
+        <input
+          id="aiQuestion"
+          type="text"
+          placeholder="z.B. Fasse die Risikoanalyse zusammen..."
+          style="flex:1;">
+
+        <button
+          id="aiAskBtn"
+          class="btn-save"
+          onclick="askAI()">
+          Enter
+        </button>
+
+      </div>
+    </div>
+
+    <div class="meta-field">
+
+      <label>Antwort</label>
+
+      <div
+        id="aiAnswer"
+        style="
+          min-height:320px;
+          max-height:420px;
+          overflow-y:auto;
+          padding:1rem;
+          background:var(--bg);
+          border:1px solid var(--border);
+          border-radius:8px;
+          color:var(--text-muted);
+          line-height:1.6;
+          white-space:pre-wrap;
+        ">
+
+KI-antowrt kommt später dazu
+Mögliche Funktionen:
+
+• Dokument zusammenfassen
+• Risiken erläutern
+• Controls erklären
+• Unterschiede zwischen Dokumenten finden
+• Fragen zum ISMS beantworten
+• Auditorfragen vorbereiten
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
 
     <div class="phase">
       <div class="phase-header" onclick="togglePhase(this)">
@@ -1206,7 +1271,7 @@ window.showTable = showTable;   // <<< ADD THIS LINE
                 </a>
               </div>
             </div>
-            <span class="owner-badge">ISB</span>
+            <span class="owner-badge"></span>
             <div class="task-check">
               <input type="checkbox" id="chk-aenderungen" onchange="markDone(this,'row-aenderungen')" />
               <label for="chk-aenderungen">Eingereicht</label>
@@ -1222,7 +1287,7 @@ window.showTable = showTable;   // <<< ADD THIS LINE
                 </a>
               </div>
             </div>
-            <span class="owner-badge">ISB</span>
+            <span class="owner-badge"></span>
             <div class="task-check">
               <input type="checkbox" id="chk-soa-re" onchange="markDone(this,'row-soa-re')" />
               <label for="chk-soa-re">Eingereicht</label>
@@ -1238,7 +1303,7 @@ window.showTable = showTable;   // <<< ADD THIS LINE
                 </a>
               </div>
             </div>
-            <span class="owner-badge">ISB</span>
+            <span class="owner-badge"></span>
             <div class="task-check">
               <input type="checkbox" id="chk-risk-re" onchange="markDone(this,'row-risk-re')" />
               <label for="chk-risk-re">Eingereicht</label>
@@ -1297,7 +1362,7 @@ window.showTable = showTable;   // <<< ADD THIS LINE
                 </a>
               </div>
             </div>
-            <span class="owner-badge">GF</span>
+            <span class="owner-badge">ISB</span>
             <div class="task-check">
               <input type="checkbox" id="chk-re-zertifikat" onchange="markDone(this,'row-re-zertifikat')" />
               <label for="chk-re-zertifikat">Archiviert</label>
@@ -1416,7 +1481,6 @@ window.showTable = showTable;   // <<< ADD THIS LINE
 <!-- SAVE BAR -->
 <div class="save-bar">
   <span class="save-note">Änderungen werden lokal gespeichert</span>
-  <button class="btn-secondary" onclick="window.location.href='../ueberwachung/'">→ Überwachungsaudits</button>
   <button class="btn-save" onclick="saveState()">Speichern</button>
 </div>
 
@@ -1520,7 +1584,43 @@ Danke.`
     `;
     tbody.appendChild(row);
   }
+function askAI(){
 
+    const question =
+        document.getElementById("aiQuestion").value.trim();
+
+    const answer =
+        document.getElementById("aiAnswer");
+
+    if(!question){
+
+        answer.textContent =
+            "Bitte zuerst eine Frage eingeben.";
+
+        return;
+    }
+
+    answer.innerHTML = `
+<b>Frage</b>
+
+${question}
+
+<hr style="margin:1rem 0;border:0;border-top:1px solid var(--border);">
+
+<b>Antwort (Dummy)</b>
+
+Hier wird später die KI-Antwort erscheinen.
+
+TODO:
+- Dokumente auswählen
+- Embeddings durchsuchen
+- LLM aufrufen
+- Markdown rendern
+`;
+
+    // TODO:
+    // fetch("/api/ai", ...)
+}
   // ── SAVE (stub — wire up to backend/Dropbox later) ─────────
   function saveState() {
     const btn = document.querySelector('.btn-save');
@@ -1739,6 +1839,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 <!-- ========================================================= -->
 <!-- Überwachung -->
 <!-- ========================================================= -->
+   <div id="tab-erst" class="tab-panel active">
+
+    <!-- tables -->
+    <div class="phase">
+      <div class="phase-header" onclick="togglePhase(this)">
+        <div class="phase-num">4</div>
+        <div>
+          <div class="ai-question">Tabellen</div>
+          
+        </div>
+        <div class="phase-toggle">▼</div>
+      </div>
+
+    </div>
 <hr style="margin:4rem 0;border:none;border-top:1px solid #ddd;">
 <section id="ueberwachung" style="padding:3rem 2rem">
 

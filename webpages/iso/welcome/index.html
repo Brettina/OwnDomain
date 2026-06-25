@@ -51,7 +51,7 @@ const sel = document.getElementById("role");
 const err = document.getElementById("err");
 
 // fill the dropdown with every role found in the JSON (highest level wins for the label)
-fetch("/docs/conv_meta/zugriffsverwaltung.json")
+fetch("/zugriffsverwaltung.json")
   .then(r => r.json())
   .then(data => {
     const seen = new Set();

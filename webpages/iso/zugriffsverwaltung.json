@@ -1,0 +1,18 @@
+{
+  "streng_vertraulich": {
+    "roles": ["GF", "ISB"],
+    "files": ["dat-010 Risikomanagement","dat-013 Assetliste HW", "dat-016 soa"]
+  },
+  "vertraulich": {
+    "roles": ["DevOps", "PM", "DSB"],
+    "files": ["DAT-017 Vorfallsregister"]
+  },
+  "intern": {
+    "roles": ["MA"],
+    "files": ["PRO-009 - OFI"]
+  },
+  "oeffentlich": {
+    "roles": ["public"],
+    "files": ["gov-001 Infosicherheitsrichtlinie2"]
+  }
+}

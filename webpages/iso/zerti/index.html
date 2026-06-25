@@ -875,7 +875,11 @@ window.showTable = showTable;   // <<< ADD THIS LINE
 
           <div class="task-row" id="row-risikoanalyse">
             <div class="task-info">
-              <div class="task-name">Risikoanalyse &amp; Schwachstellenanalyse</div>
+              <div class="task-name">Risikoanalyse</div>
+              <button class="btn"
+            onclick="showTable('dat-010 Risikomanagement.json','Risikomanagement')">
+            OFI
+        </button>
               <div class="task-meta">
                 <a class="task-doc" href="../docs/risikoanalyse.pdf" target="_blank">
                   <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
@@ -893,6 +897,10 @@ window.showTable = showTable;   // <<< ADD THIS LINE
           <div class="task-row" id="row-soa">
             <div class="task-info">
               <div class="task-name">Statement of Applicability (SoA) / Anwendbarkeitserklärung</div>
+              <button class="btn"
+            onclick="showTable('dat-016 soa.json','SoA')">
+            OFI
+        </button>
               <div class="task-meta">
                 <a class="task-doc" href="../docs/soa.pdf" target="_blank">
                   <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
@@ -907,22 +915,7 @@ window.showTable = showTable;   // <<< ADD THIS LINE
             </div>
           </div>
 
-          <div class="task-row" id="row-rtp">
-            <div class="task-info">
-              <div class="task-name">Risikobehandlungsplan (RTP)</div>
-              <div class="task-meta">
-                <a class="task-doc" href="../docs/risikobehandlungsplan.pdf" target="_blank">
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
-                  risikobehandlungsplan.pdf
-                </a>
-              </div>
-            </div>
-            <span class="owner-badge">ISB</span>
-            <div class="task-check">
-              <input type="checkbox" id="chk-rtp" onchange="markDone(this,'row-rtp')" />
-              <label for="chk-rtp">Eingereicht</label>
-            </div>
-          </div>
+          
 
           <div class="task-row" id="row-richtlinie">
             <div class="task-info">
@@ -964,44 +957,22 @@ window.showTable = showTable;   // <<< ADD THIS LINE
               <label for="chk-assets">Eingereicht</label>
             </div>
           </div>
-
-          <div class="task-row" id="row-rollen">
+          <div class="task-row" id="row-assets">
             <div class="task-info">
-              <div class="task-name">Rollen &amp; Verantwortlichkeiten (ISMS-Organisation)</div>
+              <div class="task-name">BIA</div>
               <div class="task-meta">
-                <a class="task-doc" href="../docs/rollen-verantwortlichkeiten.pdf" target="_blank">
+                <a class="task-doc" href="../docs/asset-verzeichnis.xlsx" target="_blank">
                   <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
-                  rollen-verantwortlichkeiten.pdf
+                  asset-verzeichnis.xlsx
                 </a>
               </div>
             </div>
-            <span class="owner-badge">GF</span>
+            <span class="owner-badge">IT-Leitung</span>
             <div class="task-check">
-              <input type="checkbox" id="chk-rollen" onchange="markDone(this,'row-rollen')" />
-              <label for="chk-rollen">Eingereicht</label>
+              <input type="checkbox" id="chk-assets" onchange="markDone(this,'row-assets')" />
+              <label for="chk-assets">Eingereicht</label>
             </div>
           </div>
-
-          <div class="task-row" id="row-intaudit">
-            <div class="task-info">
-              <div class="task-name">Internes Voraudit (Bericht)</div>
-              <div class="task-meta">
-                <a class="task-doc" href="../docs/internes-audit-bericht.pdf" target="_blank">
-                  <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
-                  internes-audit-bericht.pdf
-                </a>
-              </div>
-            </div>
-            <span class="owner-badge">ISB</span>
-            <div class="task-check">
-              <input type="checkbox" id="chk-intaudit" onchange="markDone(this,'row-intaudit')" />
-              <label for="chk-intaudit">Eingereicht</label>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </div>
 
     <!-- Phase 3: Stage 1 -->
     <div class="phase">
@@ -1786,6 +1757,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             onclick="showTable('DAT-017 Vorfallsregister.json','Vorfallsregister')">
             Vorfallsregister
         </button>
+                <button class="btn"
+            onclick="showTable('DAT-017 Vorfallsregister.json','Vorfallsregister')">
+            Audits
+        </button>
+                </button>
+                <button class="btn"
+            onclick="showTable('DAT-017 Vorfallsregister.json','Vorfallsregister')">
+            Schulungen
+        </button>
+  
 
     </div>
 
@@ -1802,11 +1783,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     id="closeDocBtn"
     onclick="document.getElementById('docPanel').classList.remove('open')">
     ✕
-</button>    </div>
+</button>    
+
+</div>
 
     <div id="docContent" class="doc-content">
     </div>
 
 </div>
+
 </body>
 </html>

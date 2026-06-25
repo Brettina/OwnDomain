@@ -64,12 +64,7 @@ async function loadConfig() {
 }
 
 function applyResponsibilities() {
-  Object.entries(CFG.responsibilities || {}).forEach(([rowId, label]) => {
-    const row = document.getElementById(rowId);
-    if (!row) return;
-    const badge = row.querySelector('.owner-badge');
-    if (badge) badge.textContent = label;
-  });
+  // Badges now come from the Assetliste CSV via loadDocs(); config no longer sets them.
 }
 
 function makeDocLink(href, label, isGdrive, isPdf) {
@@ -229,9 +224,10 @@ async function loadDocs() {
   } catch(e) { console.warn('Docs API unavailable, using Drive fallbacks'); }
 
   Object.entries(DOCREGISTER).forEach(([docName, doc]) => {
+const norm = s => (s || '').toLowerCase().replace(/[\s\-]/g, '');
     const row = [...document.querySelectorAll(".task-list .task-row")]
     .find(r =>
-        r.querySelector(".task-name")?.textContent.trim() === docName
+        norm(r.querySelector(".task-name")?.textContent) === norm(docName)
     );
     const docBase = doc.file;
     if (!row) return;
@@ -1072,7 +1068,6 @@ window.showTable = showTable;   // <<< ADD THIS LINE
             <div
                 id="aiAnswer"
                 style="
-                    min-height:320px;
                     max-height:420px;
                     overflow-y:auto;
                     background:var(--bg);

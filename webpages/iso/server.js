@@ -290,6 +290,7 @@ app.get('/api/asset-owners', (req, res) => {
   if (!currentRole(req)) return res.status(401).json({ error: 'Nicht angemeldet' });
   res.json(loadAssetOwners());
 });
+require('./search')(app, { currentRole, DOCS_DIR });
 // ── Static routes ────────────────────────────────────────────
 // PUBLIC: the access map itself (login page + guard need it before login)
 app.use('/docs/conv_meta', express.static(path.join(DOCS_DIR, 'conv_meta')));

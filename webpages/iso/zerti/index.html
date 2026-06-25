@@ -1011,7 +1011,39 @@ window.showTable = showTable;   // <<< ADD THIS LINE
        TAB: ERSTZERTIFIZIERUNG
   ══════════════════════════════════════════════════════════ -->
   <div id="tab-erst" class="tab-panel active">
-
+<!-- ===== DOC SEARCH ===== -->
+<div class="phase">
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-num">🔍</div>
+    <div style="flex:1">
+      <div class="phase-title">Dokumentensuche</div>
+      <div class="phase-subtitle">Volltext + ID-Verknüpfungen über alle Dokumente (ohne KI)</div>
+    </div>
+    <div class="phase-toggle open">▼</div>
+  </div>
+  <div class="phase-body open">
+    <div class="meta-field">
+      <label>Suchbegriff</label>
+      <div style="display:flex;gap:1rem;align-items:center;">
+        <input id="docSearchInput" type="text"
+               placeholder="z.B. infosicherheitsrichtlinie, crypto, backup…"
+               style="flex:1;"
+               onkeydown="if(event.key==='Enter')runDocSearch()">
+        <button class="btn-save" onclick="runDocSearch()">Suchen</button>
+      </div>
+    </div>
+    <div class="meta-field" style="margin-top:1.5rem;">
+      <label>Ergebnisse</label>
+      <div id="docSearchResults"
+           style="max-height:60vh;overflow-y:auto;background:var(--bg);
+                  border:1px solid var(--border);border-radius:8px;
+                  padding:1rem;line-height:1.55;color:var(--text-muted);">
+        Ergebnisse erscheinen hier.
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ===== /DOC SEARCH ===== -->
     <!-- AI -->
 <!-- AI -->
 <div class="phase">
@@ -2063,6 +2095,61 @@ document.addEventListener('DOMContentLoaded', async () => {
     </div>
 
 </div>
-
+<script>
+function escHtml(s){return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
+function hl(text,q){
+  const e=escHtml(text);
+  if(!q) return e;
+  try{return e.replace(new RegExp('('+q.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','ig'),
+    '<mark style="background:var(--green-bg2);color:var(--green);padding:0 2px;border-radius:3px">$1</mark>');}
+  catch{return e;}
+}
+function renderFileBlock(f,q){
+  const rows=f.rows.map(r=>
+    `<div style="padding:.3rem 0;border-bottom:1px solid var(--border)">
+       <span style="color:var(--text-dim);font-size:.72rem">Z. ${r.line}</span>
+       <div style="font-size:.82rem;color:var(--text)">${hl(r.text,q)}</div>
+     </div>`).join('');
+  const more=f.total>f.rows.length?`<div style="font-size:.72rem;color:var(--text-dim);margin-top:.25rem">+${f.total-f.rows.length} weitere Treffer in dieser Datei</div>`:'';
+  return `<details open style="margin-bottom:.75rem;border:1px solid var(--border);border-radius:6px;padding:.5rem .75rem">
+            <summary style="cursor:pointer;color:var(--green);font-weight:600;font-size:.85rem">
+              ${escHtml(f.file)} <span style="color:var(--text-dim);font-weight:400">(${f.total})</span>
+            </summary>
+            <div style="margin-top:.4rem">${rows}${more}</div>
+          </details>`;
+}
+async function runDocSearch(){
+  const q=document.getElementById('docSearchInput').value.trim();
+  const box=document.getElementById('docSearchResults');
+  if(q.length<2){box.textContent='Bitte mind. 2 Zeichen eingeben.';return;}
+  box.textContent='Suche…';
+  let data;
+  try{data=await fetch('/api/search?q='+encodeURIComponent(q)).then(r=>r.json());}
+  catch(e){box.textContent='Suche nicht verfügbar.';return;}
+  let html='';
+  html+=`<h4 style="color:var(--green);font-family:'Space Grotesk',sans-serif;margin:.25rem 0 .5rem">
+           Volltext-Treffer ${data.textHits.length?'':'— keine'}</h4>`;
+  html+=data.textHits.length
+    ? data.textHits.map(f=>renderFileBlock(f,q)).join('')
+    : `<div style="color:var(--text-dim);font-size:.82rem;margin-bottom:1rem">Kein direkter Texttreffer.</div>`;
+  const sec=data.idSection;
+  html+=`<h4 style="color:var(--green);font-family:'Space Grotesk',sans-serif;margin:1.25rem 0 .5rem">
+           Verknüpfte IDs ${sec?'':'— keine'}</h4>`;
+  if(sec){
+    const seedTxt=sec.seeds.map(s=>`<b>${escHtml(s.id)}</b> (${s.score})`).join(', ');
+    const chips=sec.reachedIds.sort((a,b)=>a.depth-b.depth)
+      .map(r=>`<span title="Tiefe ${r.depth}" style="display:inline-block;margin:2px;padding:1px 7px;border-radius:12px;
+                font-size:.7rem;border:1px solid var(--green-dim);
+                background:rgba(120,200,50,${0.16-r.depth*0.04});color:var(--green)">${escHtml(r.id)}</span>`).join('');
+    html+=`<div style="font-size:.8rem;margin-bottom:.4rem">Beste Treffer-ID: ${seedTxt}</div>
+           <div style="margin-bottom:.75rem">${chips}</div>`;
+    html+=sec.files.map(f=>renderFileBlock(f,'')).join('');
+  }else{
+    html+=`<div style="color:var(--text-dim);font-size:.82rem">Kein passender ID-Kontext gefunden.</div>`;
+  }
+  box.innerHTML=html;
+}
+window.runDocSearch=runDocSearch;
+</script>
 </body>
 </html>

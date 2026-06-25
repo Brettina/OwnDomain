@@ -68,13 +68,23 @@ fetch("/docs/conv_tables/zugriffsverwaltung.json")
   })
   .catch(() => { err.textContent = "zugriffsverwaltung.json konnte nicht geladen werden."; });
 
-function login(){
+async function login(){
   const role = sel.value;
   const pw = document.getElementById("pw").value;
   if (!role){ err.textContent = "Bitte eine Rolle wählen."; return; }
-  if (pw !== PASSWORD){ err.textContent = "Falsches Passwort."; return; }
-  sessionStorage.setItem("iso_role", role);   // remembered for the other pages
-  window.location.href = "/zerti/";
+  try {
+    const res = await fetch("/api/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ role, password: pw })
+    });
+    const data = await res.json();
+    if (!res.ok){ err.textContent = data.error || "Anmeldung fehlgeschlagen"; return; }
+    sessionStorage.setItem("iso_role", role);   // for the in-page link hiding (the guard)
+    window.location.href = "/zerti/";
+  } catch(e){
+    err.textContent = "Server nicht erreichbar.";
+  }
 }
 
 document.getElementById("login").addEventListener("click", login);

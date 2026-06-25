@@ -11,9 +11,7 @@ const ISO_DIR = __dirname;
 const DOCS_DIR = path.join(ISO_DIR, 'docs');
 const APPROVALS_FILE = path.join(ISO_DIR, 'approvals.json');
 const CONFIG_FILE = path.join(ISO_DIR, 'config.json');
-const ACCESS_FILE = path.join(DOCS_DIR, 'conv_tables', 'zugriffsverwaltung.json');
-
-// ── Auth config ──────────────────────────────────────────────
+const ACCESS_FILE = path.join(ISO_DIR, 'zugriffsverwaltung.json');// ── Auth config ──────────────────────────────────────────────
 const PASSWORD = process.env.ISO_PASSWORD || '12345';                 // demo password
 const SECRET   = process.env.ISO_SECRET   || 'CHANGE-ME-to-a-long-random-string';
 const HIERARCHY = ['streng_vertraulich', 'vertraulich', 'intern', 'oeffentlich'];
@@ -217,9 +215,13 @@ app.post('/api/approve', (req, res) => {
 
 // ── Static routes ────────────────────────────────────────────
 // PUBLIC: the access map itself (login page + guard need it before login)
-app.use('/docs/conv_tables', express.static(path.join(DOCS_DIR, 'conv_tables')));
-
+app.use('/docs/conv_meta', express.static(path.join(DOCS_DIR, 'conv_meta')));
 // GATED: every other file under /docs is checked against the role
+
+// PUBLIC: the access map (login page + guard need it before login)
+app.get('/zugriffsverwaltung.json', (req, res) => {
+  res.sendFile(ACCESS_FILE);
+});
 app.use('/docs', (req, res, next) => {
   const role = currentRole(req);
   if (!role) return res.status(401).send('Nicht angemeldet');

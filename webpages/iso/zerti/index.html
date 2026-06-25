@@ -44,18 +44,8 @@ converted outputs.
  
   <script>
 const API_BASE = '';
+let DOCREGISTER = {};
 
-const DOC_MAP = {
-  'row-risikoanalyse':  'dat-010 Risikomanagement',
-  'row-soa': 'dat-016 soa',
-  'row-richtlinie':     'gov-001 Infosicherheitsrichtlinie2',
-  'row-assets':         'asset-verzeichnis',
-  'row-rollen':         'rollen-verantwortlichkeiten',
-  'row-intaudit':       'internes-audit-bericht',
-  'row-korrektur':      'korrekturmassnahmen',
-  'row-zertifikat':     'zertifikat-iso27001',
-  'row-aenderungen':    'isms-aenderungsprotokoll',
-};
 
 let CFG = { responsibilities: {}, driveLinks: {} };
 let CONFIG_READY = false;
@@ -70,6 +60,7 @@ async function loadConfig() {
     applyResponsibilities();
     CONFIG_READY = true;
   } catch(e) { console.warn(e); }
+  DOCREGISTER = await fetch("/docregister.json").then(r => r.json());
 }
 
 function applyResponsibilities() {
@@ -90,15 +81,159 @@ function makeDocLink(href, label, isGdrive, isPdf) {
   return `<a class="task-doc" href="${href}" target="_blank" style="${colorStyle}"${title}>${icon} ${label}</a>`;
 }
 
+async function loadComplianceMonitor(){
+
+    const [docs, schedule] = await Promise.all([
+        fetch("/docregister.json").then(r => r.json()),
+        fetch("/isoschedule.json").then(r => r.json())
+    ]);
+
+    const upcoming = document.getElementById("upcomingMonitor");
+
+    upcoming.innerHTML = "";
+
+    const now = new Date();
+
+    let rows = [];
+const seen = new Set();
+
+    schedule.schedule.forEach(item => {
+
+        item.documents.forEach(docName => {
+
+            const doc = docs[docName];
+
+            if(!doc || !doc.last_changed)
+                return;
+              if (seen.has(docName)) return;
+                seen.add(docName);
+
+            const changed = new Date(doc.last_changed);
+
+            const months =
+                (now.getFullYear() - changed.getFullYear()) * 12 +
+                (now.getMonth() - changed.getMonth());
+
+            const ratio = Math.min(months / item.interval_months, 1);
+
+            const hue = 120 * (1 - ratio);
+
+            const color = `hsl(${hue},85%,45%)`;
+
+            rows.push({ changed, html: `
+                <div class="task-row">
+
+                    <div class="task-info">
+
+                        <div class="task-name" style="color:${color}">
+                            ${docName}
+                        </div>
+
+                        <div class="task-meta">
+                            ${item.activity}<br>
+Last changed: ${changed.toLocaleDateString('de-DE', {day:'2-digit', month:'short', year:'numeric'})} ${changed.toLocaleTimeString('de-DE', {hour:'2-digit', minute:'2-digit'})}                        </div>
+
+                    </div>
+
+                </div>
+            ` });
+
+        });
+
+    });
+
+    rows.sort((a, b) => a.changed - b.changed);
+    const html = rows.map(r => r.html).join("");
+
+    upcoming.innerHTML = html || `
+        <div class="task-row">
+            <div class="task-info">
+                <div class="task-name">Keine anstehenden Prüfungen.</div>
+            </div>
+        </div>
+    `;
+}
+
+async function loadInconsistencies(){
+  const box = document.getElementById("consistencyMonitor");
+  if (!box) return;
+  let items = [];
+  try {
+    const res = await fetch("/api/inconsistencies");
+    const data = await res.json();
+    items = data.items || [];
+  } catch(e){ console.warn("Inconsistencies API unavailable", e); }
+
+  if (!items.length){
+    box.innerHTML = `
+      <div class="task-row">
+        <div class="task-info">
+          <div class="task-name">Keine Inkonsistenzen gefunden.</div>
+          <div class="task-meta">Logische Widersprüche erscheinen hier.</div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="task-meta" style="margin-bottom:.25rem;color:var(--red)">
+      ${items.length} Dokument${items.length>1?'e':''} mit Inkonsistenzen
+    </div>` +
+    items.map(it => `
+      <div class="task-row inc-row" data-id="${it.id}">
+        <div class="task-info">
+          <div class="task-name inc-toggle" style="color:var(--red);cursor:pointer">
+            ${it.title || (it.docs||[]).join(' ↔ ')}
+          </div>
+          <div class="task-meta">${(it.docs||[]).join(', ')}</div>
+          <div class="inc-detail">
+            <p style="margin:.4rem 0;color:var(--text-muted);font-size:.82rem;line-height:1.5">
+              ${it.explanation || 'Erklärung folgt (KI).'}
+            </p>
+            <button class="inc-btn" onclick="ignoreInconsistency('${it.id}')">
+              ✓ Erledigt – künftig ignorieren
+            </button>
+          </div>
+        </div>
+      </div>`).join("");
+
+  box.querySelectorAll('.inc-toggle').forEach(t => {
+    t.addEventListener('click', () => {
+      t.closest('.inc-row').querySelector('.inc-detail').classList.toggle('open');
+    });
+  });
+}
+
+async function ignoreInconsistency(id){
+  const reason = prompt('Grund (optional):') || '';
+  try {
+    const res = await fetch('/api/inconsistencies/ignore', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ id, reason })
+    });
+    if (!res.ok) throw new Error((await res.json()).error || 'Fehler');
+    await loadInconsistencies();
+  } catch(e){ alert(e.message); }
+}
+window.ignoreInconsistency = ignoreInconsistency;
 async function loadDocs() {
+  let assetOwners = {};
+  try {
+    assetOwners = await fetch(`${API_BASE}/api/asset-owners`).then(r => r.json());
+  } catch(e) { console.warn('Asset owners unavailable', e); }
   let groups = {};
   try {
     const res = await fetch(`${API_BASE}/api/docs`);
     groups = await res.json();
   } catch(e) { console.warn('Docs API unavailable, using Drive fallbacks'); }
 
-  Object.entries(DOC_MAP).forEach(([rowId, docBase]) => {
-    const row = document.getElementById(rowId);
+  Object.entries(DOCREGISTER).forEach(([docName, doc]) => {
+    const row = [...document.querySelectorAll(".task-list .task-row")]
+    .find(r =>
+        r.querySelector(".task-name")?.textContent.trim() === docName
+    );
+    const docBase = doc.file;
     if (!row) return;
     const metaDiv = row.querySelector('.task-meta');
     if (!metaDiv) return;
@@ -107,10 +242,12 @@ async function loadDocs() {
     const group = groups[docBase];
     const badge = row.querySelector(".owner-badge");
 
-const roles = FILE_ROLES[baseName(docBase)] || [];
+if (badge) {
+      const idMatch = String(docBase || '').toLowerCase().match(/^([a-z]{3}-\d{3})/);
+      const owner = idMatch ? assetOwners[idMatch[1]] : null;
+      badge.textContent = owner || doc.owner || 'kein Eigentümer';
+    }
 
-if (badge)
-    badge.textContent = roles.join(", ");
     const driveUrl = (CFG.driveLinks || {})[docBase];
 
     if (group && (group.odt || group.pdf)) {
@@ -323,7 +460,26 @@ if (badge)
     }
     .task-row:hover { border-color: var(--text-dim); }
     .task-row.done { border-color: var(--green-dim); background: rgba(120,200,50,0.04); }
-    .task-info { min-width: 0; }
+    .monitor-scroll {
+  max-height: 260px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+  padding-right: 4px;
+}
+.monitor-scroll::-webkit-scrollbar { width: 6px; }
+.monitor-scroll::-webkit-scrollbar-thumb { background: var(--green-dim); border-radius: 3px; }
+  .inc-detail { display: none; }
+.inc-detail.open { display: block; }
+.inc-btn {
+  margin-top: .4rem; padding: 5px 12px; font-size: .78rem; cursor: pointer;
+  background: var(--green-bg); color: var(--green);
+  border: 1px solid var(--green-dim); border-radius: 6px;
+  font-family: 'DM Sans', sans-serif;
+}
+.inc-btn:hover { background: var(--green-bg2); }  
+.task-info { min-width: 0; }
     .task-name {
       font-size: .9rem; font-weight: 500; margin-bottom: 3px;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
@@ -727,6 +883,8 @@ let ready = false;
 ready = true;
 
 loadDocs();
+loadComplianceMonitor();
+loadInconsistencies();
 
 sweep(document);
     })
@@ -931,15 +1089,10 @@ Hier erscheint später die Antwort der KI.
 Mögliche Funktionen
 
 • Dokument zusammenfassen
-
 • Auditorfragen beantworten
-
 • Risiken erklären
-
 • Controls erläutern
-
 • Unterschiede zwischen Dokumenten finden
-
 • Maßnahmen vorschlagen
 
             </div>
@@ -994,10 +1147,10 @@ Mögliche Funktionen
                     font-size:1rem;
                     font-family:'Space Grotesk',sans-serif;
                 ">
-                    Upcoming
+                    Zeitliche Überwachung
                 </h3>
 
-                <div id="upcomingMonitor">
+                <div id="upcomingMonitor" class="monitor-scroll">
 
                     <div class="task-row">
                         <div class="task-info">
@@ -1029,10 +1182,10 @@ Mögliche Funktionen
                     font-size:1rem;
                     font-family:'Space Grotesk',sans-serif;
                 ">
-                    Inconsistencies
+                    Logische Inkonsistenzen zw. den Dokumenten
                 </h3>
 
-                <div id="consistencyMonitor">
+                <div id="consistencyMonitor" class="monitor-scroll">
 
                     <div class="task-row">
                         <div class="task-info">
@@ -1573,6 +1726,7 @@ Danke.`
       if (!res.ok) throw new Error(data.error);
 
       await loadDocs();
+      await loadComplianceMonitor();
     } catch (e) {
       alert(e.message);
       chk.checked = false;
@@ -1841,6 +1995,7 @@ function initSoa() {
 document.addEventListener('DOMContentLoaded', async () => {
   await loadConfig();
   await loadDocs();
+  await loadComplianceMonitor();
   initSoa();
 });
 </script>

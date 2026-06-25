@@ -2,36 +2,40 @@
   "schedule": [
     {
       "interval_months": 12,
-      "activity": "Managementreview",
+      "activity": "Management Review",
       "documents": [
-        "dat-010 Risikomanagement",
-        "dat-013 Assetliste HW",
-        "dat-016 soa"
+        "Risikoanalyse",
+        "Assetverzeichnis",
+        "Statement of Applicability (SoA)"
       ]
     },
     {
       "interval_months": 12,
       "activity": "Interner Audit",
       "documents": [
-        "internes-audit-bericht"
+        "Interner Auditbericht"
       ]
     },
     {
       "interval_months": 12,
       "activity": "Dokumentenreview",
       "documents": [
-        "gov-001 Infosicherheitsrichtlinie2",
-        "rollen-verantwortlichkeiten",
-        "asset-verzeichnis"
+        "Informationssicherheitsrichtlinie",
+        "Rollen und Verantwortlichkeiten",
+        "Assetverzeichnis",
+        "Risikoanalyse",
+        "Statement of Applicability (SoA)"
       ]
     },
     {
       "interval_months": 36,
-      "activity": "Rezertifizierungsaudit",
+      "activity": "Rezertifizierung",
       "documents": [
-        "dat-010 Risikomanagement",
-        "dat-013 Assetliste HW",
-        "dat-016 soa"
+        "Informationssicherheitsrichtlinie",
+        "Risikoanalyse",
+        "Statement of Applicability (SoA)",
+        "Assetverzeichnis",
+        "Interner Auditbericht"
       ]
     }
   ]

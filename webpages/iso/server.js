@@ -212,7 +212,84 @@ app.post('/api/approve', (req, res) => {
     res.json({ ok: true, pdfFilename: stampedPdf, timestamp: now.toISOString() });
   });
 });
+// ── Inconsistencies API (content-based; AI hook wired in later) ──
+const DOCREGISTER_FILE = path.join(ISO_DIR, 'docregister.json');
+function loadDocregister(){ try { return JSON.parse(fs.readFileSync(DOCREGISTER_FILE,'utf8')); } catch { return {}; } }
+function saveDocregister(d){ fs.writeFileSync(DOCREGISTER_FILE, JSON.stringify(d, null, 2)); }
 
+app.get('/api/inconsistencies', (req, res) => {
+  if (!currentRole(req)) return res.status(401).json({ error: 'Nicht angemeldet' });
+  const reg = loadDocregister();
+  const ignored = (reg._meta && reg._meta.ignoredInconsistencies) || [];
+  // TODO: replace [] with real AI content analysis over the documents in docs/.
+  let items = [];
+  items = items.filter(it => !ignored.includes(it.id));
+  res.json({ items });
+});
+
+app.post('/api/inconsistencies/ignore', (req, res) => {
+  if (!currentRole(req)) return res.status(401).json({ error: 'Nicht angemeldet' });
+  const { id, reason } = req.body || {};
+  if (!id) return res.status(400).json({ error: 'id required' });
+  const reg = loadDocregister();
+  if (!reg._meta) reg._meta = {};
+  if (!Array.isArray(reg._meta.ignoredInconsistencies)) reg._meta.ignoredInconsistencies = [];
+  if (!Array.isArray(reg._meta.ignoredLog)) reg._meta.ignoredLog = [];
+  if (!reg._meta.ignoredInconsistencies.includes(id)) {
+    reg._meta.ignoredInconsistencies.push(id);
+    reg._meta.ignoredLog.push({ id, reason: reason || '', by: currentRole(req), at: new Date().toISOString() });
+  }
+  saveDocregister(reg);
+  res.json({ ok: true });
+});
+
+// ── Asset owners (parsed from the messy Assetliste CSV) ──────
+const ASSET_CSV = path.join(DOCS_DIR, 'conv_tables', 'dat-013 Assetliste HW__assetlist.csv');
+
+function parseCsvLine(line) {                 // minimal CSV (handles quotes + commas)
+  const out = []; let cur = '', q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (q) {
+      if (c === '"' && line[i+1] === '"') { cur += '"'; i++; }
+      else if (c === '"') q = false;
+      else cur += c;
+    } else if (c === '"') q = true;
+    else if (c === ',') { out.push(cur); cur = ''; }
+    else cur += c;
+  }
+  out.push(cur);
+  return out;
+}
+
+function loadAssetOwners() {
+  const map = {};
+  try {
+    const text = fs.readFileSync(ASSET_CSV, 'utf8');
+    const lines = text.split(/\r?\n/);
+    // find the header row that contains "Kategorie inkl ID" and "Eigentümer"
+    let hi = lines.findIndex(l => /Kategorie inkl ID/i.test(l) && /Eigent/i.test(l));
+    if (hi < 0) return map;
+    const hdr = parseCsvLine(lines[hi]);
+    const idCol = hdr.findIndex(h => /Kategorie inkl ID/i.test(h));
+    const ownerCol = hdr.findIndex(h => /Eigent/i.test(h));
+    for (let i = hi + 1; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      const cells = parseCsvLine(lines[i]);
+      const id = (cells[idCol] || '').trim().toLowerCase();
+      let owner = (cells[ownerCol] || '').trim();
+      if (!/^[a-z]{3}-\d{3}$/.test(id) || !owner) continue;
+      owner = owner.replace(/\s*\([^)]*\)/g, '').trim();   // drop "(R/A)" etc.
+      map[id] = owner;
+    }
+  } catch (e) { console.warn('Asset CSV parse failed:', e.message); }
+  return map;
+}
+
+app.get('/api/asset-owners', (req, res) => {
+  if (!currentRole(req)) return res.status(401).json({ error: 'Nicht angemeldet' });
+  res.json(loadAssetOwners());
+});
 // ── Static routes ────────────────────────────────────────────
 // PUBLIC: the access map itself (login page + guard need it before login)
 app.use('/docs/conv_meta', express.static(path.join(DOCS_DIR, 'conv_meta')));
@@ -221,6 +298,16 @@ app.use('/docs/conv_meta', express.static(path.join(DOCS_DIR, 'conv_meta')));
 // PUBLIC: the access map (login page + guard need it before login)
 app.get('/zugriffsverwaltung.json', (req, res) => {
   res.sendFile(ACCESS_FILE);
+});
+
+// GATED: data files the Compliance Monitor (zerti page) fetches by URL.
+// Without these, fetch('/docregister.json') / fetch('/isoschedule.json')
+// hit the catch-all 404 (HTML), r.json() throws, and the monitor renders nothing.
+app.get('/docregister.json', requireLogin, (req, res) => {
+  res.sendFile(path.join(ISO_DIR, 'docregister.json'));
+});
+app.get('/isoschedule.json', requireLogin, (req, res) => {
+  res.sendFile(path.join(ISO_DIR, 'isoschedule.json'));
 });
 app.use('/docs', (req, res, next) => {
   const role = currentRole(req);

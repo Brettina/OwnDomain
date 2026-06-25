@@ -590,7 +590,7 @@ async function loadDocs() {
 .soa-popup-close:hover { border-color: var(--red); color: var(--red); }
   .doc-panel{
     position:fixed;
-    top:0;
+    top:70px;
     right:-45%;
     width:45%;
     height:100%;
@@ -738,11 +738,7 @@ async function openMarkdown(file, title){
 
 }
 window.openMarkdown = openMarkdown;
-document.getElementById("closeDocBtn").onclick = () => {
-
-    document.getElementById("docPanel").classList.remove("open");
-
-};
+;
 })();
 </script>
 <!-- ===== Ende Guard ===== -->
@@ -769,13 +765,7 @@ document.getElementById("closeDocBtn").onclick = () => {
 
 <!-- MAIN -->
 <main>
-<button onclick="openMarkdown(
-'gov-001 Infosicherheitsrichtlinie2.md',
-'Informationssicherheitsrichtlinie'
-)">
 
-    📄 Informationssicherheitsrichtlinie
-</button>
   <!-- HERO -->
   <div class="hero">
     <div class="hero-text">
@@ -895,6 +885,13 @@ document.getElementById("closeDocBtn").onclick = () => {
           <div class="task-row" id="row-richtlinie">
             <div class="task-info">
               <div class="task-name">Informationssicherheitsrichtlinie</div>
+              <button onclick="openMarkdown(
+'gov-001 Infosicherheitsrichtlinie2.md',
+'Informationssicherheitsrichtlinie'
+)">
+
+    📄 Informationssicherheitsrichtlinie
+</button>
               <div class="task-meta">
                 <a class="task-doc" href="../docs/sicherheitsrichtlinie.pdf" target="_blank">
                   <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 0h5.293A1 1 0 0 1 10 .293L13.707 4a1 1 0 0 1 .293.707V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2zm6 1.5v2a.5.5 0 0 0 .5.5h2L10 1.5z"/></svg>
@@ -1731,8 +1728,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     <div class="doc-header">
         <h2 id="docTitle">Dokument</h2>
 
-        <button id="closeDocBtn">✕</button>
-    </div>
+<button
+    id="closeDocBtn"
+    onclick="document.getElementById('docPanel').classList.remove('open')">
+    ✕
+</button>    </div>
 
     <div id="docContent" class="doc-content">
     </div>

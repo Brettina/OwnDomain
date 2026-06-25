@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zugriffsverwaltung</title>
+<style>
+  :root{
+    --bg:#0f1115;--panel:#1a1d23;--border:#2a2f38;
+    --text:#e6e8eb;--muted:#8b919c;--accent:#5b9dff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;
+    background:var(--bg);color:var(--text);min-height:100vh;padding:2rem}
+  .wrap{max-width:720px;margin:0 auto}
+  h1{font-size:1.4rem;margin:0 0 .25rem}
+  .sub{color:var(--muted);margin:0 0 1.5rem;font-size:.9rem}
+  label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:.4rem}
+  select{width:100%;padding:.6rem .7rem;background:var(--panel);color:var(--text);
+    border:1px solid var(--border);border-radius:8px;font-size:1rem}
+  .clearance{margin:1.25rem 0 .5rem;font-size:.9rem;color:var(--muted)}
+  .clearance b{color:var(--accent)}
+  .level{background:var(--panel);border:1px solid var(--border);border-radius:10px;
+    padding:.9rem 1rem;margin-top:.75rem}
+  .level h2{font-size:.95rem;margin:0 0 .5rem;display:flex;align-items:center;gap:.5rem}
+  .badge{font-size:.7rem;text-transform:uppercase;letter-spacing:.04em;
+    padding:.15rem .45rem;border-radius:999px;border:1px solid var(--border);color:var(--muted)}
+  ul{margin:0;padding-left:1.1rem}
+  li{margin:.2rem 0}
+  .empty{color:var(--muted);font-style:italic}
+  .error{background:#2a1416;border:1px solid #5a2228;color:#ffb4b4;
+    padding:.8rem 1rem;border-radius:8px;font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Zugriffsverwaltung</h1>
+  <p class="sub">Rolle wählen, um die freigegebenen Dokumente zu sehen.</p>
+
+  <label for="role">Rolle</label>
+  <select id="role"><option value="">– bitte wählen –</option></select>
+
+  <div id="output"></div>
+</div>
+
+<script>
+// highest clearance -> lowest. A role sees its own level + everything below it.
+const HIERARCHY = ["streng_vertraulich", "vertraulich", "intern", "oeffentlich"];
+const LABELS = {
+  streng_vertraulich:"Streng vertraulich", vertraulich:"Vertraulich",
+  intern:"Intern", oeffentlich:"Öffentlich"
+};
+
+const norm = s => String(s).trim().toLowerCase().replace(/\s+/g, "_");
+let LEVELS = {}; // normalizedLevel -> { roles:[], files:[] }
+
+function ingest(levelKey, obj){
+  const key = norm(levelKey);
+  const roles = obj.roles || obj.role || [];
+  const files = obj.files || obj.file || [];
+  LEVELS[key] = {
+    roles: Array.isArray(roles) ? roles : [roles],
+    files: Array.isArray(files) ? files : [files]
+  };
+}
+
+// handles both the array-of-objects shape and the single-object shape
+function parse(data){
+  if (Array.isArray(data)) data.forEach(e => Object.keys(e).forEach(k => ingest(k, e[k])));
+  else Object.keys(data).forEach(k => ingest(k, data[k]));
+}
+
+function buildRoleMenu(){
+  const sel = document.getElementById("role");
+  const seen = new Set();
+  HIERARCHY.forEach(level => {
+    (LEVELS[level]?.roles || []).forEach(role => {
+      if (seen.has(role)) return;
+      seen.add(role);
+      const opt = document.createElement("option");
+      opt.value = role;
+      opt.textContent = role + " (" + (LABELS[level] || level) + ")";
+      sel.appendChild(opt);
+    });
+  });
+}
+
+// a role's clearance = the highest level it appears in
+function clearanceIndexFor(role){
+  for (let i = 0; i < HIERARCHY.length; i++)
+    if ((LEVELS[HIERARCHY[i]]?.roles || []).includes(role)) return i;
+  return -1;
+}
+
+function render(role){
+  const out = document.getElementById("output");
+  out.innerHTML = "";
+  if (!role) return;
+  const idx = clearanceIndexFor(role);
+  if (idx === -1) return;
+
+  const info = document.createElement("p");
+  info.className = "clearance";
+  info.innerHTML = "Freigabestufe: <b>" + (LABELS[HIERARCHY[idx]] || HIERARCHY[idx]) +
+                   "</b> — sichtbar sind diese Stufe und alle darunter.";
+  out.appendChild(info);
+
+  HIERARCHY.slice(idx).forEach(level => {
+    const data = LEVELS[level] || { files: [] };
+    const card = document.createElement("div");
+    card.className = "level";
+
+    const h = document.createElement("h2");
+    h.textContent = LABELS[level] || level;
+    const badge = document.createElement("span");
+    badge.className = "badge";
+    badge.textContent = level === HIERARCHY[idx] ? "eigene Stufe" : "geerbt";
+    h.appendChild(badge);
+    card.appendChild(h);
+
+    if (data.files.length){
+      const ul = document.createElement("ul");
+      data.files.forEach(f => {
+        const li = document.createElement("li");
+        li.textContent = f;
+        ul.appendChild(li);
+      });
+      card.appendChild(ul);
+    } else {
+      const p = document.createElement("p");
+      p.className = "empty";
+      p.textContent = "Keine Dokumente.";
+      card.appendChild(p);
+    }
+    out.appendChild(card);
+  });
+}
+
+document.getElementById("role").addEventListener("change", e => render(e.target.value));
+
+fetch("../docs/conv_tables/zugriffsverwaltung.json")
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .then(data => { parse(data); buildRoleMenu(); })
+  .catch(err => {
+    document.getElementById("output").innerHTML =
+      '<div class="error">Konnte zugriffsverwaltung.json nicht laden (' + err.message +
+      ').<br>Bitte über einen lokalen Server öffnen (z.&nbsp;B. VS&nbsp;Code „Live Server"), ' +
+      'da <code>fetch</code> mit <code>file://</code> blockiert wird.</div>';
+  });
+</script>
+</body>
+</html>

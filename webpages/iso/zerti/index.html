@@ -764,32 +764,40 @@ async function showTable(file, title){
 
     const data = await res.json();
 
-    const sheet = Object.values(data)[0];
+    const sheets = Object.entries(data);
 
-    if(!sheet || sheet.length===0){
-        viewer.innerHTML="<p>Keine Daten.</p>";
-        return;
-    }
+let html = `<h3>${title}</h3>`;
+
+for (const [sheetName, sheet] of sheets) {
+
+    if (!sheet.length) continue;
+
+    html += `<h4 style="margin-top:1.5rem">${sheetName}</h4>`;
 
     const cols = Object.keys(sheet[0]);
 
-    let html = `<h3>${title}</h3><table class="findings-table"><thead><tr>`;
+    html += `<table class="findings-table"><thead><tr>`;
 
     cols.forEach(c => html += `<th>${c}</th>`);
 
     html += "</tr></thead><tbody>";
 
-    sheet.forEach(row=>{
+    sheet.forEach(row => {
+
         html += "<tr>";
-        cols.forEach(c=>{
+
+        cols.forEach(c => {
             html += `<td>${row[c] ?? ""}</td>`;
         });
+
         html += "</tr>";
+
     });
 
     html += "</tbody></table>";
+}
 
-    viewer.innerHTML = html;
+viewer.innerHTML = html;
 }
 
 window.showTable = showTable;   // <<< ADD THIS LINE

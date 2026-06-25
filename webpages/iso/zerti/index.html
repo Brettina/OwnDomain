@@ -704,7 +704,7 @@ const PATHS = {
     muts.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) sweep(n); }));
   }).observe(document.body, {childList:true, subtree:true});
 
-  fetch("/docs/conv_tables/zugriffsverwaltung.json")
+  fetch("/docs/conv_meta/zugriffsverwaltung.json")
     .then(r => r.json())
     .then(data => {
       const idx = HIERARCHY.findIndex(l => (data[l]?.roles || []).includes(role));
@@ -721,7 +721,6 @@ const PATHS = {
     })
     .catch(e => console.error("Guard: JSON-Fehler", e));
 async function openMarkdown(file, title){
-
     const panel = document.getElementById("docPanel");
     const content = document.getElementById("docContent");
 
@@ -738,7 +737,7 @@ async function openMarkdown(file, title){
     content.innerHTML = marked.parse(markdown);
 
 }
-
+window.openMarkdown = openMarkdown;
 document.getElementById("closeDocBtn").onclick = () => {
 
     document.getElementById("docPanel").classList.remove("open");
@@ -766,16 +765,17 @@ document.getElementById("closeDocBtn").onclick = () => {
     </nav>
   </div>
 </header>
+
+
+<!-- MAIN -->
+<main>
 <button onclick="openMarkdown(
 'infosicherheitsrichtlinie.md',
 'Informationssicherheitsrichtlinie'
 )">
+
     📄 Informationssicherheitsrichtlinie
 </button>
-
-<!-- MAIN -->
-<main>
-
   <!-- HERO -->
   <div class="hero">
     <div class="hero-text">
@@ -1731,13 +1731,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     <div class="doc-header">
         <h2 id="docTitle">Dokument</h2>
 
-        <button id="closeDocBtn">
-            ✕
-        </button>
+        <button id="closeDocBtn">✕</button>
     </div>
 
     <div id="docContent" class="doc-content">
-        Dokument wird geladen...
     </div>
 
 </div>

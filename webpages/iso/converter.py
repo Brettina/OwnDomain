@@ -139,8 +139,13 @@ def convert_docx(src: Path):
     dest.write_text("\n\n".join(out), encoding="utf-8")
     return [dest]
 
+def _json_default(o):
+    """Make pandas/np types JSON-safe (dates -> ISO strings, fallback -> str)."""
+    if isinstance(o, (pd.Timestamp, datetime.datetime, datetime.date)):
+        return o.isoformat()
+    return str(o)
 
-# --- Spreadsheets -> CSV + JSON --------------------------------------------
+
 def convert_table(src: Path):
     ext = src.suffix.lower()
     if ext == ".csv":
@@ -155,6 +160,8 @@ def convert_table(src: Path):
     written = []
     json_payload = {}
     for name, df in sheets.items():
+        df = df.copy()
+        df.columns = [str(c) for c in df.columns]   # headers -> safe JSON keys
         df = df.fillna("")
         if len(sheets) == 1:
             csv_path = TABLES_DIR / (src.stem + ".csv")
@@ -167,10 +174,10 @@ def convert_table(src: Path):
 
     json_path = TABLES_DIR / (src.stem + ".json")
     with open(json_path, "w", encoding="utf-8") as f:
-        json.dump(json_payload, f, ensure_ascii=False, indent=2)
+        json.dump(json_payload, f, ensure_ascii=False, indent=2,
+                  default=_json_default)   # <-- handles Timestamp values
     written.append(json_path)
     return written
-
 
 # --- Metadata ---------------------------------------------------------------
 def write_metadata(src: Path, outputs):

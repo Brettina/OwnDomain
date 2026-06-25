@@ -320,7 +320,93 @@ async function loadDocs() {
   </style>
 </head>
 <body>
+<!-- ===== Zugriffs-Guard: direkt nach <body> einfügen (zerti + ueberwachung) ===== -->
+<div id="authbar" style="position:sticky;top:0;z-index:9999;display:flex;
+     justify-content:flex-end;align-items:center;gap:.75rem;
+     padding:.4rem .9rem;background:#11151c;border-bottom:1px solid #2a2f38;
+     font:500 .8rem system-ui,sans-serif;color:#8b919c">
+  <span id="authrole"></span>
+  <button id="authout" style="border:1px solid #2a2f38;background:#1a1d23;color:#e6e8eb;
+     border-radius:6px;padding:.25rem .6rem;cursor:pointer">Abmelden</button>
+</div>
+<script>
+(function(){
+  const HIERARCHY = ["streng_vertraulich","vertraulich","intern","oeffentlich"];
+  const LABELS = {streng_vertraulich:"Streng vertraulich",vertraulich:"Vertraulich",
+                  intern:"Intern",oeffentlich:"Öffentlich"};
+  // Stufe für Dateien, die in der JSON NICHT klassifiziert sind.
+  // "oeffentlich" = für alle sichtbar. Auf z.B. "intern" setzen für strenger.
+  const DEFAULT_LEVEL = "oeffentlich";
 
+  const role = sessionStorage.getItem("iso_role");
+  if (!role){ window.location.href = "/welcome/"; return; }
+
+  const norm = s => decodeURIComponent(String(s)).trim().toLowerCase().replace(/\s+/g," ");
+
+  // Basisname aus einem href/Text ziehen: Pfad + Endung + Zeitstempel entfernen
+  function baseName(s){
+    let n = decodeURIComponent(String(s)).split(/[\\/]/).pop();   // nur Dateiname
+    n = n.replace(/\.(pdf|odt|ods|odp|docx?)$/i,"");              // Endung weg
+    n = n.replace(/_\d{4}-\d{2}-\d{2}_\d{2}-\d{2}$/,"");          // Zeitstempel weg
+    return norm(n);
+  }
+
+  let allowed = new Set();      // erlaubte Basisnamen für diese Rolle
+  let classified = new Set();   // alle in der JSON klassifizierten Basisnamen
+  let ready = false;
+
+  document.getElementById("authrole").textContent = "Angemeldet als: " + role;
+  document.getElementById("authout").addEventListener("click", () => {
+    sessionStorage.removeItem("iso_role");
+    window.location.href = "/welcome/";
+  });
+
+  function canSee(base){
+    if (!ready) return true;            // vor dem Laden nichts verstecken
+    if (allowed.has(base)) return true;
+    if (classified.has(base)) return false;        // klassifiziert, aber über der Freigabe
+    return HIERARCHY.indexOf(DEFAULT_LEVEL) >= 0;  // unklassifiziert
+  }
+
+  function isDocLink(a){
+    return a.tagName === "A" && /\/docs\//.test(a.getAttribute("href") || "");
+  }
+
+  function applyTo(a){
+    if (!isDocLink(a)) return;
+    const base = baseName(a.getAttribute("href"));
+    a.style.display = canSee(base) ? "" : "none";
+  }
+
+  function sweep(root){
+    (root.querySelectorAll ? root.querySelectorAll("a") : []).forEach(applyTo);
+    if (root.tagName === "A") applyTo(root);
+  }
+
+  // dynamisch nachgeladene Links (/api/docs) ebenfalls abfangen
+  new MutationObserver(muts => {
+    muts.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) sweep(n); }));
+  }).observe(document.body, {childList:true, subtree:true});
+
+  fetch("/docs/conv_tables/zugriffsverwaltung.json")
+    .then(r => r.json())
+    .then(data => {
+      const idx = HIERARCHY.findIndex(l => (data[l]?.roles || []).includes(role));
+      const fromIdx = idx === -1 ? HIERARCHY.length : idx;  // unbekannte Rolle = nichts
+      HIERARCHY.forEach((level, i) => {
+        (data[level]?.files || []).forEach(f => {
+          const b = baseName(f);
+          classified.add(b);
+          if (i >= fromIdx) allowed.add(b);
+        });
+      });
+      ready = true;
+      sweep(document);   // erneuter Durchlauf, jetzt mit Regeln
+    })
+    .catch(e => console.error("Guard: JSON-Fehler", e));
+})();
+</script>
+<!-- ===== Ende Guard ===== -->
 <header>
   <div class="header-inner">
     <a href="https://helmundwalter.de" class="logo" target="_blank" rel="noopener">
@@ -906,4 +992,5 @@ Danke.`
   //document.addEventListener('DOMContentLoaded', loadDocs);
 </script>
 </body>
+
 </html>

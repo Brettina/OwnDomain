@@ -704,7 +704,7 @@ const PATHS = {
     muts.forEach(m => m.addedNodes.forEach(n => { if (n.nodeType === 1) sweep(n); }));
   }).observe(document.body, {childList:true, subtree:true});
 
-  fetch("/docs/conv_meta/zugriffsverwaltung.json")
+  fetch("/zugriffsverwaltung.json")
     .then(r => r.json())
     .then(data => {
       const idx = HIERARCHY.findIndex(l => (data[l]?.roles || []).includes(role));

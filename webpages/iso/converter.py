@@ -179,6 +179,30 @@ def convert_table(src: Path):
     written.append(json_path)
     return written
 
+# --- Document register ------------------------------------------------------
+def update_docregister(src: Path):
+    reg_path = SCRIPT_DIR / "docregister.json"
+
+    if not reg_path.exists():
+        return
+
+    with open(reg_path, "r", encoding="utf-8") as f:
+        reg = json.load(f)
+
+    changed = datetime.datetime.fromtimestamp(
+        src.stat().st_mtime
+    ).isoformat(timespec="seconds")
+
+    updated = False
+
+    for doc in reg.values():
+        if doc.get("file") == src.stem:
+            doc["last_changed"] = changed
+            updated = True
+
+    if updated:
+        with open(reg_path, "w", encoding="utf-8") as f:
+            json.dump(reg, f, ensure_ascii=False, indent=2)
 # --- Metadata ---------------------------------------------------------------
 def write_metadata(src: Path, outputs):
     stat = src.stat()
@@ -224,6 +248,8 @@ def main():
                 print(f"skip (unsupported): {entry.name}")
                 continue
             write_metadata(entry, outputs)
+            update_docregister(entry)
+
             print(f"OK   {entry.name}  ->  {len(outputs)} file(s)")
         except Exception as e:
             print(f"ERR  {entry.name}: {e}")

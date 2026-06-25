@@ -1,0 +1,47 @@
+{
+  "row-risikoanalyse": {
+    "file": "dat-010 Risikomanagement",
+    "title": "Risikomanagement",
+    "last_changed": "2026-01-25T10:31:42"
+  },
+  "row-soa": {
+    "file": "dat-016 soa",
+    "title": "Statement of Applicability (SoA)",
+    "last_changed": "2026-06-25T10:31:42"
+  },
+  "row-richtlinie": {
+    "file": "gov-001 Infosicherheitsrichtlinie2",
+    "title": "Informationssicherheitsrichtlinie",
+    "last_changed": "2026-06-25T10:31:42"
+  },
+  "row-assets": {
+    "file": "asset-verzeichnis",
+    "title": "Assetverzeichnis",
+    "last_changed": "2026-06-25T10:31:42"
+  },
+  "row-rollen": {
+    "file": "rollen-verantwortlichkeiten",
+    "title": "Rollen und Verantwortlichkeiten",
+    "last_changed": "2026-06-25T10:31:42"
+  },
+  "row-interaudit": {
+    "file": "internes-audit-bericht",
+    "title": "Interner Auditbericht",
+    "last_changed": "2026-06-25T10:31:42"
+  },
+  "row-korrektur": {
+    "file": "korrekturmassnahmen",
+    "title": "Korrekturmaßnahmen",
+    "last_changed": "2026-06-25T10:31:42"
+  },
+  "row-zertifikat": {
+    "file": "zertifikat-iso27001",
+    "title": "ISO 27001 Zertifikat",
+    "last_changed": "2026-06-25T10:31:42"
+  },
+  "row-aenderungen": {
+    "file": "isms-aenderungsprotokoll",
+    "title": "ISMS-Änderungsprotokoll",
+    "last_changed": "2026-06-25T10:31:42"
+  }
+}

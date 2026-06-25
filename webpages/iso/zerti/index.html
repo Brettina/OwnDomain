@@ -738,6 +738,48 @@ async function openMarkdown(file, title){
 
 }
 window.openMarkdown = openMarkdown;
+
+async function showTable(file, title){
+
+    const viewer = document.getElementById("tableViewer");
+
+    viewer.innerHTML = "<p>Lade...</p>";
+
+    const res = await fetch("/docs/conv_tables/" + file);
+
+    const data = await res.json();
+
+    const sheet = Object.values(data)[0];
+
+    if(!sheet || sheet.length===0){
+        viewer.innerHTML="<p>Keine Daten.</p>";
+        return;
+    }
+
+    const cols = Object.keys(sheet[0]);
+
+    let html = `<h3>${title}</h3><table class="findings-table"><thead><tr>`;
+
+    cols.forEach(c => html += `<th>${c}</th>`);
+
+    html += "</tr></thead><tbody>";
+
+    sheet.forEach(row=>{
+        html += "<tr>";
+        cols.forEach(c=>{
+            html += `<td>${row[c] ?? ""}</td>`;
+        });
+        html += "</tr>";
+    });
+
+    html += "</tbody></table>";
+
+    viewer.innerHTML = html;
+}
+
+window.showTable = showTable;   // <<< ADD THIS LINE
+
+
 ;
 })();
 </script>
@@ -757,7 +799,7 @@ window.openMarkdown = openMarkdown;
     <nav class="header-nav">
       <a href="https://helmundwalter.de" target="_blank" rel="noopener">helmundwalter.de ↗</a>
       <a href="../zerti/" class="active">Zertifizierung <span class="header-badge">ISO 27001</span></a>
-      <a href="../ueberwachung/">Überwachung</a>
+      <a href="#ueberwachung">Überwachung</a>
     </nav>
   </div>
 </header>
@@ -1723,6 +1765,34 @@ document.addEventListener('DOMContentLoaded', async () => {
   initSoa();
 });
 </script>
+<!-- ========================================================= -->
+<!-- Überwachung -->
+<!-- ========================================================= -->
+<hr style="margin:4rem 0;border:none;border-top:1px solid #ddd;">
+<section id="ueberwachung" style="padding:3rem 2rem">
+
+    <h2>Überwachung</h2>
+
+    <p>Laufende Überwachung des ISMS.</p>
+
+    <div style="display:flex;gap:1rem;margin:2rem 0;flex-wrap:wrap">
+
+        <button class="btn"
+            onclick="showTable('PRO-009 - OFI.json','OFI')">
+            OFI
+        </button>
+
+        <button class="btn"
+            onclick="showTable('DAT-017 Vorfallsregister.json','Vorfallsregister')">
+            Vorfallsregister
+        </button>
+
+    </div>
+
+    <div id="tableViewer"></div>
+
+</section>
+
 <div id="docPanel" class="doc-panel">
 
     <div class="doc-header">

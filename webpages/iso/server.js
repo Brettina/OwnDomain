@@ -291,6 +291,241 @@ app.get('/api/asset-owners', (req, res) => {
   res.json(loadAssetOwners());
 });
 require('./search')(app, { currentRole, DOCS_DIR });
+// ════════════════════════════════════════════════════════════════
+//  COMPLIANCE WORKFLOWS  (Vorfall melden + Lessons Learned)
+//  Paste into server.js directly ABOVE:  // ── Static routes ──────
+//  REPLACES any previous compliance-workflows block. Additive only;
+//  reuses transporter / parseCsvLine / currentRole / loadConfig.
+// ════════════════════════════════════════════════════════════════
+
+const USER_DATA_DIR  = path.join(ISO_DIR, 'user_data');
+const INCIDENTS_FILE = path.join(USER_DATA_DIR, 'incidents.json');
+const LESSONS_FILE   = path.join(USER_DATA_DIR, 'lessonslearned.json');
+
+if (!fs.existsSync(USER_DATA_DIR)) fs.mkdirSync(USER_DATA_DIR, { recursive: true });
+if (!fs.existsSync(INCIDENTS_FILE)) fs.writeFileSync(INCIDENTS_FILE, '[]');
+if (!fs.existsSync(LESSONS_FILE))   fs.writeFileSync(LESSONS_FILE, '[]');
+
+function loadArr(file) {
+  try { const v = JSON.parse(fs.readFileSync(file, 'utf8')); return Array.isArray(v) ? v : []; }
+  catch { return []; }
+}
+function saveArr(file, arr) { fs.writeFileSync(file, JSON.stringify(arr, null, 2)); }
+
+// role -> {name,email} from verantwortliche (single source of truth)
+function contactFor(cfg, role) {
+  const v = (cfg.verantwortliche || {})[role];
+  return v ? { name: v.name || role, email: v.email || '' } : { name: role, email: '' };
+}
+
+// Ordered internal recipients. Order = key order in verantwortliche.
+// DSB added when personal data ja/unklar.
+function routeRoles(cfg, type, personalData) {
+  const r = cfg.incidentRouting || {};
+  const set = new Set([...(r.default || [])]);
+  ((r.byType || {})[type] || []).forEach(x => set.add(x));
+  if (personalData === 'ja' || personalData === 'unklar')
+    (r.personalDataRoles || []).forEach(x => set.add(x));
+  const order = Object.keys(cfg.verantwortliche || {});   // <- order from verantwortliche
+  return [...set].sort((a, b) => {
+    const ia = order.indexOf(a), ib = order.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+  });
+}
+
+// ONE internal mail (first role = To, rest = CC) + known participants -> CC.
+// Plus a SEPARATE external (BSI) draft only when severity triggers it.
+function buildMailDrafts(cfg, inc) {
+  const roles = inc.notifiedRoles || [];
+  const drafts = [];
+
+  if (roles.length) {
+    const contacts = roles.map(r => ({ role: r, ...contactFor(cfg, r) }));
+    const toEmails = [...new Set(contacts.map(c => c.email).filter(Boolean))];
+    const toLabel  = contacts.map(c => `${c.name} (${c.role})`).join(', ');
+
+    // known participants (name matches a verantwortliche entry) -> CC
+    const partContacts = (inc.participants || []).map(p => {
+      const hit = Object.values(cfg.verantwortliche || {})
+        .find(v => v.name && String(p) && v.name.toLowerCase() === String(p).toLowerCase());
+      return hit ? hit.email : '';
+    });
+    const ccEmails = [...new Set(partContacts.filter(Boolean))];
+    const ccLabel  = (inc.participants || []).join(', ');
+
+    const greetNames = contacts.map(c => c.name).join(', ');
+    const body =
+`Hallo ${greetNames},
+
+es wurde ein Sicherheitsvorfall erfasst und an Sie zur Kenntnis und Bearbeitung weitergeleitet.
+
+Vorfallsart:         ${inc.type}
+Einstufung:          ${inc.severity || '-'}
+Begruendung:         ${inc.severityReason || '-'}
+Entdeckt durch:      ${inc.discoverer || '-'}
+Beteiligte:          ${(inc.participants || []).join(', ') || '-'}
+Personenbezogene Daten betroffen: ${inc.personalData}
+Betroffene Systeme:  ${(inc.systems || []).join(', ') || '-'}
+
+Was ist passiert:
+${inc.description || '-'}
+
+Bitte die zugehoerigen Sofortmassnahmen und Fristen beachten.
+
+Diese Nachricht wurde aus dem ISMS-Portal vorbereitet.`;
+
+    drafts.push({
+      kind: 'intern',
+      toEmails, toLabel, ccEmails, ccLabel,
+      subject: `Sicherheitsvorfall: ${inc.type} (${inc.severity || 'ohne Einstufung'})`,
+      body
+    });
+  }
+
+  const ext = cfg.externalAuthority || {};
+  if (ext.role && (ext.triggerSeverities || []).includes(inc.severity)) {
+    const bsi = contactFor(cfg, ext.role);
+    drafts.push({
+      kind: 'extern',
+      toEmails: bsi.email ? [bsi.email] : [],
+      toLabel: `${bsi.name} (${ext.role})`,
+      ccEmails: [], ccLabel: '',
+      subject: `Meldung eines erheblichen Sicherheitsvorfalls gemaess ${ext.label || 'NIS2 / DSGVO'}`,
+      body:
+`Sehr geehrte Damen und Herren,
+
+hiermit melden wir gemaess ${ext.label || 'NIS2 / DSGVO'} einen erheblichen Sicherheitsvorfall.
+
+Meldende Organisation:        Helm & Walter
+Vorfallsart:                  ${inc.type}
+Einstufung:                   ${inc.severity}
+Begruendung der Einstufung:   ${inc.severityReason || '-'}
+Personenbezogene Daten betroffen: ${inc.personalData}
+Betroffene Systeme:           ${(inc.systems || []).join(', ') || '-'}
+Zeitpunkt der Kenntnisnahme:  ${inc.timestamp || ''}
+
+Sachverhalt:
+${inc.description || '-'}
+
+Wir halten Sie ueber den weiteren Verlauf und die ergriffenen Massnahmen auf dem Laufenden.
+
+Mit freundlichen Gruessen
+Helm & Walter`
+    });
+  }
+  return drafts;
+}
+
+function loadExcelIncidents() {
+  const out = [];
+  try {
+    const dir = path.join(DOCS_DIR, 'conv_tables');
+    const file = fs.readdirSync(dir).find(f => /vorfallsregister/i.test(f) && f.endsWith('.csv'));
+    if (!file) return out;
+    fs.readFileSync(path.join(dir, file), 'utf8').split(/\r?\n/).forEach((line, i) => {
+      if (!line.trim()) return;
+      const cells = parseCsvLine(line).map(c => c.trim());
+      const dateCell = cells.find(c => /\d{4}-\d{2}-\d{2}|\d{1,2}\.\d{1,2}\.\d{2,4}/.test(c));
+      const textCells = cells.filter(Boolean);
+      if (!dateCell || textCells.length < 2) return;
+      out.push({ id: 'excel-' + i, source: 'excel', date: dateCell,
+        type: textCells.find(c => c !== dateCell) || 'Vorfall', discoverer: '' });
+    });
+  } catch (e) { console.warn('Excel incident parse skipped:', e.message); }
+  return out;
+}
+
+function loadMeasures() {
+  const out = [];
+  try {
+    const dir = path.join(DOCS_DIR, 'conv_tables');
+    const file = fs.readdirSync(dir).find(f => /atalog/i.test(f) && f.endsWith('.csv'));
+    if (!file) return out;
+    fs.readFileSync(path.join(dir, file), 'utf8').split(/\r?\n/).forEach(line => {
+      if (!line.trim()) return;
+      const cells = parseCsvLine(line).map(c => c.trim());
+      const idx = cells.findIndex(c => /^MAS-[a-z]+-\d+$/i.test(c));
+      if (idx < 0) return;
+      const rest = cells.slice(idx + 1).filter(Boolean);
+      out.push({ id: cells[idx], kategorie: rest[0] || '', bezeichnung: rest[1] || '' });
+    });
+  } catch (e) { console.warn('Measure parse skipped:', e.message); }
+  return out;
+}
+
+app.get('/api/incidents', (req, res) => {
+  if (!currentRole(req)) return res.status(401).json({ error: 'Nicht angemeldet' });
+  const web = loadArr(INCIDENTS_FILE).map(i => ({ ...i, source: i.source || 'web' }));
+  res.json({ incidents: [...loadExcelIncidents(), ...web] });
+});
+
+app.post('/api/incidents', (req, res) => {
+  if (!currentRole(req)) return res.status(401).json({ error: 'Nicht angemeldet' });
+  const cfg = loadConfig();
+  const b = req.body || {};
+  if (!b.type) return res.status(400).json({ error: 'type required' });
+  const arr = loadArr(INCIDENTS_FILE);
+  const nextId = arr.reduce((m, x) => Math.max(m, Number(x.id) || 0), 0) + 1;
+  const inc = {
+    id: nextId, source: 'web',
+    date: b.date || new Date().toISOString().slice(0, 10),
+    timestamp: new Date().toISOString(),
+    type: b.type,
+    discoverer: b.discoverer || '',
+    participants: Array.isArray(b.participants) ? b.participants : (b.participants ? [b.participants] : []),
+    description: b.description || '',
+    severity: b.severity || '',
+    severityReason: b.severityReason || '',
+    personalData: b.personalData || 'unklar',
+    systems: Array.isArray(b.systems) ? b.systems : []
+  };
+  inc.notifiedRoles = routeRoles(cfg, inc.type, inc.personalData);
+  inc.mailDrafts = buildMailDrafts(cfg, inc);
+  arr.push(inc);
+  saveArr(INCIDENTS_FILE, arr);
+  res.json({ ok: true, incident: inc });
+});
+
+app.post('/api/sendMail', (req, res) => {
+  if (!currentRole(req)) return res.status(401).json({ error: 'Nicht angemeldet' });
+  const { to, cc, subject, body } = req.body || {};
+  if (!to) return res.status(400).json({ error: 'to required' });
+  const ccVal = Array.isArray(cc) ? cc.join(',') : (cc || '');
+  transporter.sendMail({
+    from: '"ISO System" <no-reply@yourdomain.com>',
+    to, cc: ccVal, subject: subject || '', text: body || ''
+  }, (err, info) => {
+    if (err) { console.error('Mail error:', err); return res.status(500).json({ error: err.message }); }
+    res.json({ ok: true, messageId: info && info.messageId });
+  });
+});
+
+app.get('/api/lessons', (req, res) => {
+  if (!currentRole(req)) return res.status(401).json({ error: 'Nicht angemeldet' });
+  res.json({ lessons: loadArr(LESSONS_FILE) });
+});
+
+app.post('/api/lessons', (req, res) => {
+  if (!currentRole(req)) return res.status(401).json({ error: 'Nicht angemeldet' });
+  const b = req.body || {};
+  if (b.incident === undefined || b.incident === null)
+    return res.status(400).json({ error: 'incident required' });
+  const arr = loadArr(LESSONS_FILE);
+  const lesson = { incident: b.incident, date: new Date().toISOString().slice(0, 10),
+    text: b.text || '', measures: Array.isArray(b.measures) ? b.measures : [] };
+  const i = arr.findIndex(x => String(x.incident) === String(b.incident));
+  if (i >= 0) arr[i] = lesson; else arr.push(lesson);
+  saveArr(LESSONS_FILE, arr);
+  res.json({ ok: true, lesson });
+});
+
+app.get('/api/measures', (req, res) => {
+  if (!currentRole(req)) return res.status(401).json({ error: 'Nicht angemeldet' });
+  res.json({ measures: loadMeasures() });
+});
+// ════════════════════════ END COMPLIANCE WORKFLOWS ══════════════
+// ════════════════════════ END COMPLIANCE WORKFLOWS ══════════════
+
 // ── Static routes ────────────────────────────────────────────
 // PUBLIC: the access map itself (login page + guard need it before login)
 app.use('/docs/conv_meta', express.static(path.join(DOCS_DIR, 'conv_meta')));

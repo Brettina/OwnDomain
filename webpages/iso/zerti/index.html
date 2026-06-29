@@ -1011,6 +1011,122 @@ window.showTable = showTable;   // <<< ADD THIS LINE
        TAB: ERSTZERTIFIZIERUNG
   ══════════════════════════════════════════════════════════ -->
   <div id="tab-erst" class="tab-panel active">
+
+  <!-- ════════════════════════════════════════════════════════════
+     COMPLIANCE WORKFLOWS
+     Paste in zerti/index.html directly ABOVE:  
+   ===== DOC SEARCH ===== 
+     Uses existing .phase / .meta-field / .findings-table / .btn-save styles.
+═════════════════════════════════════════════════════════════ 
+-->
+<div class="phase">
+  <div class="phase-header" onclick="togglePhase(this)">
+    <div class="phase-num">⚑</div>
+    <div style="flex:1">
+      <div class="phase-title">Vorfalls- und Notfallbehandlung</div>
+      <div class="phase-subtitle">Vorfall melden &amp; Lessons Learned (Incident Response, DAT-017)</div>
+    </div>
+    <div class="phase-toggle open">▼</div>
+  </div>
+
+  <div class="phase-body open">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;" id="cwGrid">
+
+      <!-- ░░░░ LINKE KARTE: VORFALL MELDEN (Wizard, Schritt für Schritt) ░░░░ -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1.25rem;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;">
+          <h3 style="color:var(--green);font-size:1rem;font-family:'Space Grotesk',sans-serif;">Vorfall melden</h3>
+          <span id="cwStepLabel" style="font-size:.75rem;color:var(--text-dim);"></span>
+        </div>
+
+        <!-- Schritt 1 -->
+        <div class="cw-step" data-step="1">
+          <div class="meta-field"><label>Schritt 1 · Vorfallsart</label>
+            <select id="incType"></select></div>
+        </div>
+
+        <!-- Schritt 2 -->
+        <div class="cw-step" data-step="2" style="display:none;">
+          <div class="meta-field" style="margin-bottom:1rem;"><label>Schritt 2 · Entdecker</label>
+            <input id="incDiscoverer" type="text" placeholder="z.B. Robert Juzak" /></div>
+          <div class="meta-field" style="margin-bottom:1rem;"><label>Beteiligte (Komma-getrennt; bekannte Personen kommen in CC)</label>
+            <input id="incParticipants" type="text" placeholder="z.B. Robert Juzak, Bettina Lohr, Kunde XY" /></div>          <div class="meta-field"><label>Beschreibung (kurze Zeitlinie / was ist passiert)</label>
+            <textarea id="incDescription" rows="3"
+              style="width:100%;padding:.5rem .75rem;background:var(--bg2);border:1px solid var(--border);
+                     border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;
+                     outline:none;resize:vertical;"></textarea></div>
+        </div>
+
+        <!-- Schritt 3 -->
+<div class="cw-step" data-step="3" style="display:none;">
+          <div class="meta-field" style="margin-bottom:1rem;"><label>Schritt 3 · Personenbezogene Daten betroffen?</label>
+            <select id="incPersonal">
+              <option value="nein">nein</option>
+              <option value="ja">ja</option>
+              <option value="unklar" selected>unklar</option>
+            </select>
+            <div style="font-size:.75rem;color:var(--text-dim);margin-top:.35rem;">Bei „ja" oder „unklar" wird der DSB automatisch informiert.</div>
+          </div>
+          <div class="meta-field" style="margin-bottom:.5rem;"><label>Einstufung / Erheblichkeit (NIS2 / DSGVO)</label>
+            <select id="incSeverity"></select>
+            <div id="incSeverityHelp" style="font-size:.75rem;color:var(--text-dim);margin-top:.35rem;"></div></div>
+          <div class="meta-field"><label>Begründung der Einstufung</label>
+            <textarea id="incSeverityReason" rows="2"
+              style="width:100%;padding:.5rem .75rem;background:var(--bg2);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;outline:none;resize:vertical;"
+              placeholder="Warum diese Einstufung?"></textarea></div>
+        </div>
+
+        <!-- Schritt 4 -->
+        <div class="cw-step" data-step="4" style="display:none;">
+          <div class="meta-field"><label>Schritt 4 · Betroffene Systeme</label>
+            <div id="incSystems" style="display:flex;flex-wrap:wrap;gap:.6rem;"></div></div>
+        </div>
+
+        <!-- Ergebnis -->
+        <div class="cw-step" data-step="5" style="display:none;">
+          <div id="cwResult"></div>
+        </div>
+
+        <!-- Navigation -->
+        <div style="display:flex;justify-content:space-between;gap:.75rem;margin-top:1.25rem;">
+          <button class="btn-secondary" id="cwBack" onclick="cwPrev()" style="visibility:hidden;">← Zurück</button>
+          <button class="btn-save" id="cwNext" onclick="cwNext()">Weiter →</button>
+        </div>
+      </div>
+
+      <!-- ░░░░ RECHTE KARTE: LESSONS LEARNED ░░░░ -->
+      <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:1.25rem;">
+        <h3 style="margin-bottom:1rem;color:var(--green);font-size:1rem;font-family:'Space Grotesk',sans-serif;">Lessons Learned</h3>
+
+        <div class="meta-field" style="margin-bottom:1rem;"><label>Vorfall auswählen</label>
+          <select id="llIncident" onchange="onLessonIncidentChange()"></select></div>
+
+        <div class="meta-field" style="margin-bottom:1rem;"><label>Erkenntnisse / was wurde gelernt</label>
+          <textarea id="llText" rows="4"
+            style="width:100%;padding:.5rem .75rem;background:var(--bg2);border:1px solid var(--border);
+                   border-radius:6px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.875rem;
+                   outline:none;resize:vertical;"></textarea></div>
+
+        <div class="meta-field" style="margin-bottom:.5rem;">
+          <label>Korrekturmaßnahmen (verknüpft mit Standardmaßnahmen-IDs aus dem Risikoregister)</label>
+          <table class="findings-table" id="llMeasures">
+            <thead><tr>
+              <th style="width:130px">Maßnahmen-ID</th><th>Verantwortlich</th><th>Asset</th>
+              <th style="width:90px;text-align:center">Umgesetzt</th><th style="width:120px">Erledigt am</th>
+            </tr></thead><tbody></tbody>
+          </table>
+          <button class="add-btn" onclick="addMeasureRow()">+ Maßnahme verknüpfen</button>
+        </div>
+
+        <datalist id="measureOptions"></datalist>
+        <button class="btn-save" style="margin-top:.75rem;" onclick="saveLesson()">Lessons Learned speichern</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+<!-- ════════════════════ END COMPLIANCE WORKFLOWS ════════════════ -->
+<!-- ════════════════════ END COMPLIANCE WORKFLOWS ════════════════ -->
 <!-- ===== DOC SEARCH ===== -->
 <div class="phase">
   <div class="phase-header" onclick="togglePhase(this)">
@@ -2019,11 +2135,281 @@ function initSoa() {
   buildSoaTable('soa-a7', ANNEX_A.a7);
   buildSoaTable('soa-a8', ANNEX_A.a8);
 }
+
+// ════════════════════════════════════════════════════════════════
+//  COMPLIANCE WORKFLOWS — client logic
+//  Paste inside the same <script> that defines initSoa()/askAI(),
+//  directly ABOVE the final document.addEventListener('DOMContentLoaded',…).
+//  Then add ONE line inside that handler, right after initSoa();  :
+//        await initComplianceWorkflows();
+// ════════════════════════════════════════════════════════════════
+
+let CW_MEASURES = [];
+let CW_INCIDENTS = [];
+let CW_STEP = 1;
+const CW_LAST_INPUT_STEP = 4;   // step 5 = Ergebnis
+
+// ── Build config-driven form controls ───────────────────────────
+function cwBuildForm() {
+  const fill = (id, arr, asOption) => {
+    const el = document.getElementById(id); if (!el) return;
+    el.innerHTML = arr.map(asOption).join('');
+  };
+fill('incType', CFG.incidentTypes || [], t => `<option>${t}</option>`);
+  fill('incSeverity', Object.keys(CFG.severity || {}), s => `<option>${s}</option>`);
+  const box = (id, arr, cls) => {
+    const el = document.getElementById(id); if (!el) return;
+    el.innerHTML = arr.map(v => `
+      <label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;color:var(--text);">
+        <input type="checkbox" class="${cls}" value="${v}" style="accent-color:var(--green);"> ${v}
+      </label>`).join('');
+  };
+  box('incSystems', CFG.systems || [], 'inc-sys');
+  const sev = document.getElementById('incSeverity');
+  const help = document.getElementById('incSeverityHelp');
+  const upd = () => { if (help) help.textContent = (CFG.severity || {})[sev.value] || ''; };
+  if (sev) { sev.onchange = upd; upd(); }
+}
+
+// ── Wizard navigation (one step visible at a time) ───────────────
+function cwShowStep(n) {
+  CW_STEP = n;
+  document.querySelectorAll('.cw-step').forEach(s => {
+    s.style.display = (Number(s.dataset.step) === n) ? 'block' : 'none';
+  });
+  const back = document.getElementById('cwBack');
+  const next = document.getElementById('cwNext');
+  back.style.visibility = (n === 1) ? 'hidden' : 'visible';
+  const labels = { 1: 'Schritt 1 / 4', 2: 'Schritt 2 / 4', 3: 'Schritt 3 / 4', 4: 'Schritt 4 / 4', 5: 'Ergebnis' };
+  document.getElementById('cwStepLabel').textContent = labels[n] || '';
+  if (n < CW_LAST_INPUT_STEP) { next.textContent = 'Weiter →'; next.style.display = ''; }
+  else if (n === CW_LAST_INPUT_STEP) { next.textContent = 'Auswerten & Speichern'; next.style.display = ''; }
+else { next.style.display = 'none'; back.textContent = '← Zurück (bearbeiten)'; }
+}
+function cwPrev() {
+  if (CW_STEP === 5) { cwShowStep(4); return; }   // back to inputs, keep everything
+  if (CW_STEP > 1) cwShowStep(CW_STEP - 1);
+}
+function cwNext() {
+  if (CW_STEP < CW_LAST_INPUT_STEP) { cwShowStep(CW_STEP + 1); return; }
+  if (CW_STEP === CW_LAST_INPUT_STEP) { saveIncident(); }   // -> shows Ergebnis (step 5)
+}
+function cwResetWizard() {
+  document.getElementById('incDiscoverer').value = '';
+  document.getElementById('incParticipants').value = '';
+  document.getElementById('incDescription').value = '';
+  document.getElementById('incSeverityReason').value = '';
+  document.querySelectorAll('.inc-sys:checked').forEach(c => c.checked = false);
+  document.getElementById('incPersonal').value = 'unklar';
+  document.getElementById('cwBack').textContent = '← Zurück';
+  cwShowStep(1);
+}
+
+// ── Save incident -> server computes ordered roles + mail drafts ──
+async function saveIncident() {
+  const participants = document.getElementById('incParticipants').value
+    .split(',').map(s => s.trim()).filter(Boolean);
+  const payload = {
+    type: document.getElementById('incType').value,
+    discoverer: document.getElementById('incDiscoverer').value.trim(),
+    participants,
+    description: document.getElementById('incDescription').value.trim(),
+    severity: document.getElementById('incSeverity').value,
+    severityReason: document.getElementById('incSeverityReason').value.trim(),
+    personalData: document.getElementById('incPersonal').value,
+    systems: [...document.querySelectorAll('.inc-sys:checked')].map(c => c.value)
+  };
+  try {
+    const res = await fetch(`${API_BASE}/api/incidents`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Fehler');
+    cwRenderResult(data.incident);
+    cwShowStep(5);
+    await cwLoadIncidentDropdown();
+  } catch (e) { alert(e.message); }
+}
+
+// ── Ergebnis: deadlines + Sofortmaßnahmen + editable/sendable mails ──
+function cwComputeDeadlines(inc) {
+  const base = new Date(inc.timestamp || Date.now());
+  const fmt = d => d.toLocaleDateString('de-DE') + ' ' + d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' });
+  const addBiz = (d, n) => { const r = new Date(d); let added = 0; while (added < n) { r.setDate(r.getDate() + 1); const wd = r.getDay(); if (wd !== 0 && wd !== 6) added++; } return r; };
+return (CFG.deadlines || []).filter(dl => !dl.onlyIfPersonalData || inc.personalData === 'ja' || inc.personalData === 'unklar').map(dl => {    let due;
+    if (dl.businessDays != null) due = addBiz(base, dl.businessDays);
+    else { due = new Date(base); due.setHours(due.getHours() + (dl.hours || 0)); }
+    return { label: dl.label, due: dl.hours === 0 ? 'sofort' : fmt(due) };
+  });
+}
+
+function cwRenderResult(inc) {
+  const actions = (CFG.scenarioActions || {})[inc.type] || [];
+  const deadlines = cwComputeDeadlines(inc);
+  const li = arr => arr.map(x => `<li style="margin:.15rem 0;">${x}</li>`).join('');
+
+  let html = `
+    <div style="color:var(--green);font-family:'Space Grotesk',sans-serif;margin-bottom:.5rem;">
+      Vorfall #${inc.id} gespeichert — ${inc.type}${inc.severity ? ' · ' + inc.severity : ''}
+    </div>
+    <div style="font-size:.82rem;color:var(--text-muted);margin-bottom:1rem;">
+      Benachrichtigen (Reihenfolge): <b style="color:var(--text);">${inc.notifiedRoles.join(' → ')}</b>
+    </div>
+
+    <div style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin:.5rem 0 .25rem;">Fristen</div>
+    <ul style="font-size:.84rem;color:var(--text);padding-left:1.1rem;margin-bottom:1rem;">
+      ${deadlines.map(d => `<li style="margin:.2rem 0;">${d.label} <span style="color:var(--text-dim);">(fällig: ${d.due})</span></li>`).join('')}
+    </ul>
+
+    <div style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin:.5rem 0 .25rem;">Sofortmaßnahmen</div>
+    <ul style="font-size:.84rem;color:var(--text);padding-left:1.1rem;margin-bottom:1.25rem;">${li(actions)}</ul>
+
+    <div style="font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--text-dim);margin:.5rem 0 .5rem;">E-Mails (bearbeitbar &amp; direkt sendbar)</div>
+    <div id="cwMails"></div>`;
+  document.getElementById('cwResult').innerHTML = html;
+
+ const wrap = document.getElementById('cwMails');
+wrap.innerHTML = (inc.mailDrafts || []).map((d, i) => {
+    const ccStr = (d.ccEmails || []).join(', ');
+    const tag = d.kind === 'extern'
+      ? '<span style="color:var(--red);font-weight:600;">Externe Meldung</span>'
+      : '<span style="color:var(--green);font-weight:600;">Interne Meldung</span>';
+    return `
+    <div class="cw-mail" data-i="${i}" style="border:1px solid var(--border);border-radius:8px;padding:.75rem;margin-bottom:.75rem;background:var(--bg2);">
+<div style="font-size:.78rem;margin-bottom:.4rem;">${tag} &nbsp; An: <b style="color:var(--text);">${d.toLabel || ''}</b></div>      <label style="font-size:.7rem;color:var(--text-dim);">An (To)</label>
+<input class="cw-to" value="${(d.toEmails || []).join(', ')}"
+        style="width:100%;margin:.15rem 0 .4rem;padding:.35rem .5rem;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:.82rem;">
+<label style="font-size:.7rem;color:var(--text-dim);">CC ${d.ccLabel ? '(' + d.ccLabel + ')' : ''}</label>
+      <input class="cw-cc" value="${ccStr}"
+        style="width:100%;margin:.15rem 0 .4rem;padding:.35rem .5rem;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:.82rem;">
+      <input class="cw-subj" value="${(d.subject||'').replace(/"/g,'&quot;')}"
+        style="width:100%;margin-bottom:.4rem;padding:.35rem .5rem;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:.82rem;">
+      <textarea class="cw-body" rows="6"
+        style="width:100%;padding:.35rem .5rem;background:var(--bg);border:1px solid var(--border);border-radius:5px;color:var(--text);font-size:.82rem;resize:vertical;">${d.body || ''}</textarea>
+      <div style="display:flex;gap:.5rem;margin-top:.5rem;">
+        <button class="btn-save" style="padding:.4rem 1rem;" onclick="cwSendMail(${i})">Senden</button>
+        <a class="task-doc cw-mailto" href="#">✉ Lokal öffnen</a>
+      </div>
+    </div>`;
+  }).join('') || '<div style="font-size:.82rem;color:var(--text-dim);">Keine Empfänger für diese Vorfallsart hinterlegt.</div>';
+
+  wrap.querySelectorAll('.cw-mail').forEach(m => cwSyncMailto(m));
+  wrap.querySelectorAll('.cw-to,.cw-cc,.cw-subj,.cw-body').forEach(el =>
+    el.addEventListener('input', () => cwSyncMailto(el.closest('.cw-mail'))));
+}
+
+function cwSyncMailto(m) {
+  const to = m.querySelector('.cw-to').value;
+  const cc = m.querySelector('.cw-cc').value;
+  const subj = m.querySelector('.cw-subj').value;
+  const body = m.querySelector('.cw-body').value;
+  const ccPart = cc ? `&cc=${encodeURIComponent(cc)}` : '';
+  m.querySelector('.cw-mailto').href =
+    `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subj)}${ccPart}&body=${encodeURIComponent(body)}`;
+}
+
+async function cwSendMail(i) {
+  const m = document.querySelector(`.cw-mail[data-i="${i}"]`);
+  const to = m.querySelector('.cw-to').value.trim();
+  const cc = m.querySelector('.cw-cc').value.split(',').map(s => s.trim()).filter(Boolean);
+  const subject = m.querySelector('.cw-subj').value;
+  const body = m.querySelector('.cw-body').value;
+  if (!to) { alert('Keine Empfängeradresse.'); return; }
+  if (!confirm(`E-Mail an ${to}${cc.length ? ' (CC: ' + cc.join(', ') + ')' : ''} jetzt senden?`)) return;
+  const btn = m.querySelector('.btn-save');
+  btn.disabled = true; btn.textContent = 'Sende…';
+  try {
+    const res = await fetch(`${API_BASE}/api/sendMail`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ to, cc, subject, body })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Senden fehlgeschlagen');
+    btn.textContent = '✓ Gesendet';
+  } catch (e) { alert(e.message); btn.disabled = false; btn.textContent = 'Senden'; }
+}
+
+// ── Lessons Learned ──────────────────────────────────────────────
+async function cwLoadIncidentDropdown() {
+  const sel = document.getElementById('llIncident'); if (!sel) return;
+  try { CW_INCIDENTS = (await fetch(`${API_BASE}/api/incidents`).then(r => r.json())).incidents || []; }
+  catch (e) { CW_INCIDENTS = []; }
+  sel.innerHTML = CW_INCIDENTS.length
+    ? CW_INCIDENTS.map(i => `<option value="${i.id}">${i.date || ''} · ${i.type}${i.discoverer ? ' · ' + i.discoverer : ''}</option>`).join('')
+    : `<option value="">Noch keine Vorfälle erfasst</option>`;
+  onLessonIncidentChange();
+}
+
+async function onLessonIncidentChange() {
+  const sel = document.getElementById('llIncident');
+  const id = sel ? sel.value : '';
+  let lesson = null;
+  try { lesson = ((await fetch(`${API_BASE}/api/lessons`).then(r => r.json())).lessons || []).find(l => String(l.incident) === String(id)); }
+  catch (e) {}
+  document.getElementById('llText').value = lesson ? (lesson.text || '') : '';
+  const tbody = document.querySelector('#llMeasures tbody');
+  tbody.innerHTML = '';
+  if (lesson && lesson.measures) lesson.measures.forEach(m => addMeasureRow(m));
+  if (!tbody.children.length) addMeasureRow();
+}
+
+function addMeasureRow(m) {
+  m = m || {};
+  const tbody = document.querySelector('#llMeasures tbody');
+  const inp = (cls, val, ph, list) =>
+    `<input class="${cls}" ${list ? 'list="measureOptions"' : ''} value="${(val || '').replace(/"/g,'&quot;')}" placeholder="${ph||''}"
+      style="width:100%;background:transparent;border:none;border-bottom:1px solid var(--border);color:var(--text);font-family:inherit;font-size:.82rem;padding:2px 4px;outline:none;">`;
+  const tr = document.createElement('tr');
+  tr.innerHTML = `
+    <td>${inp('m-id', m.id, 'MAS-…', true)}</td>
+    <td>${inp('m-owner', m.owner, 'Verantwortlich')}</td>
+    <td>${inp('m-asset', m.asset, 'Asset')}</td>
+    <td style="text-align:center"><input type="checkbox" class="m-done" ${m.done ? 'checked' : ''} style="accent-color:var(--green);"></td>
+    <td>${inp('m-date', m.date, 'YYYY-MM-DD')}</td>`;
+  tbody.appendChild(tr);
+}
+
+async function saveLesson() {
+  const sel = document.getElementById('llIncident');
+  const incident = sel ? sel.value : '';
+  if (!incident) { alert('Bitte zuerst einen Vorfall auswählen.'); return; }
+  const measures = [...document.querySelectorAll('#llMeasures tbody tr')].map(tr => ({
+    id: tr.querySelector('.m-id').value.trim(), owner: tr.querySelector('.m-owner').value.trim(),
+    asset: tr.querySelector('.m-asset').value.trim(), done: tr.querySelector('.m-done').checked,
+    date: tr.querySelector('.m-date').value.trim()
+  })).filter(m => m.id);
+  try {
+    const res = await fetch(`${API_BASE}/api/lessons`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ incident, text: document.getElementById('llText').value, measures })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Fehler');
+    const btn = event && event.target;
+    if (btn) { const t = btn.textContent; btn.textContent = '✓ Gespeichert'; setTimeout(() => btn.textContent = t, 1500); }
+  } catch (e) { alert(e.message); }
+}
+
+async function cwLoadMeasures() {
+  try { CW_MEASURES = (await fetch(`${API_BASE}/api/measures`).then(r => r.json())).measures || []; }
+  catch (e) { CW_MEASURES = []; }
+  const dl = document.getElementById('measureOptions');
+  if (dl) dl.innerHTML = CW_MEASURES.map(m => `<option value="${m.id}">${m.bezeichnung || m.kategorie}</option>`).join('');
+}
+
+async function initComplianceWorkflows() {
+  cwBuildForm();
+  cwShowStep(1);
+  await cwLoadMeasures();
+  await cwLoadIncidentDropdown();
+}
 document.addEventListener('DOMContentLoaded', async () => {
   await loadConfig();
   await loadDocs();
   await loadComplianceMonitor();
   initSoa();
+  await initComplianceWorkflows();   // <-- ADD THIS LINE
 });
 </script>
 <!-- ========================================================= -->

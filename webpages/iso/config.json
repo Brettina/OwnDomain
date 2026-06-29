@@ -1,5 +1,4 @@
 {
- 
   "driveLinks": {
     "risikoanalyse": "https://drive.google.com/drive/folders/1sw2gsXm7BjTk4buCHPuetJqKcHybOk6W?usp=drive_link",
     "soa": "https://docs.google.com/document/d/1lXPQKXlTrxVl0XQQFhLvkpPr1yMrxUqcgwWn7uchSm8/edit?usp=drive_link",
@@ -18,10 +17,107 @@
     "rezertifizierung-bericht": "https://drive.google.com/file/d/YOUR_ID/view",
     "zertifikat-iso27001-neu": "https://drive.google.com/file/d/YOUR_ID/view"
   },
-  "emails": {
-    "ISB": "anfrage@weichware-lohr.de",
-    "GF": "anfrage@weichware-lohr.de",
-        "IT-Leitung": "it@company.com"
+"verantwortliche": {
+  "GF":         { "name": "Daniel Walter",      "email": "anfrage@weichware-lohr.de" },
+  "DevOps":     { "name": "Robert Juzak",       "email": "anfrage@weichware-lohr.de" },
+  "ISB":        { "name": "Bettina Lohr",       "email": "anfrage@weichware-lohr.de" },
+  "DSB":        { "name": "Philipp Hary",       "email": "lohr_bettina@web.de" },
+  "IT-Leitung": { "name": "Bernd Helm",         "email": "anfrage@weichware-lohr.de" },
+  "PM":         { "name": "Dr. Jens Bornschein","email": "anfrage@weichware-lohr.de" },
+  "IA":         { "name": "Pauline Zeidler",    "email": "anfrage@weichware-lohr.de" },
+  "BSI":        { "name": "BSI Meldestelle",    "email": "meldung@bsi.bund.de" }
+},
+  "incidentTypes": [
+    "Datenpanne",
+    "Ransomware",
+    "Schwachstelle (extern gemeldet)",
+    "Sonstiges"
+  ],
+  "systems": [
+    "GitLab",
+    "Passbolt",
+    "Nextcloud",
+    "Kundensystem"
+  ],
+"severity": {
+  "niedrig":  "Kein Personenbezug, kein Kundensystem betroffen, keine spürbare Betriebsunterbrechung. Keine externe Meldepflicht.",
+  "mittel":   "Begrenzte Auswirkung, ggf. einzelne Betroffene. DSGVO-Prüfung nötig; i.d.R. keine NIS2-Erheblichkeit.",
+  "hoch":     "Personenbezogene Daten betroffen oder Kundensystem beeinträchtigt. DSGVO-Meldung (Art. 33, 72 h) wahrscheinlich.",
+  "erheblich":"NIS2-erheblich: spürbare Betriebsunterbrechung, erheblicher finanzieller Schaden oder Auswirkung auf andere/Kunden. DSGVO- und ggf. NIS2-Meldelogik greift."
+},
+  "incidentRouting": {
+    "default": [
+      "GF",
+      "ISB"
+    ],
+    "personalDataRoles": [
+      "DSB"
+    ],
+    "byType": {
+      "Datenpanne": [],
+      "Ransomware": [
+        "DevOps"
+      ],
+      "Schwachstelle (extern gemeldet)": [
+        "DevOps"
+      ],
+      "Sonstiges": []
+    }
+  },
 
+"externalAuthority": {
+    "role": "BSI",
+    "triggerSeverities": [
+      "hoch",
+      "erheblich"
+    ],
+    "label": "NIS2 / DSGVO – externe Meldung"
+  },
+  "deadlines": [
+    {
+      "label": "Sofort: Geschäftsführung informieren",
+      "hours": 0
+    },
+    {
+      "label": "24 h: Prüfen, ob Kunden informiert werden müssen",
+      "hours": 24
+    },
+    {
+      "label": "72 h: ggf. DSGVO-Meldung an Aufsichtsbehörde (nur DSB oder GF)",
+      "hours": 72,
+      "onlyIfPersonalData": true
+    },
+    {
+      "label": "5 Werktage: Lessons Learned dokumentieren (DAT-017)",
+      "businessDays": 5
+    }
+  ],
+  "scenarioActions": {
+    "Datenpanne": [
+      "Betroffenes System isolieren (Netzwerk trennen)",
+      "Beweise sichern (GitLab-Logs, SSH auth.log, Nextcloud-Aktivitätslog)",
+      "Schadensausmaß bewerten (Daten / Systeme / Kunden)",
+      "DSB einbinden",
+      "An ISB und GF melden"
+    ],
+    "Ransomware": [
+      "Gerät sofort vom Netz trennen",
+      "GF und Robert Juzak informieren",
+      "Keine Zahlung ohne ausdrückliche GF-Entscheidung",
+      "Backup-Wiederherstellung einleiten (MAS-dat-013)",
+      "SSH-Keys und Passbolt-Passwörter rotieren",
+      "GitLab-Zugänge prüfen / ggf. sperren"
+    ],
+    "Schwachstelle (extern gemeldet)": [
+      "Meldung dokumentieren und triagieren (CVSS-basiert)",
+      "Echtheit telefonischer Anweisungen per Codewort prüfen",
+      "Bei kritischer Schwachstelle Vorfallprozess auslösen"
+    ],
+    "Sonstiges": [
+      "Ruhe bewahren",
+      "Geschäftsführung informieren",
+      "System nach Möglichkeit isolieren",
+      "Keine Daten löschen (Beweissicherung)"
+    ]
   }
 }

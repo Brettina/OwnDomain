@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /webpages/iso/
+Disallow: /webpages/test/
+Disallow: /webpages/test2/
+
+Sitemap: https://publish-lohr.com/sitemap.xml
